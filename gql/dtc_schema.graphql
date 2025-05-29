@@ -1,0 +1,2879 @@
+directive @captchaProtected(type: CAPTCHA_CALL_TYPE!) on FIELD_DEFINITION
+
+"""
+The @defer directive may be specified on a fragment spread to imply de-prioritization, that causes the fragment to be omitted in the initial response, and delivered as a subsequent response afterward. A query with @defer directive will cause the request to potentially return multiple responses, where non-deferred data is delivered in the initial response and data deferred delivered in a subsequent response. @include and @skip take precedence over @defer.
+"""
+directive @defer(if: Boolean = true, label: String) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+directive @maxLimit(limit: Int!, scope: SCOPE!) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INTERFACE | OBJECT
+
+directive @notEmpty on FIELD_DEFINITION | SCALAR
+
+directive @operationCategory(category: OPERATION_CATEGORY) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INTERFACE | OBJECT
+
+directive @permission(permission: String!) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INTERFACE | OBJECT
+
+directive @scope(scope: SCOPE!) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INTERFACE | OBJECT
+
+directive @sensitive on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+type AddItemPayload implements Payload & SelectionMutationPayload {
+  line: Line
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection
+  userErrors: [UserError!]!
+}
+
+type Address {
+  address1: String
+  address2: String
+  attention: String
+  cellPhoneNumber: String
+  city: String
+  companyName: String
+  country: Country
+  email: String
+  faxNumber: String
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  state: CountryState
+  stateOrProvince: String
+  vatNumber: String
+  zipCode: String
+}
+
+interface AddressField {
+  key: String!
+  required: Boolean!
+  visible: Boolean!
+}
+
+type AddressFieldList {
+  newsletter: CheckboxAddressField!
+  separateBillingAddress(sort: [AddressSortKey!] = [EMAIL, COMPANY, FIRSTNAME, LASTNAME, ADDRESS1, ADDRESS2, ZIPCODE, CITY, STATE, COUNTRY, PHONE_NUMBER, IDENTITY_NUMBER, HOUSE_NUMBER, HOUSE_EXTENSION]): [AddressField!]!
+  shippingAddress(sort: [AddressSortKey!] = [EMAIL, COMPANY, FIRSTNAME, LASTNAME, ADDRESS1, ADDRESS2, ZIPCODE, CITY, STATE, COUNTRY, PHONE_NUMBER, VAT_NUMBER, HOUSE_NUMBER, HOUSE_EXTENSION]): [AddressField!]!
+  termsAndConditions: CheckboxAddressField!
+}
+
+input AddressInput {
+  address1: String
+  address2: String
+  attention: String
+  cellPhoneNumber: String
+  city: String
+  companyName: String
+  country: String!
+  email: String
+  faxNumber: String
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  state: String
+  stateOrProvince: String
+  vatNumber: String
+  zipCode: String
+}
+
+enum AddressSortKey {
+  ADDRESS1
+  ADDRESS2
+  CITY
+  COMPANY
+  COUNTRY
+  EMAIL
+  FIRSTNAME
+  HOUSE_EXTENSION
+  HOUSE_NUMBER
+  IDENTITY_NUMBER
+  LASTNAME
+  PHONE_NUMBER
+  STATE
+  VAT_NUMBER
+  ZIPCODE
+}
+
+type Affiliate {
+  name: String!
+  sendToPage: String!
+  uri: String!
+}
+
+type AffiliateList implements Payload {
+  list: [Affiliate!]!
+  pagination: PaginationInfo!
+  userErrors: [UserError!]!
+}
+
+enum AffiliateSort {
+  name_ASC
+  name_DESC
+}
+
+type AffiliateUriLookupPayload implements Payload & URILookupPayload {
+  affiliate: Affiliate!
+  found: UriLookupType!
+
+  """Required scope: SESSION"""
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection
+  userErrors: [UserError!]!
+}
+
+enum AppliedActionType {
+  FREE_PRODUCT_ADDED
+  FREE_SHIPPING
+}
+
+type AppliedCampaignPercent implements AppliedPromotion {
+  percent: Float
+  type: AppliedPromotionType!
+  value: MonetaryValue!
+}
+
+type AppliedLineItemVoucher implements AppliedPromotion {
+  name: String!
+  percent: Float
+  type: AppliedPromotionType!
+  value: MonetaryValue!
+}
+
+interface AppliedPromotion {
+  percent: Float
+  type: AppliedPromotionType!
+  value: MonetaryValue!
+}
+
+enum AppliedPromotionType {
+  CAMPAIGN
+  VOUCHER
+}
+
+input ApplyGiftCardInput {
+  cardNumber: String!
+  pin: String
+}
+
+enum AttentionReason {
+  """Selected variant is no longer purchasable."""
+  NOT_PURCHASABLE
+
+  """Selected market is not available or not suitable for delivery country."""
+  NO_MARKET
+
+  """Selected shipping is not available."""
+  NO_SHIPPING
+
+  """Selected item is out of stock."""
+  OUT_OF_STOCK
+
+  """
+  Payment has failed but future attempts might succeed.
+  This might happen when card has insufficient funds.
+  """
+  PAYMENT_DECLINED
+
+  """
+  The payment method associated with this subscription is no longer valid
+  and will not become valid without on-session customer interaction (eg.
+  providing a new card details).
+  """
+  PAYMENT_REVOKED
+
+  """
+  Reasons for this subscriptions failing are unknown and should undergo investigation.
+  """
+  UNKNOWN
+}
+
+interface Attribute {
+  elements: [AttributeElement!]!
+  type: AttributeType!
+}
+
+type AttributeChoiceElement implements AttributeElement {
+  key: String!
+  kind: AttributeElementKind!
+  value: ChoiceValue!
+  values: [ChoiceValue!]!
+}
+
+interface AttributeElement {
+  key: String!
+  kind: AttributeElementKind!
+}
+
+enum AttributeElementKind {
+  BOOLEAN
+  FILE
+  IMAGE
+  INPUT
+  READONLY
+  SELECT
+  TEXTAREA
+}
+
+type AttributeFileElement implements AttributeElement {
+  key: String!
+  kind: AttributeElementKind!
+  url: String
+}
+
+type AttributeImageElement implements AttributeElement {
+  height: Int
+  key: String!
+  kind: AttributeElementKind!
+  mimeType: String
+  url: String
+  width: Int
+}
+
+type AttributeStringElement implements AttributeElement {
+  key: String!
+  kind: AttributeElementKind!
+  translations: [AttributeStringElementTranslation!]
+  value: String!
+}
+
+input AttributeStringElementInput {
+  key: String!
+  value: String!
+}
+
+type AttributeStringElementTranslation {
+  language: Language!
+  value: String
+}
+
+type AttributeType {
+  isMulti: Boolean!
+  name: String!
+}
+
+type AutoVoucher implements Voucher {
+  actions: [VoucherAction!]!
+  appliedOn: [VoucherAppliedOn!]!
+  attributes: [Attribute!]!
+  expiryDate: String!
+  giftCard: GiftCard
+  id: Int!
+  isExternal: Boolean!
+  lineIds: [String!]!
+  method: VoucherMethod!
+  name: String!
+  orderReduction: MonetaryValue!
+  totalItemReduction: MonetaryValue!
+  totalShippingReduction: MonetaryValue!
+  type: VoucherType!
+  value: MonetaryValue!
+}
+
+input BackInStockSubscribeInput {
+  email: String
+  item: String!
+  languageCode: String
+  shipTo: CountryStateInput!
+}
+
+type Brand {
+  id: Int!
+  markets: [Market!]!
+  metaDescription: String!
+  metaKeywords: String!
+  metaTitle: String!
+  name: String!
+  pricelists: [Pricelist!]!
+  uri: String!
+}
+
+type BrandFilterValue implements FilterValue {
+  active: Boolean!
+  brand: Brand
+
+  """Number of matches with the current filtering"""
+  count: Int!
+
+  """
+  Number of matches with the current filtering when you discount the other selected values in this group.
+  """
+  filterCount: Int!
+  name: String
+
+  """The number of items in total available, independent of filtering"""
+  totalCount: Int!
+  value: String!
+}
+
+type BrandList implements Payload {
+  list: [Brand!]!
+  pagination: PaginationInfo!
+  userErrors: [UserError!]!
+}
+
+enum BrandSort {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+}
+
+type BrickAndMortar {
+  address: String!
+  country: Country
+  distance(unit: DistanceUnit! = KILOMETER): Distance
+  id: Int!
+  latitude: String!
+  longitude: String!
+  name: String!
+  openingDays: [OpeningDay!]!
+  state: CountryState
+  type: BrickAndMortarType!
+  website: String
+}
+
+type BrickAndMortarList {
+  list: [BrickAndMortar!]!
+  pagination: PaginationInfo
+  userErrors: [UserError!]!
+}
+
+input BrickAndMortarListFilter {
+  countryCode: String
+
+  """The user's location in latitude / longitude"""
+  location: GeoPositionInput
+  maxDistance: MaxDistance
+  stateCode: String
+}
+
+enum BrickAndMortarSort {
+  distance_ASC
+  distance_DESC
+  name_ASC
+  name_DESC
+}
+
+enum BrickAndMortarType {
+  FRANCHISE_OR_PARTNER
+  MULTI_BRAND_RETAILER
+  OWN_STORE
+}
+
+type Bundle {
+  id: Int!
+
+  """
+  The maximum possible price available for a flexible bundle with dynamic price
+  Will be null if the bundle is fixed or has a static price.
+  """
+  maxPrice: MonetaryValue
+
+  """
+  The maximum possible prices available for a flexible bundle with dynamic price.
+  Will be null if the bundle is fixed or has a static price.
+  
+  Required scope: NO_SESSION
+  """
+  maxPriceByPricelist(limit: Int, page: Int): [PricelistPrice!]!
+
+  """
+  The minimum possible price available for a flexible bundle with dynamic price
+  Will be null if the bundle is fixed or has a static price.
+  """
+  minPrice: MonetaryValue
+
+  """
+  The minimum possible prices available for a flexible bundle with dynamic price
+  Will be null if the bundle is fixed or has a static price.
+  
+  Required scope: NO_SESSION
+  """
+  minPriceByPricelist(limit: Int, page: Int): [PricelistPrice!]!
+  priceType: BundlePriceType!
+  sections: [BundleSection!]!
+  type: BundleType!
+}
+
+type BundleLine implements Line {
+  addedFromCategory: Category
+  appliedPromotions: [AppliedPromotion!]!
+  brand: Brand
+  bundle: SelectionBundle
+  comment: String!
+  discountPercent: Float!
+  displayItem: DisplayItem!
+  hasDiscount: Boolean!
+  id: String!
+  item: Item!
+  lineValue(includingTax: Boolean! = true): MonetaryValue!
+  localizedSize: LocalizedProdSize
+  name: String!
+  originalLineValue(includingTax: Boolean! = true): MonetaryValue!
+  productExternalUrl: String
+  productNumber: String!
+  productVariantName: String!
+  quantity: Int!
+  size: String!
+  subscriptionId: Int
+  taxPercent: Float!
+  unitOriginalPrice(includingTax: Boolean! = true): MonetaryValue!
+  unitPrice(includingTax: Boolean! = true): MonetaryValue!
+  unitPriceReduction(includingTax: Boolean! = true): MonetaryValue!
+}
+
+enum BundlePriceType {
+  DYNAMIC
+  STATIC
+}
+
+type BundleSection {
+  id: Int!
+  items: [DisplayItem!]!
+  quantity: Int!
+}
+
+input BundleSectionInput {
+  item: String!
+  sectionId: Int!
+}
+
+enum BundleType {
+  FIXED
+  FLEXIBLE
+}
+
+enum CAPTCHA_CALL_TYPE {
+  CUSTOMER_LOGIN
+  CUSTOMER_REGISTRATION
+  GIFT_CERT
+  NEWSLETTER
+  PAYMENT
+  VOUCHER
+}
+
+type CampaignInfo {
+  attributes(keys: [String!]! = []): [Attribute!]!
+  endDateDateTime: String!
+  showNew: Boolean!
+  showSale: Boolean!
+  startDateTime: String!
+}
+
+type CampaignSite {
+  """Required scope: NO_SESSION"""
+  market: Market!
+  name: String
+  sendToPage: String
+  uri: String!
+}
+
+type CampaignSiteList implements Payload {
+  list: [CampaignSite!]!
+  pagination: PaginationInfo!
+  userErrors: [UserError!]!
+}
+
+enum CampaignSiteSort {
+  name_ASC
+  name_DESC
+}
+
+type CampaignSiteUriLookupPayload implements Payload & URILookupPayload {
+  campaignSite: CampaignSite!
+  found: UriLookupType!
+
+  """Required scope: SESSION"""
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection
+  userErrors: [UserError!]!
+}
+
+type CaptchaVerifyPayload implements Payload {
+  userErrors: [UserError!]!
+  verified: Boolean!
+}
+
+type CarrierInformation {
+  carrierName: String
+  serviceName: String
+}
+
+type Category {
+  attributes(keys: [String!]! = []): [Attribute!]!
+  childCategories(limit: Int! = 20, page: Int! = 1, sort: [CategorySort!]! = [customOrder_ASC]): [Category!]!
+  id: Int!
+
+  """Required scope: NO_SESSION"""
+  markets: [Market!]!
+  metaDescription: String!
+  metaKeywords: String!
+  metaTitle: String!
+  name: [String!]
+  parentCategory: Category
+
+  """Required scope: NO_SESSION"""
+  pricelists: [Pricelist!]!
+  sortOrder: Int!
+  translations: [TranslatedCategory!]!
+  uri: String!
+}
+
+type CategoryFilterValue implements FilterValue {
+  active: Boolean!
+  category: Category!
+
+  """Number of matches with the current filtering"""
+  count: Int!
+
+  """
+  Number of matches with the current filtering when you discount the other selected values in this group.
+  """
+  filterCount: Int!
+  name: String
+
+  """The number of items in total available, independent of filtering"""
+  totalCount: Int!
+  value: String!
+}
+
+type CategoryItemList {
+  displayItems: [DisplayItem!]
+  filters: [FilterOption!]
+  pagination: PaginationInfo!
+}
+
+type CategoryList {
+  list: [Category!]!
+  pagination: PaginationInfo!
+  userErrors: [UserError!]!
+}
+
+enum CategorySort {
+  customOrder_ASC
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+}
+
+type CategoryUriLookupPayload implements Payload & URILookupPayload {
+  category: Category!
+  displayItemList: CategoryItemList!
+  found: UriLookupType!
+  userErrors: [UserError!]!
+}
+
+type CheckboxAddressField implements AddressField {
+  key: String!
+  required: Boolean!
+  visible: Boolean!
+}
+
+type CheckoutSelection {
+  addressFields: AddressFieldList!
+  checkoutScript: String
+  hasSeparateBillingAddress: Boolean!
+  paymentMethod: PaymentMethod
+  paymentMethods(sort: [PaymentMethodKind!] = []): [PaymentMethod!]!
+  separateBillingAddress: Address
+  shippingAddress: Address!
+  shippingMethod: ShippingMethod
+  shippingMethods: [ShippingMethod!]
+  totals: [SelectionTotalRow!]!
+  widgets: [Widget!]
+}
+
+type ChoiceValue {
+  name: String!
+  value: String!
+}
+
+input ClientDetails {
+  browserLanguage: String
+  ip: String
+  userAgent: String
+}
+
+type CodeVoucher implements Voucher {
+  actions: [VoucherAction!]!
+  appliedOn: [VoucherAppliedOn!]!
+  attributes: [Attribute!]!
+  code: String!
+  expiryDate: String!
+  giftCard: GiftCard
+  isExternal: Boolean!
+  lineIds: [String!]!
+  method: VoucherMethod!
+  name: String!
+  orderReduction: MonetaryValue!
+  totalItemReduction: MonetaryValue!
+  totalShippingReduction: MonetaryValue!
+  type: VoucherType!
+  value: MonetaryValue!
+}
+
+type Collection {
+  id: Int!
+
+  """Required scope: NO_SESSION"""
+  markets: [Market!]!
+  name: String!
+
+  """Required scope: NO_SESSION"""
+  pricelists: [Pricelist!]!
+  uri: String!
+}
+
+type CollectionFilterValue implements FilterValue {
+  active: Boolean!
+  collection: Collection
+
+  """Number of matches with the current filtering"""
+  count: Int!
+
+  """
+  Number of matches with the current filtering when you discount the other selected values in this group.
+  """
+  filterCount: Int!
+  name: String
+
+  """The number of items in total available, independent of filtering"""
+  totalCount: Int!
+  value: String!
+}
+
+type CollectionList implements Payload {
+  list: [Collection!]!
+  pagination: PaginationInfo!
+  userErrors: [UserError!]!
+}
+
+enum CollectionSort {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+}
+
+input ConsentInput {
+  consented: Boolean!
+  data: String!
+  key: String!
+  languageCode: String
+  name: String!
+  version: String!
+}
+
+type Country {
+  code: String!
+  defaultLanguage: Language
+  isEU: Boolean!
+  name: String!
+  shipTo: Boolean!
+  states: [CountryState!]
+  translations: [TranslatedCountry!]!
+}
+
+type CountryAddressField implements AddressField {
+  choices: [Country!]!
+  key: String!
+  required: Boolean!
+  selected: Country
+  visible: Boolean!
+}
+
+input CountryInput {
+  code: String
+  id: Int
+}
+
+type CountryState {
+  code: String!
+  name: String!
+}
+
+input CountryStateInput {
+  countryCode: String!
+  stateCode: String
+}
+
+type Currency {
+  code: String!
+  currentBaseRate: Float!
+  decimalDigits: Int!
+  decimalPoint: String!
+  denominator: Int!
+  id: Int!
+  isoNumber: String!
+  name: String!
+  prefix: String
+  suffix: String
+  thousandsSeparator: String!
+}
+
+input CustomAttributeInput {
+  dynamicAttributes: [DynamicAttributeInput!]
+  mappedAttributes: [MappedAttributeInput!]
+}
+
+input CustomSortInput {
+  key: SortKey!
+  order: SortOrder!
+}
+
+type Customer {
+  attributes: [Attribute!]!
+  billingAddress: Address
+
+  """Required permission: customer.birthdate"""
+  birthdate(format: String = "Y-m-d"): Date
+  cellPhoneNumber: String
+  email: String!
+  firstName: String
+
+  """Required permission: customer.gender"""
+  gender: Gender
+  id: Int!
+  language: Language
+  lastName: String
+  newsletterSubscriptions: [NewsletterSubscription!]!
+  orders(limit: Int! = 20, page: Int! = 1): [Order!]!
+  phoneNumber: String
+  subscriptionContracts: [SubscriptionContract!]!
+  totalOrders: Int!
+  websiteUrl: String
+  wishlists(limit: Int, page: Int): [Wishlist!]!
+}
+
+input CustomerClubSpecificFields {
+  voyadoCustomerId: String
+  voyadoPromotionId: String
+}
+
+input CustomerRegisterAddressInput {
+  address1: String
+  address2: String
+  cellPhoneNumber: String
+  city: String
+  companyName: String
+  country: String!
+  email: String!
+  faxNumber: String
+  firstName: String!
+  lastName: String!
+  phoneNumber: String
+  state: String
+  stateOrProvince: String
+  vatNumber: String
+  zipCode: String
+}
+
+input CustomerRegisterInput {
+  billingAddress: CustomerRegisterAddressInput!
+  consents: [ConsentInput!]
+  customAttributes: CustomAttributeInput
+  gender: Gender
+  loginOnSuccess: Boolean!
+  password: String!
+}
+
+type CustomerRegisterPayload implements Payload {
+  loggedIn: Customer
+  userErrors: [UserError!]!
+}
+
+input CustomerUpdateAddressInput {
+  address1: String
+  address2: String
+  cellPhoneNumber: String
+  city: String
+  companyName: String
+  country: String
+  email: String
+  faxNumber: String
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  state: String
+  stateOrProvince: String
+  vatNumber: String
+  zipCode: String
+}
+
+input CustomerUpdateInput {
+  billingAddress: CustomerUpdateAddressInput
+  consents: [ConsentInput!]
+  customAttributes: CustomAttributeInput
+  gender: Gender
+  password: PasswordUpdateInput
+}
+
+type CustomerUpdatePayload implements Payload {
+  customer: Customer!
+  userErrors: [UserError!]!
+}
+
+scalar Date
+
+type DateInterval {
+  type: DateIntervalType!
+  value: Int!
+}
+
+enum DateIntervalType {
+  DAY
+  MONTH
+  WEEK
+  YEAR
+}
+
+scalar DateTimeTz
+
+type DeliveryGroup {
+  attributes: [Attribute!]!
+  externalDeliveryGroupId: String
+  id: Int!
+  lines: [DeliveryGroupLine!]!
+  name: String
+  shippingMethod: ShippingMethod!
+  shippingPrice: MonetaryValue!
+}
+
+type DeliveryGroupLine {
+  line: Line!
+  quantity: Int!
+}
+
+type DisplayItem {
+  attributes(keys: [String!]! = []): [Attribute!]!
+  available: Boolean!
+  brand: Brand
+  bundle: Bundle
+  campaignInfo: CampaignInfo
+  canonicalCategory: Category
+  canonicalUri: String!
+
+  """Required scope: NO_SESSION"""
+  categories: [Category!]
+  category: Category
+  collection: Collection
+
+  """Required permission: displayItem.countryOfOrigin"""
+  countryOfOrigin: Country
+  createdAt: String!
+  description: FormattedString!
+  hasStock: Boolean!
+  id: Int!
+  isPrimaryVariant: Boolean!
+  items: [Item!]!
+
+  """Required scope: SESSION"""
+  language: Language
+  languages: [Language!]!
+  lowestPrice: LowestPrice
+
+  """Required scope: NO_SESSION"""
+  lowestPriceByPricelist: [PricelistLowestPrice!]!
+
+  """Required scope: SESSION"""
+  market: Market!
+
+  """Required scope: NO_SESSION"""
+  markets: [Market!]!
+  measurementTable: MeasurementTable
+  media: [ProductMedia!]!
+  metaDescription: String!
+  metaKeywords: String!
+  metaTitle: String!
+  minimumOrderQuantity: Int!
+  modifiedAt: String!
+  name: String!
+  orderQuantityDenominator: Int!
+  originalPrice: MonetaryValue
+
+  """Required scope: NO_SESSION"""
+  preview: Boolean!
+
+  """
+  Price with current market and pricelist, either from session or if _one_ market and pricelist is provided in no session.
+  For dynamically priced flexible bundles, price will be null since there is a range of possible prices depending on the sections when added to cart. 
+  minPrice and maxPrice can be found under `bundle`
+  """
+  price: MonetaryValue
+
+  """
+  Price by pricelist
+  For dynamically priced flexible bundles priceByPricelist will be empty, since there is a range of possible prices depending on the sections when added to cart.
+  minPriceByPricelist and maxPriceByPricelist can be found under `bundle`
+  Only available for NO_SESSION scoped tokens.
+  
+  Required scope: NO_SESSION
+  """
+  priceByPricelist: [PricelistPrice!]!
+
+  """Required scope: SESSION"""
+  pricelist: Pricelist!
+
+  """Required scope: NO_SESSION"""
+  pricelists: [Pricelist!]!
+  primaryVariant: DisplayItem
+  productNumber: String!
+  productVariant: ProductVariant!
+  relatedDisplayItems(relationType: [String!]! = []): [RelatedDisplayItems!]!
+  shortDescription: FormattedString!
+  showAsNew: Boolean!
+  showAsSale: Boolean!
+  sizeChart: SizeChart!
+  subscriptionPlans: [SubscriptionPlan!]!
+  translations: [TranslatedDisplayItem!]!
+  uri: String!
+  weight: Float!
+  weightUnit: String!
+}
+
+input DisplayItemFilter {
+  filters: [FilterInput!]
+  id: [Int!]
+  onlyAvailable: Boolean! = false
+
+  """Input for full-text search query."""
+  search: String
+
+  """Fields to include in full-text search."""
+  searchInFields: [SearchField!]! = [NAME, FUZZY_NAME, BRAND_NAME, COLLECTION_NAME, PRODUCT_VARIANT_NAME, FUZZY_PRODUCT_VARIANT_NAME, PRODUCT_NUMBER, SIZE_NUMBER, GTIN, SHORT_DESCRIPTION, DESCRIPTION, CATEGORY_NAME]
+}
+
+type DisplayItemList implements Payload {
+  filters(keys: [String!]): [FilterOption!]
+  list: [DisplayItem!]
+  pagination: PaginationInfo!
+  userErrors: [UserError!]!
+}
+
+type DisplayItemUriLookupPayload implements Payload & URILookupPayload {
+  displayItem: DisplayItem!
+  found: UriLookupType!
+  userErrors: [UserError!]!
+}
+
+type Distance {
+  unit: DistanceUnit!
+  value: Float!
+}
+
+enum DistanceUnit {
+  KILOMETER
+  METER
+  MILE
+}
+
+type DynamicAttribute implements Attribute {
+  elements: [AttributeElement!]!
+  type: AttributeType!
+}
+
+input DynamicAttributeInput {
+  attributeElementKey: String!
+  attributeElementValue: String!
+  attributeTypeName: String!
+}
+
+input DynamicSelectionAttributeSetInput {
+  attributeElementKey: String!
+  attributeElementValue: String!
+  attributeTypeName: String!
+}
+
+input DynamicSelectionAttributeUnsetInput {
+  attributeElementKey: String!
+  attributeTypeName: String!
+}
+
+input FilterInput {
+  """Filter key from FilterOption.key"""
+  key: String!
+
+  """Filter values from FilterOption.values"""
+  values: [String!]!
+}
+
+type FilterOption {
+  anyAvailable: Boolean!
+  key: String!
+  selectedValues: [String!]!
+  values: [FilterValue!]!
+}
+
+interface FilterValue {
+  active: Boolean!
+
+  """Number of matches with the current filtering"""
+  count: Int!
+
+  """
+  Number of matches with the current filtering when you discount the other selected values in this group.
+  """
+  filterCount: Int!
+
+  """The number of items in total available, independent of filtering"""
+  totalCount: Int!
+  value: String!
+}
+
+type FormPaymentAction implements PaymentAction {
+  action: PaymentActionType!
+  formFields: Map
+  formType: String!
+  html: String!
+}
+
+type FormattedString {
+  formatted: String!
+  raw: String!
+}
+
+type FreeProductAddedAction implements VoucherAction {
+  allowAddMore: Boolean!
+  allowRemove: Boolean!
+  lineId: String!
+  type: AppliedActionType!
+}
+
+type FreeShippingAction implements VoucherAction {
+  shippingMethods: [Int!]!
+  type: AppliedActionType!
+}
+
+type FulfillmentCheckPayload implements Payload {
+  availableInBrickAndMortars: [Int!]!
+  userErrors: [UserError!]!
+}
+
+enum Gender {
+  FEMALE
+  MALE
+  UNKNOWN
+}
+
+type GenericSelectionMutationPayload implements Payload & SelectionMutationPayload {
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection
+  userErrors: [UserError!]!
+}
+
+input GeoPositionInput {
+  latitude: String!
+  longitude: String!
+}
+
+type GiftCard {
+  lastFourDigits: String!
+}
+
+type IngridWidget implements Widget {
+  deliveryOptionsAvailable: Boolean!
+  ingridAttributes: [String!]
+  kind: WidgetKind!
+  reload: Boolean!
+  sessionId: String!
+  snippet: String!
+}
+
+type Item {
+  GTIN: String!
+  horizontalLabelIndex: Int!
+  id: String!
+  name: String!
+  preorder: Boolean!
+  productSizeId: Int!
+  sizeLocalization: [LocalizedSize!]!
+  sku: String!
+  stock: Stock!
+
+  """Required scope: NO_SESSION"""
+  stockByWarehouse: [WarehouseStock!]!
+  verticalLabelIndex: Int!
+}
+
+scalar JSON
+
+type JavascriptPaymentAction implements PaymentAction {
+  action: PaymentActionType!
+  formFields: Map
+  formType: String!
+  script: String!
+}
+
+type KlarnaCheckoutWidget implements Widget {
+  kind: WidgetKind!
+  replaceSnippet: Boolean!
+}
+
+type KlarnaPaymentWidget implements Widget {
+  authorizePayload: Map
+  client_token: String!
+  kind: WidgetKind!
+  replace_snippet: Boolean!
+}
+
+type Language {
+  code: String!
+
+  """ISO-3166 code"""
+  countryCode: String
+  default: Boolean!
+
+  """ISO-639 code"""
+  languageCode: String
+
+  """ISO-639 description"""
+  languageName: String
+  name(locale: String): String!
+}
+
+interface Line {
+  addedFromCategory: Category
+  appliedPromotions: [AppliedPromotion!]!
+  brand: Brand
+  comment: String!
+  discountPercent: Float!
+  displayItem: DisplayItem!
+  hasDiscount: Boolean!
+  id: String!
+  item: Item!
+  lineValue(includingTax: Boolean! = true): MonetaryValue!
+  localizedSize: LocalizedProdSize
+  name: String!
+  originalLineValue(includingTax: Boolean! = true): MonetaryValue!
+  productExternalUrl: String
+  productNumber: String!
+  productVariantName: String!
+  quantity: Int!
+  size: String!
+  subscriptionId: Int
+  taxPercent: Float!
+  unitOriginalPrice(includingTax: Boolean! = true): MonetaryValue!
+  unitPrice(includingTax: Boolean! = true): MonetaryValue!
+  unitPriceReduction(includingTax: Boolean! = true): MonetaryValue!
+}
+
+type LocalizedProdSize {
+  localizationDefinitionName: String!
+  localizedSize: String!
+}
+
+input LocalizedProdSizeInput {
+  localizationDefinitionName: String!
+  localizedSize: String!
+}
+
+type LocalizedSize {
+  countries: [Country!]!
+  displayName: String
+  name: String
+}
+
+type LocalizedSizeChart {
+  countries: [Country!]!
+  displayName: String!
+  horizontalLabels: [String!]!
+  verticalLabels: [String!]!
+}
+
+input LoginOptions {
+  """
+  If set to `true`, `applyCustomerMarket` will change the current `Selection` and `Session` to use the market specified on the customer.
+  The market will only be changed if the customer has a non-geolocated market assigned.
+  """
+  applyCustomerMarket: Boolean! = false
+}
+
+type LoginPayload implements Payload {
+  loggedIn: Customer
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection!
+  session: Session!
+  userErrors: [UserError!]!
+}
+
+type LogoutPayload {
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection!
+  session: Session!
+}
+
+interface LowestPrice {
+  originalPrice: MonetaryValue!
+  periodDays: Int!
+  price: MonetaryValue!
+}
+
+type LowestPriceBase implements LowestPrice {
+  originalPrice: MonetaryValue!
+  periodDays: Int!
+  price: MonetaryValue!
+}
+
+scalar Map
+
+type MappedAttribute implements Attribute {
+  elements: [AttributeElement!]!
+  id: Int!
+  type: AttributeType!
+}
+
+type MappedAttributeFilterValue implements FilterValue {
+  active: Boolean!
+  attribute: MappedAttribute!
+
+  """Number of matches with the current filtering"""
+  count: Int!
+
+  """
+  Number of matches with the current filtering when you discount the other selected values in this group.
+  """
+  filterCount: Int!
+
+  """The number of items in total available, independent of filtering"""
+  totalCount: Int!
+  value: String!
+}
+
+input MappedAttributeInput {
+  attributeId: Int!
+  attributeTypeName: String!
+}
+
+input MappedSelectionAttributeSetInput {
+  attributeId: Int!
+}
+
+input MappedSelectionAttributeUnsetInput {
+  attributeId: Int!
+}
+
+type Market {
+  """Required scope: NO_SESSION"""
+  countries: [Country!]
+
+  """Required scope: NO_SESSION"""
+  hasCampaignSite: Boolean!
+  id: Int!
+  name: String!
+}
+
+type MarketLowestPrice implements LowestPrice {
+  markets: [Int!]!
+  originalPrice: MonetaryValue!
+  periodDays: Int!
+  price: MonetaryValue!
+}
+
+type MarketPrice {
+  campaignInfo: CampaignInfo
+  hasDiscount: Boolean!
+  markets: [Int!]!
+  originalPrice: MonetaryValue!
+  price: MonetaryValue!
+}
+
+input MaxDistance {
+  maxDistance: Float!
+  maxDistanceUnit: DistanceUnit!
+}
+
+type MeasurementTable {
+  displayUnit: String!
+  horizontalLabels: [String!]!
+  values: [[String!]]!
+  verticalLabels: [String!]!
+}
+
+type MediaSize {
+  maxHeight: Int
+  maxWidth: Int
+  mimeType: String
+  name: String!
+  quality: Int
+}
+
+type MediaSource {
+  mediaSize: MediaSize!
+  mimeType: String
+  type: MediaType!
+  url: String!
+}
+
+enum MediaType {
+  IMAGE
+}
+
+type MonetaryValue {
+  currency: Currency!
+  formattedValue: String!
+  value: Float!
+}
+
+type Mutation {
+  """
+  Add flexible bundle to the current selection
+  
+  Required scope: SESSION
+  """
+  addFlexibleBundle(categoryId: Int, comment: String! = "", item: String!, localizedProdSize: LocalizedProdSizeInput, productExternalUrl: String! = "", quantity: Int! = 1, sections: [BundleSectionInput!]!, subscriptionPlan: Int): AddItemPayload!
+
+  """
+  Add display item or fixed bundle to the current selection
+  
+  Required scope: SESSION
+  """
+  addItem(categoryId: Int, comment: String! = "", item: String!, localizedProdSize: LocalizedProdSizeInput, productExternalUrl: String! = "", quantity: Int! = 1, subscriptionPlan: Int): AddItemPayload!
+
+  """
+  Add a subscription to an existing subscription contract
+  
+  Required scope: LOGGED_IN
+  """
+  addSubscription(contractId: Int!, item: String!, nextOrderDate: Date!, quantity: Int!, subscriptionPlanId: Int!): SubscriptionContractPayload!
+
+  """
+  Add a code voucher to the current selection
+  
+  Can be protected by captcha
+  
+  Required scope: SESSION
+  """
+  addVoucher(code: String!): SelectionMutationPayload!
+
+  """
+  Apply a gift card on the current selection.
+  Possible Error Codes:
+  
+  internal_error: An internal issue not directly related to the shopper.
+  
+  invalid_input: A validation error, such as the gift card not existing or an incorrect PIN being provided.
+  
+  inactive_card: The gift card being used is either inactive or expired.
+  
+  insufficient_funds: The gift card does not have sufficient funds.
+  
+  invalid_gift_card_currency: The gift card’s currency does not match the current currency of the selection.
+  
+  empty_card_balance: The gift card balance is zero.
+  
+  Can be protected by captcha.
+  
+  Required scope: SESSION
+  """
+  applyGiftCard(input: ApplyGiftCardInput!): SelectionMutationPayload!
+
+  """
+  Change the subscription contract address
+  
+  Required scope: LOGGED_IN
+  """
+  changeSubscriptionContractAddress(address: SubscriptionContractAddressInput!, contractId: Int!): SubscriptionContractPayload!
+
+  """
+  Claim a selection from a purchase link
+  
+  id: selection id from a purchase link
+  hash: hash from a purchase link
+  
+  Required scope: SESSION
+  """
+  claimSelection(
+    """hash from a purchase link"""
+    hash: String!
+
+    """selection id from a purchase link"""
+    id: String!
+  ): SelectionMutationPayload!
+
+  """
+  Delete selection line by its id
+  
+  Required scope: SESSION
+  """
+  deleteLine(lineId: String!): SelectionMutationPayload!
+
+  """
+  Finalize the recurring payment process by send all variables received to paymentReturnPage
+  
+  Required scope: LOGGED_IN
+  """
+  handleStoredPaymentResult(paymentMethodFields: Map!): StoredPaymentResultPayload!
+
+  """
+  Handle event triggered by widget
+  
+  Provided values are passed to the plugins that supports them
+  
+  Required scope: SESSION
+  """
+  handleWidgetEvent(payload: Map!): SelectionMutationPayload!
+
+  """
+  Initiate the recurring payment process for the provided subscription contracts
+  
+  Required scope: LOGGED_IN
+  """
+  initializeStoredPaymentInstructions(input: StoredPaymentInstructionsInput!): StoredPaymentInstructionsPayload!
+
+  """
+  Login as the customer in the current session
+  
+  The current selection is merged with the selection associated with the customer
+  
+  Can be protected by captcha
+  
+  Required scope: SESSION
+  
+  Rate limit: 10 requests per minute
+  """
+  login(
+    email: String!
+
+    """
+    Controls how the login should affect the selection and session on successful login.
+    """
+    loginOptions: LoginOptions! = {applyCustomerMarket: false}
+    password: String!
+  ): LoginPayload!
+
+  """
+  Log out customer from the current session
+  
+  Customer selection can be kept after logout if `Retain session after logout` plugin fields is set to `Yes`. Otherwise, selection is detached from the session.
+  
+  Required scope: SESSION
+  """
+  logout: LogoutPayload
+
+  """
+  Use Centra as a routing mechanism based on request path/URI
+  
+  DISPLAY_ITEM - looks for display item
+  CATEGORY - looks for category
+  AFFILIATE - looks for affiliate and sets it on the current selection in SESSION mode
+  CAMPAIGN_SITE - looks for campaign site and sets it on the current selection in SESSION mode
+  URL_VOUCHER - looks for URL voucher and sets it on the current selection in SESSION mode
+  
+  Required scope: SESSION, NO_SESSION
+  """
+  lookupUri(
+    for: [UriLookupType!]!
+    languageCode: [String!]
+    limit: Int! = 20
+
+    """Required scope: NO_SESSION"""
+    market: [Int!]
+    page: Int! = 1
+
+    """Required scope: NO_SESSION"""
+    pricelist: [Int!]
+    uri: String!
+  ): URILookupPayload
+
+  """
+  Initiate the payment process for the current selection
+  
+  Can be protected by captcha
+  
+  Required scope: SESSION
+  """
+  paymentInstructions(input: PaymentInstructionsInput!): PaymentInstructionsPayload!
+
+  """
+  Verify payment to create order
+  
+  Send all POST/GET variables received to paymentReturnPage to verify if payment was successfully processed
+  
+  Selection is converted into order on successful payment and is detached from the current session
+  
+  Required scope: SESSION
+  """
+  paymentResult(paymentMethodFields: Map!): PaymentResultPayload!
+
+  """
+  Register customer
+  
+  Can be protected by captcha
+  
+  Required scope: SESSION
+  """
+  registerCustomer(input: CustomerRegisterInput!): CustomerRegisterPayload!
+
+  """
+  Remove subscription plan from the selection line by line id
+  
+  Required scope: SESSION
+  """
+  removeSubscriptionPlanFromLine(lineId: String!): SelectionMutationPayload!
+
+  """
+  Remove applied voucher from the current selection
+  
+  Required scope: SESSION
+  """
+  removeVoucher(code: String!): SelectionMutationPayload!
+
+  """
+  Request reset password email to be sent to the provided email
+  
+  The password reset link will be the domain from a Centra setting, resetPasswordExternalUrl is added as a path
+  Example:
+    domain - https://example.com
+    resetPasswordExternalUrl - hello/world
+    link customer receives - https://example.com/hello/world?i=123&id=567
+  
+  Can be protected by captcha
+  
+  Required scope: SESSION
+  """
+  requestPasswordResetEmail(email: String!, resetPasswordExternalUrl: String!): RequestPasswordResetEmailPayload!
+
+  """
+  Finalize reset password flow providing new password
+  
+  Provide `i` and `id` GET request variables received on reset password page
+  
+  Required scope: SESSION
+  """
+  resetPassword(
+    confirmPassword: String
+    i: String!
+    id: String!
+
+    """
+    controls weather customer will be logged in automatically or not on success password reset action
+    """
+    loginOnSuccess: Boolean! = false
+    password: String!
+  ): ResetPasswordPayload!
+
+  """
+  Set shipping and billing addresses on the current selection
+  
+  If separateBillingAddress not provided, the billing address defaults to the shipping address
+  
+  By default, a cart abandonment email is sent. To prevent this, set sendCartAbandonmentEmail to false
+  
+  Required scope: SESSION
+  """
+  setAddress(sendCartAbandonmentEmail: Boolean, separateBillingAddress: AddressInput, shippingAddress: AddressInput!): SelectionMutationPayload!
+
+  """
+  Set an affiliate on the current session by its uri
+  
+  Any selection created for the current session during affiliate `Cookie expiration in days` will have an affiliate set on it
+  
+  Required scope: SESSION
+  """
+  setAffiliate(uri: String!): SelectionMutationPayload!
+
+  """
+  Set allocation rule to request for fulfillment of order
+  
+  Required scope: SESSION, SHARED_SECRET
+  """
+  setAllocationRule(id: Int!): SelectionMutationPayload!
+
+  """
+  Set a brick and mortar store on the current selection, to request for fulfillment of order
+  
+  Required scope: SESSION
+  """
+  setBrickAndMortar(id: Int!): SelectionMutationPayload!
+
+  """
+  Set campaign site market on the current selection by its uri
+  
+  Required scope: SESSION
+  """
+  setCampaignSite(uri: String!): SelectionMutationPayload!
+
+  """
+  Set the current session and selection country and state
+  
+  Can trigger pricelist/market change along with unavailable products removal froom the current selection
+  
+  Required scope: SESSION
+  """
+  setCountryState(countryCode: String!, stateCode: String): SelectionMutationPayload!
+
+  """
+  Set the language on the current session and selection
+  
+  Required scope: SESSION
+  """
+  setLanguage(code: String!): SessionPayload!
+
+  """
+  Set the market on the current selection
+  
+  Required scope: SESSION
+  """
+  setMarket(id: Int!): SessionPayload!
+
+  """
+  Set the paymentMethod on the current selection
+  
+  Required scope: SESSION
+  """
+  setPaymentMethod(id: Int!): SelectionMutationPayload!
+
+  """
+  Attach open selection to the token, it now becomes the current selection for the session
+  
+  Required scope: SESSION
+  """
+  setSelection(id: String!): SelectionMutationPayload!
+
+  """
+  Set dynamic and mapped attributes on the current selection
+  
+  Required scope: SESSION, SHARED_SECRET
+  """
+  setSelectionAttributes(dynamicAttributes: [DynamicSelectionAttributeSetInput!], mappedAttributes: [MappedSelectionAttributeSetInput!]): SelectionMutationPayload!
+
+  """
+  Set the shipping method on the current selection
+  
+  Required scope: SESSION
+  """
+  setShippingMethod(id: Int!): SelectionMutationPayload!
+
+  """
+  Subscribe to back in stock notification
+  
+  Can be protected by captcha
+  
+  Required scope: SESSION
+  """
+  subscribeToBackInStock(input: BackInStockSubscribeInput!): StockSubscribePayload!
+
+  """
+  Subscribe to newsletter for the provided email address
+  
+  Can be protected by captcha
+  
+  Required scope: SESSION
+  """
+  subscribeToNewsletter(additionalInfo: NewsletterSubscribeInput, email: String!): NewsletterSubscribePayload!
+
+  """
+  Trigger selection action such as external allocation process
+  
+  Required scope: SESSION
+  """
+  triggerSelectionAction(actionType: SelectionActionType!): TriggerSelectionActionPayload!
+
+  """
+  Unset dynamic and mapped attributes from the current selection
+  
+  Required scope: SESSION, SHARED_SECRET
+  """
+  unsetSelectionAttributes(dynamicAttributes: [DynamicSelectionAttributeUnsetInput!], mappedAttributes: [MappedSelectionAttributeUnsetInput!]): SelectionMutationPayload!
+
+  """
+  Update currently logged in customer
+  
+  Required scope: LOGGED_IN
+  """
+  updateCustomer(input: CustomerUpdateInput!): CustomerUpdatePayload!
+
+  """
+  Update a selection line by its id
+  
+  Required scope: SESSION
+  """
+  updateLine(comment: String, lineId: String!, quantity: Int, subscriptionPlanId: Int): SelectionMutationPayload!
+
+  """
+  Update the interval for a subscription owned by the logged in customer
+  
+  Interval is taken from the provided subscription plan
+  
+  Required scope: LOGGED_IN
+  """
+  updateSubscriptionInterval(subscriptionId: Int!, subscriptionPlanId: Int!): SubscriptionContractPayload!
+
+  """
+  Update the quantity for a subscription owned by the logged in customer
+  
+  Required scope: LOGGED_IN
+  """
+  updateSubscriptionQuantity(quantity: Int!, subscriptionId: Int!): SubscriptionContractPayload!
+
+  """
+  Update the status for a subscription owned by the logged in customer
+  
+  Required scope: LOGGED_IN
+  """
+  updateSubscriptionStatus(status: SubscriptionStatus!, subscriptionId: Int!): SubscriptionContractPayload!
+
+  """
+  Validate captcha response
+  
+  Required scope: SESSION
+  """
+  verifyCaptcha(captchaData: String!): CaptchaVerifyPayload!
+
+  """
+  Verify if password hashes received on reset password page are correct
+  
+  Provide `i` and `id` GET request variables received on reset password page
+  
+  Required scope: SESSION
+  """
+  verifyResetPasswordHashes(i: String!, id: String!): VerifyResetPasswordHashesPayload!
+}
+
+input NewsletterSubscribeInput {
+  countryCode: String
+  emailField: String
+  gender: Gender
+  languageCode: String
+}
+
+type NewsletterSubscribePayload implements Payload {
+  subscribed: Boolean!
+  userErrors: [UserError!]!
+}
+
+type NewsletterSubscription {
+  country: Country
+  createdAt(
+    """ISO-8601"""
+    format: String = "Y-m-d\\TH:i:sP"
+  ): DateTimeTz!
+  isActive: Boolean!
+}
+
+type NotFoundUriLookupPayload implements Payload & URILookupPayload {
+  found: UriLookupType!
+  userErrors: [UserError!]!
+}
+
+enum OPERATION_CATEGORY {
+  CART
+  CATALOG
+  CHECKOUT
+  SEARCH_FILTER
+}
+
+type OpeningDay {
+  date: Date
+  day: OpeningDayType!
+  isClosed: Boolean!
+  openingHoursList: [OpeningHours!]!
+}
+
+enum OpeningDayType {
+  CUSTOM_DATE
+  FRIDAY
+  MONDAY
+  SATURDAY
+  SUNDAY
+  THURSDAY
+  TUESDAY
+  WEDNESDAY
+}
+
+type OpeningHours {
+  end: String!
+  start: String!
+}
+
+type Order {
+  affiliateHtml: String!
+  attributes: [Attribute!]!
+  billingAddress: Address
+  comment: String
+  country: Country
+  currencyBaseRate: Float!
+  deliveryGroups: [DeliveryGroup!]!
+  discountsApplied: [Voucher!]!
+  id: String!
+  language: Language
+  lines: [Line]!
+  market: Market
+  number: Int!
+  orderDate(
+    """ISO-8601"""
+    format: String = "Y-m-dTH:i:sP"
+  ): String!
+  otherComment: String!
+
+  """
+  Some paymentMethods return a html snippet to be rendered on the thank you page.
+  """
+  paymentHtml: String!
+  paymentMethod: PaymentMethod!
+  shippingAddress: Address
+  shippingMethod: ShippingMethod!
+  state: CountryState
+  status: OrderStatus!
+  totals: [SelectionTotalRow!]!
+  usedFallbackTax: Boolean!
+  userIP: String
+}
+
+input OrderBillingAddressCreateInput {
+  address1: String!
+  address2: String
+  attention: String
+  city: String!
+  companyName: String
+  country: CountryInput!
+  email: String
+  faxNumber: String
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  stateOrProvince: String
+  vatNumber: String
+  zipCode: String!
+}
+
+input OrderShippingAddressCreateInput {
+  address1: String!
+  address2: String
+  attention: String
+  cellPhoneNumber: String
+  city: String!
+  companyName: String
+  country: CountryInput!
+  email: String!
+  faxNumber: String
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  registerCustomer: Boolean
+  stateOrProvince: String
+  zipCode: String!
+}
+
+enum OrderStatus {
+  ARCHIVED
+  CONFIRMED
+  DELETED
+  PENDING
+  PROCESSING
+  SHIPPED
+}
+
+type PaginationInfo {
+  """ The page can be different from the requested page if an invalid page was requested 
+  """
+  currentPage: Int!
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  lastPage: Int!
+  limit: Int!
+  nextPage: Int
+  previousPage: Int
+  total: Int!
+}
+
+input PasswordUpdateInput {
+  confirmNewPassword: String
+  newPassword: String!
+  oldPassword: String!
+}
+
+interface Payload {
+  userErrors: [UserError!]!
+}
+
+interface PaymentAction {
+  action: PaymentActionType!
+}
+
+enum PaymentActionType {
+  FORM
+  JAVASCRIPT
+  REDIRECT
+  SUCCESS
+}
+
+input PaymentInstructionsInput {
+  affiliate: Int
+  checkoutPageOrigin: String
+  clientDetails: ClientDetails
+  comment: String
+  consents: [ConsentInput!]
+  customerClubSpecificFields: CustomerClubSpecificFields
+  integrationSpecificFields: Map
+  internal: Boolean! = false
+  ipAddress: String
+  languageCode: String! = ""
+  paymentFailedPage: String!
+  paymentInitiateOnly: Boolean! = false
+  paymentMethod: Int! = 0
+  paymentMethodSpecificFields: Map
+  paymentReturnPage: String!
+  separateBillingAddress: AddressInput
+  shippingAddress: AddressInput!
+  shippingMethod: Int! = 0
+  termsAndConditions: Boolean!
+}
+
+type PaymentInstructionsPayload {
+  action: PaymentAction
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection!
+  userErrors: [UserError!]!
+}
+
+type PaymentMethod {
+  active: Boolean!
+  addressAfterPayment: Boolean!
+  handlingCost: MonetaryValue!
+  id: Int!
+  initiateOnlySupported: Boolean!
+  kind: PaymentMethodKind!
+  name: String!
+  recurringSupported: Boolean!
+  uri: String!
+}
+
+enum PaymentMethodKind {
+  ADYEN_DROPIN
+  DUMMY
+  EXTERNAL_PAYMENT
+  KLARNA_CHECKOUT_V3
+  KLARNA_PAYMENTS
+  PAYPAL_COMMERCE
+  QLIRO_ONE
+  STRIPE_CHECKOUT
+  STRIPE_PAYMENT_INTENTS
+  UNKNOWN
+}
+
+type PaymentResultFailedPayload implements PaymentResultPayload {
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection!
+  type: PaymentResultType!
+  userErrors: [UserError!]!
+}
+
+interface PaymentResultPayload {
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection!
+  type: PaymentResultType!
+  userErrors: [UserError!]!
+}
+
+type PaymentResultSuccessPayload implements PaymentResultPayload {
+  order: Order!
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection!
+  type: PaymentResultType!
+  userErrors: [UserError!]!
+}
+
+enum PaymentResultType {
+  FAILED
+  SUCCESS
+}
+
+type Pricelist {
+  comment: String
+
+  """Required scope: NO_SESSION"""
+  countries: [Country!]
+  currency: Currency!
+  id: Int!
+  name: String!
+}
+
+type PricelistLowestPrice {
+  lowestPriceByMarket: [MarketLowestPrice!]!
+  pricelist: Pricelist!
+}
+
+type PricelistPrice {
+  priceByMarket: [MarketPrice!]!
+  pricelist: Pricelist!
+}
+
+type ProductLine implements Line {
+  addedFromCategory: Category
+  appliedPromotions: [AppliedPromotion!]!
+  brand: Brand
+  comment: String!
+  discountPercent: Float!
+  displayItem: DisplayItem!
+  hasDiscount: Boolean!
+  id: String!
+  item: Item!
+  lineValue(includingTax: Boolean! = true): MonetaryValue!
+  localizedSize: LocalizedProdSize
+  name: String!
+  originalLineValue(includingTax: Boolean! = true): MonetaryValue!
+  productExternalUrl: String
+  productNumber: String!
+  productVariantName: String!
+  quantity: Int!
+  size: String!
+  subscriptionId: Int
+  taxPercent: Float!
+  unitOriginalPrice(includingTax: Boolean! = true): MonetaryValue!
+  unitPrice(includingTax: Boolean! = true): MonetaryValue!
+  unitPriceReduction(includingTax: Boolean! = true): MonetaryValue!
+}
+
+type ProductMedia {
+  attributes(keys: [String!]! = []): [Attribute!]!
+  id: Int!
+  metaDataJSON: String
+  source(sizeName: String = "standard"): MediaSource!
+}
+
+type ProductVariant {
+  id: Int!
+  name: String
+  number: String
+  translations: [TranslatedProductVariant!]
+}
+
+"""
+A promotion is information about how you can trigger certain deals by adding an item to cart.
+E.g. add to cart and get 50% off on your cheapest product, save 20% when bought with X
+It interacts with auto vouchers
+"""
+interface Promotion {
+  action: PromotionAction!
+  result: PromotionResult!
+}
+
+enum PromotionAction {
+  ADD_ME_TO_CART
+  ADD_RELATED_ITEM_TO_CART
+}
+
+enum PromotionResult {
+  FREE_SHIPPING
+}
+
+type Query {
+  """
+  Get an affiliate by its uri
+  Required scope: NO_SESSION
+  """
+  affiliate(uri: String!): Affiliate
+
+  """
+  Get a paginated list of affiliates
+  Required scope: NO_SESSION
+  """
+  affiliates(limit: Int! = 20, page: Int! = 1, sort: [AffiliateSort!]! = [name_ASC]): AffiliateList!
+
+  """
+  Get a list of brands
+  
+  Required scope: SESSION, NO_SESSION
+  
+  Filtered by session's market and pricelist in session mode
+  """
+  brands(
+    """
+    Max limits
+    
+    SESSION: 40
+    
+    NO_SESSION: 100
+    """
+    limit: Int! = 20
+
+    """Required scope: NO_SESSION"""
+    market: [Int!]
+    page: Int! = 1
+
+    """Required scope: NO_SESSION"""
+    pricelist: [Int!]
+    sort: [BrandSort!]! = []
+  ): BrandList
+
+  """
+  Get a brick and mortar by its id
+  
+  Required scope: SESSION, NO_SESSION
+  """
+  brickAndMortar(id: Int!): BrickAndMortar
+
+  """
+  Get a paginated list of brick and mortars
+  
+  Required scope: SESSION, NO_SESSION
+  """
+  brickAndMortars(
+    """
+    Max limits
+    
+    SESSION: 40
+    
+    NO_SESSION: 100
+    """
+    limit: Int = 20
+    page: Int = 1
+    sort: [BrickAndMortarSort!] = [name_ASC]
+    where: BrickAndMortarListFilter
+  ): BrickAndMortarList
+
+  """
+  Get a campaign site by its uri
+  
+  Required scope: NO_SESSION
+  """
+  campaignSite(uri: String!): CampaignSite
+
+  """
+  Get a paginated list of campaign sites
+  
+  Required scope: NO_SESSION
+  """
+  campaignSites(
+    """
+    Max limits
+    
+    NO_SESSION: 100
+    """
+    limit: Int! = 20
+    page: Int! = 1
+    sort: [CampaignSiteSort!]! = []
+  ): CampaignSiteList!
+
+  """
+  Get a paginated list of categories
+  
+  Required scope: SESSION, NO_SESSION
+  
+  Filtered by session's market and pricelist in session mode
+  
+  Filter by parent: 0 to get only top level categories
+  """
+  categories(
+    id: [Int!]
+    languageCode: [String!]
+
+    """
+    Max limits
+    
+    SESSION: 40
+    
+    NO_SESSION: 100
+    """
+    limit: Int! = 20
+
+    """Required scope: NO_SESSION"""
+    market: [Int!]
+    page: Int! = 1
+    parent: Int
+
+    """Required scope: NO_SESSION"""
+    pricelist: [Int!]
+    sort: [CategorySort!]! = []
+  ): CategoryList
+
+  """
+  Get a paginated list of collections
+  
+  Required scope: SESSION, NO_SESSION
+  
+  Filtered by session's market and pricelist in session mode
+  """
+  collections(
+    ids: [Int!]
+    limit: Int! = 20
+
+    """Required scope: NO_SESSION"""
+    market: [Int!]
+
+    """
+    Max limits
+    
+    SESSION: 40
+    
+    NO_SESSION: 100
+    """
+    page: Int! = 1
+
+    """Required scope: NO_SESSION"""
+    pricelist: [Int!]
+    sort: [CollectionSort!]! = []
+  ): CollectionList
+
+  """
+  Get a list of countries
+  
+  Required scope: SESSION, NO_SESSION
+  """
+  countries(
+    """if true, returns only countries that can be shipped to."""
+    onlyShipTo: Boolean!
+  ): [Country!]!
+
+  """
+  Get the currently logged in customer
+  
+  Required scope: LOGGED_IN
+  """
+  customer: Customer
+
+  """
+  Get a display item by its id
+  
+  Required scope: SESSION, NO_SESSION
+  
+  In session mode, results are filtered by the session's market and pricelist. Translated values are returned if available for either session or input language.
+  """
+  displayItem(
+    id: Int!
+    languageCode: [String!]
+
+    """Required scope: NO_SESSION"""
+    market: [Int!]
+
+    """Required scope: NO_SESSION"""
+    pricelist: [Int!]
+  ): DisplayItem
+
+  """
+  Get a paginated list of display items
+  
+  Required scope: SESSION, NO_SESSION
+  
+  In session mode, results are filtered by the session's market and pricelist. Translated values are returned if available for either session or input language.
+  """
+  displayItems(
+    languageCode: [String!]
+
+    """
+    Max limits
+    
+    SESSION: 40
+    
+    NO_SESSION: 100
+    """
+    limit: Int! = 20
+
+    """Required scope: NO_SESSION"""
+    market: [Int!]
+    page: Int! = 1
+
+    """Required scope: NO_SESSION"""
+    pricelist: [Int!]
+    sort: [CustomSortInput!]! = []
+    where: DisplayItemFilter = null
+  ): DisplayItemList!
+
+  """
+  Check which brick and mortars can fulfill the current selection
+  
+  Required scope: SESSION, NO_SESSION
+  """
+  fulfillmentCheck(brickAndMortarIds: [Int!]!): FulfillmentCheckPayload!
+
+  """
+  Get a list of languages
+  
+  Required scope: SESSION, NO_SESSION
+  """
+  languages: [Language!]!
+
+  """
+  Get a list of markets
+  
+  Required scope: NO_SESSION
+  """
+  markets(
+    """
+    only markets available in at least one of the specified countries are returned
+    """
+    countryCode: [String!]
+    id: [Int!]
+  ): [Market!]!
+
+  """
+  Get the latest order, null if none
+  
+  Required scope: SESSION
+  """
+  order: Order
+
+  """
+  Get a list of pricelists
+  
+  Required scope: NO_SESSION
+  """
+  pricelists(
+    """
+    only pricelists available in at least one of the specified countries are returned
+    """
+    countryCodes: [String!]
+    id: [Int!]
+  ): [Pricelist!]!
+
+  """
+  Get the current selection
+  
+  Required scope: SESSION
+  """
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection!
+
+  """
+  Get the current session
+  
+  Required scope: SESSION
+  """
+  session: Session!
+
+  """
+  Get payment methods supporting recurring payment
+  
+  Required scope: LOGGED_IN
+  
+  Filters by session market, pricelist and country code by default
+  Filters by contract market, pricelist and country code if provided
+  """
+  storedPaymentMethods(contract: Int): StoredPaymentMethodPayload!
+
+  """
+  Get customer's subscription contract list
+  
+  Required scope: LOGGED_IN
+  """
+  subscriptionContracts: [SubscriptionContract!]!
+}
+
+type RedirectPaymentAction implements PaymentAction {
+  action: PaymentActionType!
+  url: String!
+}
+
+type RelatedDisplayItems {
+  displayItems: [DisplayItem!]
+  relation: String!
+}
+
+type RequestPasswordResetEmailPayload implements Payload {
+  userErrors: [UserError!]!
+}
+
+type ResetPasswordPayload implements Payload {
+  changed: Boolean!
+  session: Session!
+  userErrors: [UserError!]!
+}
+
+enum SCOPE {
+  LOGGED_IN
+  NO_SESSION
+  SESSION
+  SHARED_SECRET
+}
+
+enum SearchField {
+  BRAND_NAME
+  CATEGORY_NAME
+  COLLECTION_NAME
+  DESCRIPTION
+  FUZZY_NAME
+  FUZZY_PRODUCT_VARIANT_NAME
+  GTIN
+  NAME
+  PRODUCT_NUMBER
+  PRODUCT_VARIANT_NAME
+  SHORT_DESCRIPTION
+  SIZE_NUMBER
+}
+
+type Selection {
+  attributes: [Attribute!]!
+  availableAttributes: [Attribute!]!
+  brickAndMortar: BrickAndMortar
+
+  """slow fields for checkout"""
+  checkout: CheckoutSelection
+  comment: String
+  discounts: [Voucher!]!
+  externalGiftCardAvailable: Boolean!
+
+  """does not contain added tax"""
+  grandTotal: MonetaryValue!
+  id: String
+  language: Language
+  lines: [Line]!
+  taxExempt: Boolean
+  usedFallbackTax: Boolean!
+}
+
+enum SelectionActionType {
+  ALLOCATE
+}
+
+type SelectionBundle {
+  id: Int!
+  priceType: BundlePriceType!
+  sections: [SelectionBundleSection!]!
+  type: BundleType!
+}
+
+type SelectionBundleSection {
+  id: Int!
+  lines: [ProductLine!]!
+  quantity: Int!
+}
+
+interface SelectionMutationPayload {
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection
+  userErrors: [UserError!]!
+}
+
+interface SelectionTotalRow {
+  price: MonetaryValue!
+  type: SelectionTotalRowType!
+}
+
+type SelectionTotalRowBase implements SelectionTotalRow {
+  price: MonetaryValue!
+  type: SelectionTotalRowType!
+}
+
+enum SelectionTotalRowType {
+  CREDIT
+  DISCOUNT
+  GRAND_TOTAL
+  HANDLING
+  INCLUDING_TAX
+  INCLUDING_TAX_TOTAL
+  ITEMS_SUBTOTAL
+  SHIPPING
+  TAX_ADDED
+  TAX_ADDED_TOTAL
+  TAX_DEDUCT
+  TAX_DEDUCT_TOTAL
+}
+
+type SelectionTotalTaxRow implements SelectionTotalRow {
+  price: MonetaryValue!
+  taxPercent: Float!
+  type: SelectionTotalRowType!
+}
+
+type Session {
+  country: Country!
+  countryState: CountryState
+  language: Language
+  loggedIn: Customer
+  market: Market!
+  pricelist: Pricelist!
+}
+
+type SessionPayload implements Payload & SelectionMutationPayload {
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection
+  session: Session!
+  userErrors: [UserError!]!
+}
+
+type ShippingMethod {
+  comment: String
+  id: Int!
+  name: String!
+  price: MonetaryValue!
+  selected: Boolean!
+}
+
+type SizeChart {
+  displayUnit: String!
+  dividerSymbol: String!
+  horizontalLabels: [String!]!
+  localization: [LocalizedSizeChart!]!
+  name: String!
+  verticalLabels: [String!]!
+}
+
+type SizeNameFilterValue implements FilterValue {
+  active: Boolean!
+
+  """Number of matches with the current filtering"""
+  count: Int!
+
+  """
+  Number of matches with the current filtering when you discount the other selected values in this group.
+  """
+  filterCount: Int!
+  sizeLocalization: [LocalizedSize!]!
+
+  """The number of items in total available, independent of filtering"""
+  totalCount: Int!
+  value: String!
+}
+
+enum SortKey {
+  CATEGORY
+  COLLECTION
+  CREATED_AT
+  MODIFIED_AT
+  PRICE
+  PRODUCT_NUMBER
+  PRODUCT_VARIANT_NUMBER
+  SKU
+  URI
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+type StateAddressField implements AddressField {
+  choices: [CountryState!]!
+  key: String!
+  required: Boolean!
+  selected: CountryState
+  visible: Boolean!
+}
+
+type Stock {
+  available: Boolean!
+
+  """Required permission: stock.quantity"""
+  quantity: Int!
+}
+
+type StockSubscribePayload implements Payload {
+  subscribed: Boolean!
+  userErrors: [UserError!]!
+}
+
+input StoredPaymentInstructionsInput {
+  checkoutOrigin: String
+  contracts: [Int!]!
+  paymentFailedPage: String!
+  paymentMethod: Int!
+  paymentMethodSpecificFields: Map
+  paymentReturnPage: String!
+}
+
+type StoredPaymentInstructionsPayload implements Payload {
+  action: PaymentAction
+  userErrors: [UserError!]!
+}
+
+type StoredPaymentMethodPayload implements Payload {
+  paymentMethods(sort: [PaymentMethodKind!] = []): [PaymentMethod!]!
+  userErrors: [UserError!]!
+}
+
+type StoredPaymentResultPayload implements Payload {
+  contracts: [SubscriptionContract!]!
+  paymentHtml: String
+  success: Boolean!
+  userErrors: [UserError!]!
+}
+
+type Subscription {
+  attentionReasons: [AttentionReason!]!
+  createdAt(
+    """ISO-8601"""
+    format: String = "Y-m-d\\TH:i:sP"
+  ): DateTimeTz!
+  discount: Float
+  id: Int!
+  interval: DateInterval!
+  lines: [Line!]!
+  needsAttention: Boolean!
+
+  """
+  Next day when the order should be created according to schedule and selected interval.
+  """
+  nextOrderDate(format: String = "Y-m-d"): Date
+
+  """
+  Next day when the order creation will be attempted. Takes last failures and retrial mechanics into account.
+  """
+  nextRetryDate(format: String = "Y-m-d"): Date
+  plan: SubscriptionPlan
+  status: SubscriptionStatus!
+  updatedAt(
+    """ISO-8601"""
+    format: String = "Y-m-d\\TH:i:sP"
+  ): DateTimeTz!
+}
+
+type SubscriptionContract {
+  createdAt(
+    """ISO-8601"""
+    format: String = "Y-m-d\\TH:i:sP"
+  ): DateTimeTz!
+  id: Int!
+  market: Market
+  originatingOrder: Order
+  pricelist: Pricelist!
+  shippingAddress: Address!
+  shippingOption: ShippingMethod
+  subscriptionPayment: [SubscriptionPayment!]!
+  subscriptions: [Subscription!]!
+  updatedAt(
+    """ISO-8601"""
+    format: String = "Y-m-d\\TH:i:sP"
+  ): DateTimeTz!
+}
+
+input SubscriptionContractAddressInput {
+  address1: String
+  address2: String
+  city: String
+  email: String
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  zipCode: String
+}
+
+type SubscriptionContractPayload implements Payload {
+  contract: SubscriptionContract
+  userErrors: [UserError!]!
+}
+
+type SubscriptionPayment {
+  createdAt(
+    """ISO-8601"""
+    format: String = "Y-m-d\\TH:i:sP"
+  ): DateTimeTz!
+  id: Int!
+  paymentMethod: String!
+  status: SubscriptionPaymentStatus!
+  updatedAt(
+    """ISO-8601"""
+    format: String = "Y-m-d\\TH:i:sP"
+  ): DateTimeTz!
+}
+
+enum SubscriptionPaymentStatus {
+  ACTIVE
+  REVOKED
+  SUSPENDED
+}
+
+type SubscriptionPlan {
+  discount: Float
+  id: Int!
+  interval: DateInterval!
+  name: String!
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAUSED
+}
+
+type SuccessPaymentAction implements PaymentAction {
+  action: PaymentActionType!
+  order: Order!
+}
+
+type SuccessStoredPaymentAction implements PaymentAction {
+  action: PaymentActionType!
+  contracts: [SubscriptionContract!]!
+  paymentHtml: String
+}
+
+type TextAddressField implements AddressField {
+  key: String!
+  required: Boolean!
+  visible: Boolean!
+}
+
+type TextFilterValue implements FilterValue {
+  active: Boolean!
+
+  """Number of matches with the current filtering"""
+  count: Int!
+
+  """
+  Number of matches with the current filtering when you discount the other selected values in this group.
+  """
+  filterCount: Int!
+  name: String
+
+  """The number of items in total available, independent of filtering"""
+  totalCount: Int!
+  value: String!
+}
+
+type TranslatedCategory {
+  language: Language!
+  metaDescription: String!
+  metaKeywords: String!
+  metaTitle: String!
+  name: [String!]
+  uri: String!
+}
+
+type TranslatedCountry {
+  language: Language!
+  name: String!
+}
+
+type TranslatedDisplayItem {
+  description: FormattedString!
+  language: Language!
+  metaDescription: String!
+  metaKeywords: String!
+  metaTitle: String!
+  name: String!
+  shortDescription: FormattedString!
+  uri: String!
+}
+
+type TranslatedProductVariant {
+  language: Language!
+  name: String!
+}
+
+type TriggerSelectionActionPayload implements Payload & SelectionMutationPayload {
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection
+  userErrors: [UserError!]!
+}
+
+interface URILookupPayload {
+  found: UriLookupType!
+  userErrors: [UserError!]!
+}
+
+type UnavailableItem implements UserError {
+  availableQuantity: Int!
+  displayItem: DisplayItem
+  item: Item
+  message: String!
+  originalQuantity: Int!
+  path: [String!]
+  unavailableQuantity: Int!
+}
+
+enum UriLookupType {
+  AFFILIATE
+  CAMPAIGN_SITE
+  CATEGORY
+  DISPLAY_ITEM
+  NOT_FOUND
+  URL_VOUCHER
+}
+
+type UrlVoucher implements Voucher {
+  actions: [VoucherAction!]!
+
+  """Required scope: SESSION"""
+  appliedOn: [VoucherAppliedOn!]!
+  attributes: [Attribute!]!
+  expiryDate: String!
+  giftCard: GiftCard
+  isExternal: Boolean!
+  lineIds: [String!]!
+  method: VoucherMethod!
+  name: String!
+
+  """Required scope: SESSION"""
+  orderReduction: MonetaryValue!
+
+  """Required scope: SESSION"""
+  totalItemReduction: MonetaryValue!
+
+  """Required scope: SESSION"""
+  totalShippingReduction: MonetaryValue!
+  type: VoucherType!
+  url: String!
+
+  """Required scope: SESSION"""
+  value: MonetaryValue!
+}
+
+type UrlVoucherUriLookupPayload implements Payload & URILookupPayload {
+  found: UriLookupType!
+
+  """Required scope: SESSION"""
+  selection(voucherMode: VOUCHER_MODE! = LINES): Selection
+  userErrors: [UserError!]!
+  voucherApplied: UrlVoucher!
+}
+
+interface UserError {
+  message: String!
+  path: [String!]
+}
+
+type UserErrorBase implements UserError {
+  message: String!
+  path: [String!]
+}
+
+enum VOUCHER_MODE {
+  LINES
+  TOTAL
+}
+
+type VerifyResetPasswordHashesPayload implements Payload {
+  userErrors: [UserError!]!
+  valid: Boolean!
+}
+
+interface Voucher {
+  actions: [VoucherAction!]!
+  appliedOn: [VoucherAppliedOn!]!
+  attributes: [Attribute!]!
+  expiryDate: String!
+  giftCard: GiftCard
+  isExternal: Boolean!
+  lineIds: [String!]!
+  method: VoucherMethod!
+  name: String!
+  orderReduction: MonetaryValue!
+  totalItemReduction: MonetaryValue!
+  totalShippingReduction: MonetaryValue!
+  type: VoucherType!
+  value: MonetaryValue!
+}
+
+interface VoucherAction {
+  type: AppliedActionType!
+}
+
+enum VoucherActionType {
+  CREDIT
+  DISCOUNT
+}
+
+enum VoucherAppliedOn {
+  ADDED_LINE
+  LINES
+  ORDER
+  SHIPPING
+}
+
+enum VoucherMethod {
+  AUTO
+  CODE
+  URL
+}
+
+enum VoucherType {
+  CREDIT
+  DISCOUNT
+}
+
+type WarehouseStock {
+  stock: Stock!
+  warehouseId: Int!
+}
+
+interface Widget {
+  kind: WidgetKind!
+}
+
+enum WidgetKind {
+  PAYMENT
+  SHIPPING
+}
+
+type Wishlist {
+  id: Int!
+  isDefault: Boolean!
+  items(limit: Int, page: Int): [DisplayItem!]!
+  name: String!
+}

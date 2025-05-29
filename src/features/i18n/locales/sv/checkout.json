@@ -1,0 +1,51 @@
+{
+  "billing-address": "Faktureringsadress",
+  "cart": {
+    "hint": "Granska din nuvarande kundvagnsstatus."
+  },
+  "change": "Ändra",
+  "continue": "Fortsätta",
+  "delivery": "Leverans",
+  "delivery-method": "Leveranssätt",
+  "errors": {
+    "add-voucher": "Kunde inte lägga till kupong",
+    "cant-ship-to-country": "Vi kan inte skicka till det valda landet",
+    "could-not-finalize-payment": "Det gick inte att slutföra betalningen",
+    "fill-in-required-fields": "Vänligen fyll i alla obligatoriska fält",
+    "remove-voucher": "Det gick inte att ta bort kupongen",
+    "save-address": "Det gick inte att spara adressen",
+    "save-shipping": "Det gick inte att spara fraktmetoden",
+    "set-payment-method": "Det gick inte att ange betalningsmetod",
+    "unavailable-items": {
+      "message": "Vissa artiklar är inte längre tillgängliga. De har tagits bort från din kundvagn. Vänligen granska din beställning innan du fortsätter.",
+      "title": "Ej tillgängliga artiklar"
+    }
+  },
+  "information": "Information",
+  "no-payment-methods": "Inga betalningsmetoder",
+  "pay-with-klarna": "Betala med Klarna",
+  "payment": "Betalning",
+  "payment-failed": "Betalningen misslyckades",
+  "payment-method": "Betalningssätt",
+  "proceed": "Fortsätta",
+  "receipt": {
+    "credit": "Kreditera",
+    "discount": "Rabatt",
+    "grand-total": "Totalsumma",
+    "handling": "Hantering",
+    "shipping": "Frakt",
+    "subtotal": "Delsumma"
+  },
+  "secure-transactions": "Alla transaktioner är säkra och krypterade.",
+  "shipping-address": "Leveransadress",
+  "terms": "Genom att klicka på \"$t(proceed)\", samtycker du till vår <1>villkor</1>",
+  "totals": "Summor",
+  "voucher": {
+    "apply": "Tillämpas",
+    "apply-voucher": "Ansök voucher",
+    "code": "Verifikationskod",
+    "hide-voucher": "Dölj kupong",
+    "placeholder": "Ange din kupongkod här",
+    "remove": "Ta bort"
+  }
+}

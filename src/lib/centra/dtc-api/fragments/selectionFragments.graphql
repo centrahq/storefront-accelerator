@@ -1,0 +1,56 @@
+fragment cart on Selection {
+  lines {
+    ...line
+  }
+  grandTotal {
+    value
+    currency {
+      denominator
+      code
+      prefix
+      suffix
+    }
+  }
+}
+
+fragment line on Line {
+  __typename
+  id
+  item {
+    ...item
+  }
+  quantity
+  lineValue {
+    formattedValue
+    value
+  }
+  displayItem {
+    id
+    name
+    uri
+    media {
+      source(sizeName: "mini") {
+        url
+      }
+    }
+  }
+  ... on BundleLine {
+    bundle {
+      type
+      sections {
+        quantity
+        lines {
+          id
+          lineValue {
+            formattedValue
+          }
+          name
+          quantity
+          item {
+            ...item
+          }
+        }
+      }
+    }
+  }
+}

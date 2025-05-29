@@ -1,0 +1,20 @@
+fragment session on Session {
+  country {
+    code
+  }
+  countryState {
+    code
+  }
+  language {
+    code
+  }
+  market {
+    id
+  }
+  pricelist {
+    id
+  }
+  loggedIn {
+    id
+  }
+}

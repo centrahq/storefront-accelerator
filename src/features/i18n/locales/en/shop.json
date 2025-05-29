@@ -1,0 +1,102 @@
+{
+  "addressForm": {
+    "labels": {
+      "address1": "Address",
+      "address2": "Address continued",
+      "city": "City",
+      "companyName": "Company",
+      "country": "Country",
+      "email": "Email",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "phoneNumber": "Phone number",
+      "sameAsShipping": "Use the same address for billing",
+      "state": "State",
+      "vatNumber": "VAT number",
+      "zipCode": "Zip code"
+    },
+    "optional": "Optional",
+    "placeholders": {
+      "select-country": "Select country",
+      "select-state": "Select state"
+    }
+  },
+  "back-to-home": "Back to home",
+  "cart": {
+    "decrease": "Decrease item quantity",
+    "delete": "Remove",
+    "empty": "Your cart is empty",
+    "errors": {
+      "add": "An error occurred while adding the item to the cart",
+      "delete": "An error occurred while deleting the item from the cart",
+      "update": "An error occurred while updating the item in the cart"
+    },
+    "hint": " <0>Total items in the cart:</0><1>{{totalQuantity}}</1>",
+    "increase": "Increase item quantity",
+    "open": "Open cart",
+    "proceed": "Go to checkout",
+    "quantity": "Quantity",
+    "review": "Review your current cart status.",
+    "size": "Size",
+    "title": "Cart",
+    "total": "Total"
+  },
+  "category-not-found": {
+    "hint": "We could not find the category you're looking for. Please try again later or contact support.",
+    "title": "Category not found"
+  },
+  "common": {
+    "close": "Close"
+  },
+  "filters": {
+    "brand": "Brand",
+    "filter-by": "Filter by:",
+    "name-a-to-z": "Name: A to Z",
+    "name-z-to-a": "Name: Z to A",
+    "newest": "Newest",
+    "no-sorting": "No sorting",
+    "oldest": "Oldest",
+    "price-high-to-low": "Price: High to Low",
+    "price-low-to-high": "Price: Low to High",
+    "search": "Search",
+    "size": "Size",
+    "sort-by": "Sort by:"
+  },
+  "localization": {
+    "country": "Country",
+    "hint": "Change your country and language settings.",
+    "language": "Language",
+    "save": "Save changes",
+    "title": "Localization"
+  },
+  "menu": "Menu",
+  "not-found": {
+    "hint": "If you can't find the information you're looking for, please see our support centre.",
+    "title": "Page not found"
+  },
+  "product": {
+    "add-to-cart": "Add to cart",
+    "select-bundle-sizes": "Please select a size for each section in the bundle",
+    "select-size": "Please select a size",
+    "sizes": "Sizes"
+  },
+  "product-not-found": {
+    "hint": "We could not find the product you're looking for. Please try again later or contact support.",
+    "title": "Product not found"
+  },
+  "show-menu": "Show menu",
+  "user": {
+    "confirm-password": "Confirm password",
+    "email": "Email",
+    "forgot-password": "Forgot password?",
+    "login": "Login",
+    "password": "Password",
+    "register": "Register",
+    "reset-password": {
+      "change-password": "Change password",
+      "enter-email": "Enter your email to reset password",
+      "enter-password": "Enter your new password",
+      "reset-password": "Reset password"
+    }
+  }
+}

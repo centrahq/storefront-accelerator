@@ -1,0 +1,70 @@
+{
+  "checkout": {
+    "back-to-checkout": "Tillbaka till kassan",
+    "checkout": "Kassa",
+    "delivery": "Leverans",
+    "failed": "Misslyckades",
+    "generic-failure": "Vi kunde inte behandla din beställning. Försök igen senare eller kontakta supporten.",
+    "hint": "Om du inte hittar informationen du letar efter, se vårt supportcenter.",
+    "order-summary": {
+      "date": "Beställningsdatum",
+      "number": "Beställningsnummer",
+      "status": "Orderstatus"
+    },
+    "payment": "Betalning",
+    "success": "Framgång",
+    "summary": "Sammanfattning"
+  },
+  "featured-products": "Presenterade produkter",
+  "meta-description": "Centra swag butik. Handla för den senaste swag.",
+  "pagination": {
+    "next": "Nästa",
+    "previous": "Tidigare"
+  },
+  "product": {
+    "out-of-stock": "Slut i lager"
+  },
+  "products": {
+    "from-price": "från {{price}}",
+    "nav-label": "Produktsidor",
+    "no-products-found": "Inga produkter hittades",
+    "title": "Produkt"
+  },
+  "user": {
+    "errors": {
+      "invalid-login": "Ogiltig e-postadress eller lösenord",
+      "invalid-register": "Det gick inte att registrera sig",
+      "required-fields": "E-post och lösenord krävs"
+    },
+    "logout": "Utloggning",
+    "my-account": "Mitt konto",
+    "my-orders": "Mina beställningar",
+    "no-orders": "Inga beställningar",
+    "order-info": {
+      "action": "Handling",
+      "address": "Adress",
+      "date": "Datum",
+      "nav-label": "Beställ sidor",
+      "order": "Beställa",
+      "status": "Status",
+      "status_ARCHIVED": "Arkiverad",
+      "status_CONFIRMED": "Bekräftad",
+      "status_DELETED": "Raderad",
+      "status_PENDING": "I avvaktan på",
+      "status_PROCESSING": "Bearbetning",
+      "status_SHIPPED": "Skickas",
+      "total": "Total",
+      "view": "Se"
+    },
+    "reset-password": {
+      "email-sent": "Vi skickade en återställningslänk till dig på {{email}}. Kontrollera din inkorg.",
+      "forgot-password": "Glömt lösenord",
+      "missing-params": "Saknade parametrar, använd länken i återställningsmeddelandet",
+      "password-changed": "Ditt lösenord har ändrats. Du kan nu logga in.",
+      "passwords-match": "Lösenord matchar inte",
+      "reset-password": "Återställa lösenord",
+      "something-went-wrong": "Något gick fel. Återställningslänken kan vara ogiltig eller löpa ut."
+    }
+  },
+  "view-all": "Se alla"
+}

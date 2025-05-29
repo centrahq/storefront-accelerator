@@ -1,0 +1,102 @@
+{
+  "addressForm": {
+    "labels": {
+      "address1": "Adress",
+      "address2": "Adressen fortsatte",
+      "city": "Stad",
+      "companyName": "Företag",
+      "country": "Land",
+      "email": "E-post",
+      "firstName": "Förnamn",
+      "lastName": "Efternamn",
+      "phoneNumber": "Telefonnummer",
+      "sameAsShipping": "Använd samma adress för fakturering",
+      "state": "Ange",
+      "vatNumber": "momsnummer",
+      "zipCode": "Postnummer"
+    },
+    "optional": "Frivillig",
+    "placeholders": {
+      "select-country": "Välj land",
+      "select-state": "Välj tillstånd"
+    }
+  },
+  "back-to-home": "Tillbaka till hemmet",
+  "cart": {
+    "decrease": "Minska artikelkvantiteten",
+    "delete": "Ta bort",
+    "empty": "Din varukorg är tom",
+    "errors": {
+      "add": "Ett fel uppstod när varan lades till i kundvagnen",
+      "delete": "Ett fel uppstod när varan skulle tas bort från kundvagnen",
+      "update": "Ett fel uppstod när varan i kundvagnen skulle uppdateras"
+    },
+    "hint": " <0>Totalt antal varor i varukorgen:</0><1>{{totalQuantity}}</1>",
+    "increase": "Öka artikelkvantiteten",
+    "open": "Öppen vagn",
+    "proceed": "Gå till kassan",
+    "quantity": "Kvantitet",
+    "review": "Granska din nuvarande kundvagnsstatus.",
+    "size": "Storlek",
+    "title": "Vagn",
+    "total": "Total"
+  },
+  "category-not-found": {
+    "hint": "Vi kunde inte hitta kategorin du letade efter. \nFörsök igen senare eller kontakta supporten.",
+    "title": "Kategori hittades inte"
+  },
+  "common": {
+    "close": "Nära"
+  },
+  "filters": {
+    "brand": "Stämpla",
+    "filter-by": "Filtrera efter:",
+    "name-a-to-z": "Namn: A till Ö",
+    "name-z-to-a": "Namn: Z till A",
+    "newest": "Nyaste",
+    "no-sorting": "Ingen sortering",
+    "oldest": "Äldst",
+    "price-high-to-low": "Pris: Högt till Lågt",
+    "price-low-to-high": "Pris: Lågt till Högt",
+    "search": "Söka",
+    "size": "Storlek",
+    "sort-by": "Sortera efter:"
+  },
+  "localization": {
+    "country": "Land",
+    "hint": "Ändra dina inställningar för land och språk.",
+    "language": "Språk",
+    "save": "Spara ändringar",
+    "title": "Lokalisering"
+  },
+  "menu": "Meny",
+  "not-found": {
+    "hint": "Om du inte hittar informationen du letar efter, se vårt supportcenter.",
+    "title": "Sidan hittades inte"
+  },
+  "product": {
+    "add-to-cart": "Lägg till i varukorgen",
+    "select-bundle-sizes": "Välj en storlek för varje sektion i bunten",
+    "select-size": "Välj en storlek",
+    "sizes": "Storlekar"
+  },
+  "product-not-found": {
+    "hint": "Vi kunde inte hitta produkten du letade efter. Försök igen senare eller kontakta supporten.",
+    "title": "Produkten hittades inte"
+  },
+  "show-menu": "Visa meny",
+  "user": {
+    "confirm-password": "Bekräfta lösenord",
+    "email": "E-post",
+    "forgot-password": "Har du glömt lösenordet?",
+    "login": "Inloggning",
+    "password": "Lösenord",
+    "register": "Register",
+    "reset-password": {
+      "change-password": "Ändra lösenord",
+      "enter-email": "Ange ditt e -postmeddelande för att återställa lösenord",
+      "enter-password": "Ange ditt nya lösenord",
+      "reset-password": "Återställa lösenord"
+    }
+  }
+}

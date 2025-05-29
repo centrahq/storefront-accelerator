@@ -1,0 +1,10 @@
+fragment item on Item {
+  id
+  name
+  sizeLocalization {
+    name
+    countries {
+      code
+    }
+  }
+}

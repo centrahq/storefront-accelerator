@@ -1,0 +1,51 @@
+{
+  "billing-address": "Billing address",
+  "cart": {
+    "hint": "Review your current cart status."
+  },
+  "change": "Change",
+  "continue": "Continue",
+  "delivery": "Delivery",
+  "delivery-method": "Delivery method",
+  "errors": {
+    "add-voucher": "Could not add voucher",
+    "cant-ship-to-country": "We can't ship to the selected country",
+    "could-not-finalize-payment": "Could not finalize payment",
+    "fill-in-required-fields": "Please fill in all required fields",
+    "remove-voucher": "Could not remove voucher",
+    "save-address": "Could not save the address",
+    "save-shipping": "Could not save shipping method",
+    "set-payment-method": "Could not set payment method",
+    "unavailable-items": {
+      "message": "Some items are no longer available. They have been removed from your cart. Please review your order before proceeding.",
+      "title": "Unavailable items"
+    }
+  },
+  "information": "Information",
+  "no-payment-methods": "No payment methods",
+  "pay-with-klarna": "Pay with Klarna",
+  "payment": "Payment",
+  "payment-failed": "Payment failed",
+  "payment-method": "Payment method",
+  "proceed": "Proceed",
+  "receipt": {
+    "credit": "Credit",
+    "discount": "Discount",
+    "grand-total": "Grand total",
+    "handling": "Handling",
+    "shipping": "Shipping",
+    "subtotal": "Subtotal"
+  },
+  "secure-transactions": "All transactions are secure and encrypted.",
+  "shipping-address": "Shipping address",
+  "terms": "By clicking \"$t(proceed)\", you agree to our <1>terms and conditions</1>",
+  "totals": "Totals",
+  "voucher": {
+    "apply": "Apply",
+    "apply-voucher": "Apply voucher",
+    "code": "Voucher code",
+    "hide-voucher": "Hide voucher",
+    "placeholder": "Type your voucher code here",
+    "remove": "Remove"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "name": "centra-commerce",
+  "version": "0.1.0",
+  "engines": {
+    "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -c green,magenta -n gql-gen,next npm:gql-gen:watch \"next dev --turbopack\"",
+    "dev-ssl": "concurrently -c green,magenta -n gql-gen,next npm:gql-gen:watch \"next dev --turbopack --experimental-https\"",
+    "build": "npm run gql-gen && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prettier": "prettier --write --ignore-unknown .",
+    "prettier:check": "prettier --check --ignore-unknown .",
+    "tsc": "tsc",
+    "gql-gen": "gql-gen",
+    "gql-gen:watch": "gql-gen --watch"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.2",
+    "@heroicons/react": "^2.2.0",
+    "@tanstack/react-query": "^5.76.0",
+    "clsx": "^2.1.1",
+    "i18next": "^25.1.2",
+    "i18next-browser-languagedetector": "^8.1.0",
+    "i18next-resources-to-backend": "^1.2.1",
+    "next": "^15.4.0-canary.29",
+    "nuqs": "^2.4.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-i18next": "^15.5.1",
+    "server-only": "^0.0.1",
+    "sonner": "^2.0.3",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.6",
+    "@graphql-codegen/client-preset": "^4.8.1",
+    "@graphql-codegen/schema-ast": "^4.1.0",
+    "@parcel/watcher": "^2.5.1",
+    "@tailwindcss/postcss": "^4.1.6",
+    "@types/node": "^22.15.17",
+    "@types/react": "^19.1.3",
+    "@types/react-dom": "^19.1.3",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.26.0",
+    "eslint-config-next": "^15.4.0-canary.29",
+    "eslint-plugin-perfectionist": "^4.12.3",
+    "postcss": "^8.5.3",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11",
+    "schema-dts": "^1.1.5",
+    "tailwindcss": "^4.0.9",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.0"
+  },
+  "overrides": {
+    "nuqs": {
+      "next": "$next"
+    }
+  }
+}

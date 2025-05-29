@@ -1,0 +1,5 @@
+.vercel
+.next
+.vscode
+package-lock.json
+/gql/**

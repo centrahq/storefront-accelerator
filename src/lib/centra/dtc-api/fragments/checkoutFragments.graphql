@@ -1,0 +1,150 @@
+fragment checkout on Selection {
+  discounts {
+    ...voucher
+  }
+  checkout {
+    checkoutScript
+    separateBillingAddress {
+      ...address
+    }
+    shippingAddress {
+      ...address
+    }
+    paymentMethods {
+      id
+      uri
+      name
+      kind
+      initiateOnlySupported
+      handlingCost {
+        formattedValue
+        value
+      }
+    }
+    paymentMethod {
+      id
+    }
+    shippingMethods {
+      id
+      name
+      comment
+      price {
+        formattedValue
+        value
+      }
+    }
+    shippingMethod {
+      id
+      name
+      comment
+      price {
+        value
+        formattedValue
+      }
+    }
+    totals {
+      type
+      price {
+        value
+        formattedValue
+      }
+    }
+    widgets {
+      __typename
+      ... on IngridWidget {
+        snippet
+        deliveryOptionsAvailable
+      }
+      ... on KlarnaPaymentWidget {
+        client_token
+        authorizePayload
+      }
+    }
+  }
+}
+
+fragment address on Address {
+  country {
+    code
+    name
+  }
+  state {
+    code
+    name
+  }
+  address1
+  address2
+  city
+  zipCode
+  email
+  firstName
+  lastName
+  phoneNumber
+  companyName
+  vatNumber
+}
+
+fragment order on Order {
+  id
+  number
+  orderDate
+  status
+  totals {
+    type
+    price {
+      value
+      formattedValue
+    }
+  }
+  shippingAddress {
+    ...address
+  }
+  billingAddress {
+    ...address
+  }
+  shippingMethod {
+    id
+    name
+    comment
+    selected
+    price {
+      value
+      formattedValue
+    }
+  }
+  lines {
+    ...line
+  }
+}
+
+fragment voucher on Voucher {
+  name
+  value {
+    value
+    formattedValue
+  }
+  ... on CodeVoucher {
+    code
+  }
+}
+
+fragment paymentAction on PaymentAction {
+  __typename
+  ... on FormPaymentAction {
+    html
+    formFields
+    formType
+  }
+  ... on RedirectPaymentAction {
+    url
+  }
+  ... on JavascriptPaymentAction {
+    script
+    formFields
+  }
+  ... on SuccessPaymentAction {
+    order {
+      id
+    }
+  }
+}

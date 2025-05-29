@@ -1,0 +1,70 @@
+{
+  "checkout": {
+    "back-to-checkout": "Back to checkout",
+    "checkout": "Checkout",
+    "delivery": "Delivery",
+    "failed": "Failed",
+    "generic-failure": "We could not process your order. Please try again later or contact support.",
+    "hint": "If you can't find the information you're looking for, please see our support centre.",
+    "order-summary": {
+      "date": "Order date",
+      "number": "Order number",
+      "status": "Order status"
+    },
+    "payment": "Payment",
+    "success": "Success",
+    "summary": "Summary"
+  },
+  "featured-products": "Featured products",
+  "meta-description": "Centra swag store. Shop for the latest swag.",
+  "pagination": {
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "product": {
+    "out-of-stock": "Out of stock"
+  },
+  "products": {
+    "from-price": "from {{price}}",
+    "nav-label": "Products pages",
+    "no-products-found": "No products found",
+    "title": "Products"
+  },
+  "user": {
+    "errors": {
+      "invalid-login": "Invalid email or password",
+      "invalid-register": "Could not register",
+      "required-fields": "Please fill in required fields"
+    },
+    "logout": "Logout",
+    "my-account": "My account",
+    "my-orders": "My orders",
+    "no-orders": "No orders",
+    "order-info": {
+      "action": "Action",
+      "address": "Address",
+      "date": "Date",
+      "nav-label": "Order pages",
+      "order": "Order",
+      "status": "Status",
+      "status_ARCHIVED": "Archived",
+      "status_CONFIRMED": "Confirmed",
+      "status_DELETED": "Deleted",
+      "status_PENDING": "Pending",
+      "status_PROCESSING": "Processing",
+      "status_SHIPPED": "Shipped",
+      "total": "Total",
+      "view": "View"
+    },
+    "reset-password": {
+      "email-sent": "We sent a recovery link to you at {{email}}. Please check your inbox.",
+      "forgot-password": "Forgot password",
+      "missing-params": "Missing parameters, please use the link in the recovery email",
+      "password-changed": "Your password has been changed. You can now log in.",
+      "passwords-match": "Passwords do not match",
+      "reset-password": "Reset password",
+      "something-went-wrong": "Something went wrong. Recovery link may be invalid or expired."
+    }
+  },
+  "view-all": "View all"
+}
