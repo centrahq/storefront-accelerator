@@ -25,7 +25,6 @@ fragment line on Line {
     value
   }
   displayItem {
-    id
     name
     uri
     media {

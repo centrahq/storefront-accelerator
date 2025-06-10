@@ -1,5 +1,4 @@
 import { FlatCompat } from '@eslint/eslintrc';
-import perfectionist from 'eslint-plugin-perfectionist';
 import tseslint from 'typescript-eslint';
 
 const compat = new FlatCompat({
@@ -16,20 +15,6 @@ const eslintConfig = [
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
-    },
-  },
-  {
-    plugins: {
-      perfectionist,
-    },
-    rules: {
-      'perfectionist/sort-imports': [
-        'warn',
-        {
-          tsconfigRootDir: import.meta.dirname,
-        },
-      ],
-      'perfectionist/sort-named-imports': ['warn'],
     },
   },
   {

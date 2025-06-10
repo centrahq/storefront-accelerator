@@ -1,7 +1,7 @@
 'use client';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 import { CentraShippingAddressResponseEvent, CentraShippingMethodResponseEvent } from '@/lib/centra/events';
 import { CheckoutEvent, ShippingAddressChangedEvent, ShippingMethodChangedEvent } from '@/lib/centra/types/events';
@@ -12,7 +12,6 @@ import { checkoutQuery } from '../queries';
 import { Widget } from './Widget';
 
 export const CheckoutScript = () => {
-  const isInitialized = useRef(false);
   const { data } = useSuspenseQuery(checkoutQuery);
   const sendWidgetDataMutation = useSendWidgetData();
   const setShippingMethodMutation = useSetShippingMethod();
@@ -89,19 +88,14 @@ export const CheckoutScript = () => {
     };
   }, [setCountryStateMutation]);
 
-  useEffect(() => {
-    // Prevent double run on strict mode
-    if (!isInitialized.current) {
-      isInitialized.current = true;
-      return;
-    }
-
-    return () => {
-      window.CentraCheckout?.destroy();
-    };
-  }, []);
-
   if (data.checkout.checkoutScript) {
-    return <Widget html={`<script>${data.checkout.checkoutScript}</script>`} />;
+    return (
+      <Widget
+        html={`<script>${data.checkout.checkoutScript}</script>`}
+        cleanUp={() => {
+          window.CentraCheckout?.destroy();
+        }}
+      />
+    );
   }
 };

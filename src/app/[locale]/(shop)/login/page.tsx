@@ -6,7 +6,7 @@ import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { LoginForm } from '@/features/profile/components/LoginForm';
 import { RegisterForm } from '@/features/profile/components/RegisterForm';
-import { getCountriesWithStates } from '@/lib/centra/dtc-api/fetchers/noSession';
+import { getCountries } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -30,7 +30,7 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
     redirect('/account');
   }
 
-  const countries = (await getCountriesWithStates())
+  const countries = (await getCountries())
     .map((country) => ({
       code: country.code,
       name: country.translations.find((translation) => translation.language.code === language)?.name ?? country.name,

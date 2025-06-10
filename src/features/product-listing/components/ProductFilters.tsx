@@ -25,6 +25,15 @@ type ProductFilter<T extends Filter['values'][number]['__typename']> = Omit<Filt
   values: Extract<Filter['values'][number], { __typename: T }>[];
 };
 
+export const ProductFiltersSkeleton = () => {
+  return (
+    <div className="flex flex-wrap justify-between animate-pulse">
+      <div className="bg-mono-500 h-10 w-80 rounded-sm" />
+      <div className="bg-mono-500 ml-auto h-8 w-56 rounded-sm" />
+    </div>
+  );
+};
+
 export const ProductFilters = ({ filters }: { filters: Filter[] }) => {
   const [{ sort, brands, sizes }, setFilters] = useQueryStates(productsFilterParsers, { shallow: false });
   const { t } = useTranslation(['shop']);
@@ -42,7 +51,7 @@ export const ProductFilters = ({ filters }: { filters: Filter[] }) => {
       {brandOptions.length > 0 && sizeOptions.length > 0 ? (
         <Fieldset>
           <div className="flex gap-8">
-            <Legend as="legend" className="text-mono-500 flex items-center gap-2 font-medium">
+            <Legend className="text-mono-500 flex items-center gap-2 font-medium">
               <FunnelIcon className="size-5" />
               <span>{t('shop:filters.filter-by')}</span>
             </Legend>

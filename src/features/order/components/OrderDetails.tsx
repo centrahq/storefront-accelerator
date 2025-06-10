@@ -56,12 +56,10 @@ export const OrderDetails = async ({ order }: { order: OrderFragment }) => {
         {order.lines
           .filter((line) => !!line)
           .map((line) => {
-            const productDetailsUrl = `/product/${line.displayItem.uri}.${line.displayItem.id}?item=${line.item.id}`;
-
             return (
               <li key={line.id} className="bg-mono-50 flex gap-5 py-3">
                 {line.displayItem.media[0] ? (
-                  <ShopLink href={productDetailsUrl} className="shrink-0">
+                  <ShopLink href={`/product/${line.displayItem.uri}`} className="shrink-0">
                     <Image
                       className="size-20 object-cover"
                       src={line.displayItem.media[0].source.url}
@@ -76,7 +74,7 @@ export const OrderDetails = async ({ order }: { order: OrderFragment }) => {
                 <div className="flex grow flex-col gap-2">
                   <div>
                     <div className="flex items-baseline justify-between gap-1">
-                      <ShopLink className="font-medium" href={productDetailsUrl}>
+                      <ShopLink className="font-medium" href={`/product/${line.displayItem.uri}`}>
                         {line.displayItem.name}
                       </ShopLink>
                       <p className="shrink-0 text-sm">{line.lineValue.formattedValue}</p>

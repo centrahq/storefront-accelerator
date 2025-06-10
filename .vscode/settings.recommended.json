@@ -1,0 +1,9 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.preferences.importModuleSpecifier": "shortest",
+  "i18n-ally.dirStructure": "dir",
+  "i18n-ally.namespace": true,
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "react-i18next" // exclude react-i18next to avoid using wrong useTranslation
+  ]
+}

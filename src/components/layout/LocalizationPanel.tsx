@@ -2,7 +2,7 @@
 
 import { CloseButton, Dialog, DialogBackdrop, DialogPanel, DialogTitle, Field, Label, Select } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { serializeLocale } from '@/features/i18n/routing/localeParam';
@@ -25,7 +25,6 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
   const { country, language } = useLocale();
   const languageName = languages.find((lang) => lang.code === language)?.name ?? '?';
   const { t } = useTranslation(['shop']);
-  const pathname = usePathname();
   const router = useRouter();
   const { locale } = useParams<{ locale: string }>();
   const [selectedCountry, setSelectedCountry] = useState(country);
@@ -51,7 +50,11 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
       language: selectedLanguage,
       country: selectedCountry,
     });
-    router.push(pathname.replace(`/${locale}`, `/${newLocale}`));
+
+    router.push(
+      document.querySelector<HTMLLinkElement>(`link[rel="alternate"][hreflang="${newLocale}"]`)?.href ??
+        location.pathname.replace(`/${locale}`, `/${newLocale}`),
+    );
   };
 
   return (

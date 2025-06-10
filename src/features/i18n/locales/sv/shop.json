@@ -41,10 +41,6 @@
     "title": "Vagn",
     "total": "Total"
   },
-  "category-not-found": {
-    "hint": "Vi kunde inte hitta kategorin du letade efter. \nFörsök igen senare eller kontakta supporten.",
-    "title": "Kategori hittades inte"
-  },
   "common": {
     "close": "Nära"
   },
@@ -74,11 +70,15 @@
     "hint": "Om du inte hittar informationen du letar efter, se vårt supportcenter.",
     "title": "Sidan hittades inte"
   },
+  "page-not-found": {
+    "hint": "Vi kunde inte hitta sidan du letar efter. Försök igen senare eller kontakta support.",
+    "title": "Sidan hittades inte"
+  },
   "product": {
     "add-to-cart": "Lägg till i varukorgen",
     "select-bundle-sizes": "Välj en storlek för varje sektion i bunten",
     "select-size": "Välj en storlek",
-    "sizes": "Storlekar"
+    "size": "Storlek"
   },
   "product-not-found": {
     "hint": "Vi kunde inte hitta produkten du letade efter. Försök igen senare eller kontakta supporten.",

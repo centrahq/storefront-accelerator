@@ -8,8 +8,8 @@ export default function NotFoundPage() {
 
   return (
     <div className="flex grow flex-col items-center justify-center gap-8 self-center">
-      <h1 className="text-4xl font-medium">{t('shop:product-not-found.title')}</h1>
-      <p className="text-xl">{t('shop:product-not-found.hint')}</p>
+      <h1 className="text-4xl font-medium">{t('shop:page-not-found.title')}</h1>
+      <p className="text-xl">{t('shop:page-not-found.hint')}</p>
       <ShopLink href="/" className="underline">
         {t('shop:back-to-home')}
       </ShopLink>

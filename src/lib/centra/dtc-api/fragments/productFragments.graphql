@@ -8,3 +8,90 @@ fragment item on Item {
     }
   }
 }
+
+fragment bundle on Bundle {
+  type
+  priceType
+  minPrice {
+    formattedValue
+  }
+  maxPrice {
+    formattedValue
+  }
+  sections {
+    id
+    quantity
+    items {
+      id
+      name
+      media {
+        source(sizeName: "standard") {
+          url
+        }
+      }
+      price {
+        formattedValue
+        value
+        currency {
+          code
+        }
+      }
+      items {
+        ...item
+        stock {
+          available
+        }
+      }
+    }
+  }
+}
+
+fragment variantSwatch on DisplayItem {
+  swatch: attributes(keys: ["variant_swatch"]) {
+    __typename
+    ... on DynamicAttribute {
+      elements {
+        __typename
+        key
+        ... on AttributeStringElement {
+          value
+        }
+      }
+    }
+  }
+}
+
+fragment listProduct on DisplayItem {
+  id
+  uri
+  name
+  media {
+    source(sizeName: "standard") {
+      url
+    }
+  }
+  productVariant {
+    name
+  }
+  ...variantSwatch
+  relatedDisplayItems(relationType: "variant") {
+    relation
+    displayItems {
+      uri
+      productVariant {
+        name
+      }
+      ...variantSwatch
+    }
+  }
+  price {
+    formattedValue
+  }
+  bundle {
+    type
+    priceType
+    minPrice {
+      formattedValue
+    }
+  }
+}

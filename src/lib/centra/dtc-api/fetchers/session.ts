@@ -2,7 +2,7 @@ import { TypedDocumentString } from '@gql/graphql';
 
 import { apiTokenCookie } from '../../cookies';
 import { CentraError } from '../../errors';
-import { GQLResponse } from '../../types/api';
+import { CentraResponse } from '../../types/api';
 
 const getApiToken = async () => {
   if (typeof document === 'undefined') {
@@ -71,7 +71,7 @@ export async function centraFetch<TResult, TVariables>(
     ...rest,
   });
 
-  const body = (await result.json()) as GQLResponse<TResult>;
+  const body = (await result.json()) as CentraResponse<TResult>;
 
   if ('errors' in body) {
     throw new CentraError(body.errors, body.extensions?.traceId);

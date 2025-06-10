@@ -41,10 +41,6 @@
     "title": "Cart",
     "total": "Total"
   },
-  "category-not-found": {
-    "hint": "We could not find the category you're looking for. Please try again later or contact support.",
-    "title": "Category not found"
-  },
   "common": {
     "close": "Close"
   },
@@ -74,11 +70,15 @@
     "hint": "If you can't find the information you're looking for, please see our support centre.",
     "title": "Page not found"
   },
+  "page-not-found": {
+    "hint": "We could not find the page you're looking for. Please try again later or contact support.",
+    "title": "Page not found"
+  },
   "product": {
     "add-to-cart": "Add to cart",
     "select-bundle-sizes": "Please select a size for each section in the bundle",
     "select-size": "Please select a size",
-    "sizes": "Sizes"
+    "size": "Size"
   },
   "product-not-found": {
     "hint": "We could not find the product you're looking for. Please try again later or contact support.",

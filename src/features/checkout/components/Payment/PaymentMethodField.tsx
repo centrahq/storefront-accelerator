@@ -37,9 +37,7 @@ export const PaymentMethodField = () => {
 
   return (
     <Fieldset>
-      <Legend as="legend" className="sr-only text-xl font-medium">
-        {t('checkout:payment-method')}
-      </Legend>
+      <Legend className="sr-only text-xl font-medium">{t('checkout:payment-method')}</Legend>
       <div className="flex flex-col gap-5">
         <RadioGroup
           value={selectedMethod}

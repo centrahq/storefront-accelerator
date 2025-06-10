@@ -11,7 +11,6 @@ import { getItemName } from '@/lib/utils/product';
 import { BundleType } from '@gql/graphql';
 
 import type { useUpdateLine } from '../mutations';
-
 import { selectionQuery } from '../queries';
 import { CartContext } from './CartContext';
 import { DeleteItemButton } from './DeleteItemButton';
@@ -38,13 +37,16 @@ export const CartItems = () => {
       {lines
         .filter((line) => !!line)
         .map((line) => {
-          const productDetailsUrl = `/product/${line.displayItem.uri}.${line.displayItem.id}?item=${line.item.id}`;
           const isUpdating = updateLineMutationVariables.some((variable) => variable?.id === line.id);
 
           return (
             <li key={line.id} className="bg-mono-50 flex gap-5 p-3">
               {line.displayItem.media[0] ? (
-                <ShopLink href={productDetailsUrl} className="shrink-0" onClick={() => setIsCartOpen(false)}>
+                <ShopLink
+                  href={`/product/${line.displayItem.uri}`}
+                  className="shrink-0"
+                  onClick={() => setIsCartOpen(false)}
+                >
                   <Image
                     className="size-20 object-cover"
                     src={line.displayItem.media[0].source.url}
@@ -59,7 +61,11 @@ export const CartItems = () => {
               <div className="flex grow flex-col gap-2">
                 <div>
                   <div className="flex items-baseline justify-between gap-1">
-                    <ShopLink className="font-medium" href={productDetailsUrl} onClick={() => setIsCartOpen(false)}>
+                    <ShopLink
+                      className="font-medium"
+                      href={`/product/${line.displayItem.uri}`}
+                      onClick={() => setIsCartOpen(false)}
+                    >
                       {line.displayItem.name}
                     </ShopLink>
                     <p className="shrink-0 text-sm">{isUpdating ? '...' : line.lineValue.formattedValue}</p>

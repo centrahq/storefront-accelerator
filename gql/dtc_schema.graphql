@@ -569,6 +569,7 @@ type CheckboxAddressField implements AddressField {
 type CheckoutSelection {
   addressFields: AddressFieldList!
   checkoutScript: String
+  deliveryGroups: [SelectionDeliveryGroup!]!
   hasSeparateBillingAddress: Boolean!
   paymentMethod: PaymentMethod
   paymentMethods(sort: [PaymentMethodKind!] = []): [PaymentMethod!]!
@@ -2016,6 +2017,7 @@ type ProductLine implements Line {
 }
 
 type ProductMedia {
+  altText: String
   attributes(keys: [String!]! = []): [Attribute!]!
   id: Int!
   metaDataJSON: String
@@ -2416,6 +2418,13 @@ type SelectionBundleSection {
   id: Int!
   lines: [ProductLine!]!
   quantity: Int!
+}
+
+type SelectionDeliveryGroup {
+  lines: [DeliveryGroupLine!]!
+  name: String
+  shippingMethod: ShippingMethod!
+  shippingPrice: MonetaryValue!
 }
 
 interface SelectionMutationPayload {

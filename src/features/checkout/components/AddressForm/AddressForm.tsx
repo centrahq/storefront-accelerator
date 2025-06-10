@@ -38,7 +38,12 @@ export const AddressForm = ({ countries }: AddressProps) => {
 
   return (
     <>
-      <Widget html={ingridWidget.snippet} cleanUp={() => window._sw?.((api) => api.destroy?.())} />
+      <Widget
+        html={ingridWidget.snippet}
+        cleanUp={() => {
+          window._sw?.((api) => api.destroy?.());
+        }}
+      />
       <ShopLink
         href="/checkout/payment"
         className="bg-mono-900 text-mono-0 mt-5 flex w-full items-center justify-center px-6 py-4 text-xs font-bold uppercase"

@@ -5,22 +5,24 @@ import { Logo } from '@/components/layout/Logo';
 import { Cart } from '@/features/cart/components/CartPanel';
 import { NavLink, ShopLink } from '@/features/i18n/routing/ShopLink';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
-import { getCountriesAndLanguages } from '@/lib/centra/dtc-api/fetchers/noSession';
+import { getCountries, getLanguages } from '@/lib/centra/dtc-api/fetchers/noSession';
 
-import { WithSession } from '../WithSession';
+import { getSession } from '../../lib/centra/sessionCookie';
 import { CategoryLinks } from './CategoryLinks';
 import { LocalizationPanel } from './LocalizationPanel';
 import { NavMenuPanel } from './NavMenuPanel';
 import { SearchButton } from './SearchButton';
 
 export const Header = async () => {
-  const { countries, languages } = await getCountriesAndLanguages();
+  const [countries, languages] = await Promise.all([getCountries(), getLanguages()]);
+  const { isLoggedIn } = await getSession();
+
   const { t } = await getTranslation(['server', 'shop']);
 
   const links = (
     <>
-      <NavLink className="border-b border-transparent py-3" activeClassName="border-b-mono-900" href="/">
-        Home
+      <NavLink className="border-b border-transparent py-3" activeClassName="border-b-mono-900" href="/" prefetch>
+        {t('server:home')}
       </NavLink>
       <CategoryLinks />
     </>
@@ -55,16 +57,10 @@ export const Header = async () => {
               <div className="relative flex h-10 flex-col">
                 <SearchButton withLabel />
               </div>
-              <Suspense fallback={null}>
-                <WithSession>
-                  {({ isLoggedIn }) => (
-                    <ShopLink href={isLoggedIn ? '/account' : '/login'} className="flex items-center gap-2">
-                      <UserIcon className="size-6" />
-                      <span className="py-2">{isLoggedIn ? t('server:user.my-account') : t('shop:user.login')}</span>
-                    </ShopLink>
-                  )}
-                </WithSession>
-              </Suspense>
+              <ShopLink href={isLoggedIn ? '/account' : '/login'} className="flex items-center gap-2">
+                <UserIcon className="size-6" />
+                <span className="py-2">{isLoggedIn ? t('server:user.my-account') : t('shop:user.login')}</span>
+              </ShopLink>
             </div>
           </NavMenuPanel>
         </div>
@@ -77,16 +73,10 @@ export const Header = async () => {
             <SearchButton withBackground />
           </div>
           <div className="hidden md:block">
-            <Suspense fallback={<UserIcon className="size-6" />}>
-              <WithSession>
-                {({ isLoggedIn }) => (
-                  <ShopLink href={isLoggedIn ? '/account' : '/login'} className="flex items-center gap-2">
-                    <UserIcon className="size-6" />
-                    <span className="sr-only">{isLoggedIn ? t('server:user.my-account') : t('shop:user.login')}</span>
-                  </ShopLink>
-                )}
-              </WithSession>
-            </Suspense>
+            <ShopLink href={isLoggedIn ? '/account' : '/login'} className="flex items-center gap-2">
+              <UserIcon className="size-6" />
+              <span className="sr-only">{isLoggedIn ? t('server:user.my-account') : t('shop:user.login')}</span>
+            </ShopLink>
           </div>
           <Suspense fallback={<ShoppingBagIcon className="size-6" />}>
             <Cart />

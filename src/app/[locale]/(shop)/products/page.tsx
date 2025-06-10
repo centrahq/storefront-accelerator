@@ -6,9 +6,9 @@ import { z } from 'zod';
 import { Pagination } from '@/components/Pagination';
 import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
-import { ProductFilters } from '@/features/product-listing/components/ProductFilters';
-import { ProductList } from '@/features/product-listing/components/ProductList';
-import { ProductListSkeleton } from '@/features/product-listing/components/ProductListSkeleton';
+import { ProductCard, ProductCardSkeleton } from '@/features/product-listing/components/ProductCard';
+import { ProductFilters, ProductFiltersSkeleton } from '@/features/product-listing/components/ProductFilters';
+import { ProductGrid } from '@/features/product-listing/components/ProductGrid';
 import {
   productsFilterParamsCache,
   serializeProductsFilters,
@@ -62,7 +62,15 @@ const Listing = async ({ searchParams }: { searchParams: PageProps['searchParams
   return (
     <>
       {filters && <ProductFilters filters={filters} />}
-      {list && list.length > 0 ? <ProductList products={list} /> : <h2>{t('server:products.no-products-found')}</h2>}
+      {list && list.length > 0 ? (
+        <ProductGrid>
+          {list.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </ProductGrid>
+      ) : (
+        <h2>{t('server:products.no-products-found')}</h2>
+      )}
       {pagination.lastPage > 1 && (
         <div className="mx-auto">
           <Pagination
@@ -79,15 +87,23 @@ const Listing = async ({ searchParams }: { searchParams: PageProps['searchParams
 
 export default async function ProductsPage({ searchParams, params }: PageProps) {
   localeParam.parse((await params).locale);
-  const { t } = await getTranslation(['server']);
+  await productsFilterParamsCache.parse(searchParams);
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-10">
-      <title>{t('server:products.title')}</title>
-      <h1 className="text-4xl font-medium">{t('server:products.title')}</h1>
-      <Suspense fallback={<ProductListSkeleton />}>
-        <Listing searchParams={searchParams} />
-      </Suspense>
-    </div>
+    <Suspense
+      key={serializeProductsFilters(productsFilterParamsCache.all())}
+      fallback={
+        <>
+          <ProductFiltersSkeleton />
+          <ProductGrid>
+            {Array.from(Array(ITEMS_PER_PAGE), (_, index) => (
+              <ProductCardSkeleton key={index} />
+            ))}
+          </ProductGrid>
+        </>
+      }
+    >
+      <Listing searchParams={searchParams} />
+    </Suspense>
   );
 }

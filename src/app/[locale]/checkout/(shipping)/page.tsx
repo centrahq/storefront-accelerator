@@ -2,12 +2,12 @@ import { AddressForm } from '@/features/checkout/components/AddressForm/AddressF
 import { InitiateOnlyPayments } from '@/features/checkout/components/Payment/InitiateOnlyPayments';
 import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
-import { getCountriesWithStates } from '@/lib/centra/dtc-api/fetchers/noSession';
+import { getCountries } from '@/lib/centra/dtc-api/fetchers/noSession';
 
 export default async function ShippingPage({ params }: { params: Promise<{ locale: string }> }) {
   const { language } = localeParam.parse((await params).locale);
   const { t } = await getTranslation(['server']);
-  const countries = (await getCountriesWithStates())
+  const countries = (await getCountries())
     .map((country) => ({
       code: country.code,
       name: country.translations.find((translation) => translation.language.code === language)?.name ?? country.name,

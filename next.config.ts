@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
     },
   },
   experimental: {
-    ppr: true,
+    useCache: true,
     inlineCss: true,
   },
   images: {

@@ -1,25 +1,24 @@
-import { ResultOf, VariablesOf } from '@graphql-typed-document-node/core/typings';
 import 'server-only';
+
+import { ResultOf, VariablesOf } from '@graphql-typed-document-node/core/typings';
+import { unstable_cacheLife as cacheLife, unstable_cacheTag as cacheTag } from 'next/cache';
 
 import { graphql } from '@gql/gql';
 import {
   CategoriesQueryVariables,
-  CategoryDetailsQueryVariables,
-  ProductAvailabilityQueryVariables,
-  ProductDetailsQueryVariables,
+  LookupCategoryMutationVariables,
+  LookupProductMutationVariables,
+  LookupRelatedProductsMutationVariables,
   ProductsQueryVariables,
 } from '@gql/graphql';
 
 import { TAGS } from '../../constants';
 import { CentraError } from '../../errors';
-import { GQLResponse } from '../../types/api';
+import { CentraResponse } from '../../types/api';
 
 type BaseRequest = Omit<RequestInit, 'body' | 'method' | 'headers'> & {
   headers?: Record<string, string>;
 };
-
-type Options<T> = BaseRequest &
-  (VariablesOf<T> extends { [key: string]: never } ? { variables?: VariablesOf<T> } : { variables: VariablesOf<T> });
 
 /**
  * Fetches data from Centra DTC API without session. Can be used on server side only.
@@ -39,15 +38,16 @@ type Options<T> = BaseRequest &
  *       id: 1,
  *       language: 'en',
  *     },
- *     next: {
- *       tags: [`product-${variables.id}`],
- *       revalidate: 30 * 24 * 60 * 60,
- *     },
  *   },
  * )
  */
-export async function centraFetchNoSession<T>(query: T, options: Options<T>) {
-  const { headers, variables, ...rest } = options;
+export async function centraFetchNoSession<T>(
+  query: T,
+  ...options: VariablesOf<T> extends { [key: string]: never }
+    ? [options?: BaseRequest & { variables?: VariablesOf<T> }]
+    : [options: BaseRequest & { variables: VariablesOf<T> }]
+) {
+  const { headers, variables, ...rest } = options[0] ?? {};
 
   const result = await fetch(process.env.NO_SESSION_GQL_API, {
     method: 'POST',
@@ -60,7 +60,7 @@ export async function centraFetchNoSession<T>(query: T, options: Options<T>) {
     ...rest,
   });
 
-  const body = (await result.json()) as GQLResponse<ResultOf<T>>;
+  const body = (await result.json()) as CentraResponse<ResultOf<T>>;
 
   if ('errors' in body) {
     throw new CentraError(body.errors, body.extensions?.traceId);
@@ -69,107 +69,24 @@ export async function centraFetchNoSession<T>(query: T, options: Options<T>) {
   return body;
 }
 
-/*
- Fetcher for product details that can be obtained without session data (market, pricelist).
- Can be used to pre-render or statically generate product pages.
-*/
-export const getProductDetails = async (variables: ProductDetailsQueryVariables) => {
-  try {
-    const res = await centraFetchNoSession(
-      graphql(`
-        query productDetails($id: Int!) {
-          displayItem(id: $id) {
-            id
-            bundle {
-              type
-              priceType
-              minPriceByPricelist {
-                pricelist {
-                  id
-                }
-                priceByMarket {
-                  markets
-                  price {
-                    formattedValue
-                  }
-                }
-              }
-              maxPriceByPricelist {
-                pricelist {
-                  id
-                }
-                priceByMarket {
-                  markets
-                  price {
-                    formattedValue
-                  }
-                }
-              }
-              sections {
-                id
-                quantity
-                items {
-                  id
-                  name
-                  media {
-                    source(sizeName: "standard") {
-                      url
-                    }
-                  }
-                  priceByPricelist {
-                    pricelist {
-                      id
-                    }
-                    priceByMarket {
-                      markets
-                      price {
-                        formattedValue
-                        value
-                        currency {
-                          code
-                        }
-                      }
-                    }
-                  }
-                  items {
-                    ...item
-                  }
-                  translations {
-                    language {
-                      code
-                    }
-                    name
-                  }
-                }
-              }
-            }
-            media {
-              source(sizeName: "full") {
-                url
-              }
-            }
-            priceByPricelist {
-              pricelist {
-                id
-              }
-              priceByMarket {
-                markets
-                price {
-                  formattedValue
-                  value
-                  currency {
-                    code
-                  }
-                }
-              }
-            }
-            items {
-              ...item
-            }
-            translations {
-              language {
-                code
-              }
+export const lookupProduct = async (variables: LookupProductMutationVariables) => {
+  'use cache';
+
+  const result = await centraFetchNoSession(
+    graphql(`
+      mutation lookupProduct($uri: String!, $language: String!, $market: Int!, $pricelist: Int!) {
+        lookupUri(
+          uri: $uri
+          for: [DISPLAY_ITEM]
+          languageCode: [$language]
+          market: [$market]
+          pricelist: [$pricelist]
+        ) {
+          __typename
+          ... on DisplayItemUriLookupPayload {
+            displayItem {
+              id
+              available
               uri
               name
               metaTitle
@@ -177,76 +94,114 @@ export const getProductDetails = async (variables: ProductDetailsQueryVariables)
               description {
                 formatted
               }
+              media {
+                source(sizeName: "full") {
+                  url
+                }
+              }
+              price {
+                formattedValue
+                value
+                currency {
+                  code
+                }
+              }
+              items {
+                ...item
+                stock {
+                  available
+                }
+              }
+              relatedDisplayItems(relationType: "variant") {
+                relation
+                displayItems {
+                  uri
+                  productVariant {
+                    name
+                  }
+                  ...variantSwatch
+                }
+              }
+              productVariant {
+                name
+              }
+              ...variantSwatch
+              translations {
+                language {
+                  code
+                }
+                uri
+              }
+              bundle {
+                ...bundle
+              }
             }
           }
         }
-      `),
-      {
-        variables,
-        next: {
-          tags: [TAGS.productStatic(variables.id)],
-          revalidate: 30 * 24 * 60 * 60,
-        },
-      },
-    );
+      }
+    `),
+    {
+      variables,
+    },
+  );
 
-    return res.data.displayItem;
-  } catch {
-    return null;
+  if (result.data.lookupUri?.__typename !== 'DisplayItemUriLookupPayload') {
+    throw new Error('Product not found');
   }
+
+  cacheTag(TAGS.product(result.data.lookupUri.displayItem.id));
+  cacheLife('hours');
+
+  return result.data.lookupUri.displayItem;
 };
 
-/*
-  Fetcher for product and item availability which can only be obtained with session data (market, pricelist).
-  Should be used within a Suspense boundary.
-*/
-export const getProductAvailability = async (variables: ProductAvailabilityQueryVariables) => {
-  try {
-    const res = await centraFetchNoSession(
-      graphql(`
-        query productAvailability($id: Int!, $market: [Int!]!, $pricelist: [Int!]!) {
-          displayItem(id: $id, market: $market, pricelist: $pricelist) {
-            available
-            items {
-              id
-              stock {
-                available
-              }
-            }
-            bundle {
-              sections {
-                id
-                items {
-                  id
-                  items {
-                    id
-                    stock {
-                      available
-                    }
-                  }
+export const getRelatedProducts = async (variables: LookupRelatedProductsMutationVariables) => {
+  'use cache';
+
+  const result = await centraFetchNoSession(
+    graphql(`
+      mutation lookupRelatedProducts($uri: String!, $language: String!, $market: Int!, $pricelist: Int!) {
+        lookupUri(
+          uri: $uri
+          for: [DISPLAY_ITEM]
+          languageCode: [$language]
+          market: [$market]
+          pricelist: [$pricelist]
+        ) {
+          __typename
+          ... on DisplayItemUriLookupPayload {
+            displayItem {
+              relatedDisplayItems(relationType: "standard") {
+                relation
+                displayItems {
+                  ...listProduct
                 }
               }
             }
           }
         }
-      `),
-      {
-        variables,
-        next: {
-          tags: [TAGS.productDynamic(variables.id)],
-          revalidate: 24 * 60 * 60,
-        },
-      },
-    );
-    return res.data.displayItem;
-  } catch {
-    return null;
+      }
+    `),
+    {
+      variables,
+    },
+  );
+
+  if (result.data.lookupUri?.__typename !== 'DisplayItemUriLookupPayload') {
+    throw new Error('Product not found');
   }
+
+  cacheTag(TAGS.products);
+  cacheLife('hours');
+
+  return (
+    result.data.lookupUri.displayItem.relatedDisplayItems.find(({ relation }) => relation === 'standard')
+      ?.displayItems ?? []
+  );
 };
 
 export const filterProducts = async (variables: ProductsQueryVariables) => {
   const res = await centraFetchNoSession(
-    /* TODO: Remove category from filter query when https://centracommerce.atlassian.net/browse/DT-866 is resolved */
     graphql(`
       query products(
         $page: Int!
@@ -269,24 +224,7 @@ export const filterProducts = async (variables: ProductsQueryVariables) => {
           languageCode: [$language]
         ) {
           list {
-            id
-            uri
-            name
-            media {
-              source(sizeName: "standard") {
-                url
-              }
-            }
-            price {
-              formattedValue
-            }
-            bundle {
-              type
-              priceType
-              minPrice {
-                formattedValue
-              }
-            }
+            ...listProduct
           }
           pagination {
             currentPage
@@ -303,11 +241,6 @@ export const filterProducts = async (variables: ProductsQueryVariables) => {
               ... on BrandFilterValue {
                 name
               }
-              ... on CategoryFilterValue {
-                category {
-                  id
-                }
-              }
             }
           }
         }
@@ -315,26 +248,25 @@ export const filterProducts = async (variables: ProductsQueryVariables) => {
     `),
     {
       variables,
-      next:
-        variables.withFilters === false
-          ? {
-              tags: [TAGS.products],
-              revalidate: 24 * 60 * 60,
-            }
-          : {},
     },
   );
 
   return res.data.displayItems;
 };
 
-export const getCountriesAndLanguages = async () => {
+export const getCountries = async () => {
+  'use cache';
+
   const response = await centraFetchNoSession(
     graphql(`
-      query countriesAndLanguages {
+      query countries {
         countries(onlyShipTo: true) {
           name
           code
+          states {
+            name
+            code
+          }
           defaultLanguage {
             code
             languageCode
@@ -346,6 +278,22 @@ export const getCountriesAndLanguages = async () => {
             name
           }
         }
+      }
+    `),
+  );
+
+  cacheTag(TAGS.countries, TAGS.markets);
+  cacheLife('days');
+
+  return response.data.countries;
+};
+
+export const getLanguages = async () => {
+  'use cache';
+
+  const response = await centraFetchNoSession(
+    graphql(`
+      query languages {
         languages {
           languageCode
           name
@@ -354,70 +302,32 @@ export const getCountriesAndLanguages = async () => {
         }
       }
     `),
-    {
-      next: {
-        tags: [TAGS.languages],
-        revalidate: 30 * 24 * 60 * 60,
-      },
-    },
   );
 
-  return response.data;
-};
+  cacheTag(TAGS.languages);
+  cacheLife('days');
 
-export const getCountriesWithStates = async () => {
-  const response = await centraFetchNoSession(
-    graphql(`
-      query countries {
-        countries(onlyShipTo: true) {
-          name
-          code
-          states {
-            name
-            code
-          }
-          translations {
-            language {
-              code
-            }
-            name
-          }
-        }
-      }
-    `),
-    {
-      next: {
-        revalidate: 30 * 24 * 60 * 60,
-      },
-    },
-  );
-
-  return response.data.countries;
+  return response.data.languages;
 };
 
 export const getRootCategories = async (variables: CategoriesQueryVariables) => {
+  'use cache';
+
+  cacheTag(TAGS.categories);
+  cacheLife('days');
+
   const response = await centraFetchNoSession(
     graphql(`
-      query categories($limit: Int!) {
-        categories(limit: $limit, parent: 0) {
+      query categories($limit: Int!, $language: String!, $market: Int!) {
+        categories(limit: $limit, parent: 0, languageCode: [$language], market: [$market]) {
           list {
-            id
-            translations {
-              name
-              uri
-              language {
-                code
-              }
-            }
+            name
+            uri
           }
         }
       }
     `),
     {
-      next: {
-        tags: [TAGS.categories],
-        revalidate: 30 * 24 * 60 * 60,
-      },
       variables,
     },
   );
@@ -425,38 +335,47 @@ export const getRootCategories = async (variables: CategoriesQueryVariables) => 
   return response.data.categories?.list ?? [];
 };
 
-export const getCategoryDetails = async (variables: CategoryDetailsQueryVariables) => {
-  try {
-    const response = await centraFetchNoSession(
-      graphql(`
-        query categoryDetails($id: Int!) {
-          categories(id: [$id], limit: 1) {
-            list {
+export const lookupCategory = async (variables: LookupCategoryMutationVariables) => {
+  'use cache';
+
+  const result = await centraFetchNoSession(
+    graphql(`
+      mutation lookupCategory($uri: String!, $language: String!, $market: Int!) {
+        lookupUri(uri: $uri, for: [CATEGORY], languageCode: [$language], market: [$market]) {
+          __typename
+          ... on CategoryUriLookupPayload {
+            category {
               id
+              uri
+              name
+              metaTitle
+              metaDescription
+              childCategories {
+                name
+                uri
+              }
               translations {
                 uri
                 language {
                   code
                 }
-                name
-                metaTitle
-                metaDescription
               }
             }
           }
         }
-      `),
-      {
-        next: {
-          tags: [TAGS.category(variables.id)],
-          revalidate: 30 * 24 * 60 * 60,
-        },
-        variables,
-      },
-    );
+      }
+    `),
+    {
+      variables,
+    },
+  );
 
-    return response.data.categories?.list[0];
-  } catch {
-    return null;
+  if (result.data.lookupUri?.__typename !== 'CategoryUriLookupPayload') {
+    throw new Error('Category not found');
   }
+
+  cacheTag(TAGS.category(result.data.lookupUri.category.id));
+  cacheLife('days');
+
+  return result.data.lookupUri.category;
 };

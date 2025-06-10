@@ -4,5 +4,10 @@ module.exports = {
   quoteProps: 'consistent',
   printWidth: 120,
   tabWidth: 2,
-  plugins: ['prettier-plugin-tailwindcss'],
+  importOrder: ['<THIRD_PARTY_MODULES>', '^@(gql)?/(.*)$', '^[./]'],
+  importOrderSeparation: true,
+  importOrderSortSpecifiers: true,
+  importOrderSideEffects: false,
+  importOrderCaseInsensitive: true,
+  plugins: ['prettier-plugin-tailwindcss', '@trivago/prettier-plugin-sort-imports'],
 };

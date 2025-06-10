@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-import { getCountriesAndLanguages } from '@/lib/centra/dtc-api/fetchers/noSession';
+import { getCountries, getLanguages } from '@/lib/centra/dtc-api/fetchers/noSession';
 
 import { DEFAULT_LANGUAGE } from './settings';
 
@@ -13,12 +13,12 @@ import { DEFAULT_LANGUAGE } from './settings';
  *
  * @example
  * // Dynamic path
- * generateAlternates(lang => `/category/${categories[lang]}`)
+ * generateAlternates(lang => `/product/${products[lang]}`)
  */
 export const generateAlternates = async (
   path: string | ((lang: string) => string),
 ): Promise<NonNullable<Metadata['alternates']>['languages']> => {
-  const { countries, languages } = await getCountriesAndLanguages();
+  const [countries, languages] = await Promise.all([getCountries(), getLanguages()]);
 
   const getPath = typeof path === 'function' ? path : () => path;
 
@@ -48,6 +48,5 @@ export const generateAlternates = async (
   return {
     ...regionalAlternates,
     ...languageAlternates,
-    'x-default': languageAlternates[DEFAULT_LANGUAGE.languageCode],
   };
 };

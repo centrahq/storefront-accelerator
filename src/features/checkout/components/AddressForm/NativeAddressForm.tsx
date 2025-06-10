@@ -143,9 +143,7 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
     <form onSubmit={changeAddress} className="flex flex-col gap-5">
       <Fieldset>
         <div className="flex flex-col gap-5">
-          <Legend as="legend" className="text-xl font-medium">
-            {t('checkout:shipping-address')}
-          </Legend>
+          <Legend className="text-xl font-medium">{t('checkout:shipping-address')}</Legend>
           <div className="grid grid-cols-2 gap-5">
             <Field className="flex flex-col gap-1">
               <Label>{t('shop:addressForm.labels.country')}</Label>
@@ -284,9 +282,7 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
       {!billingSameAsShipping && (
         <Fieldset>
           <div className="flex flex-col gap-5">
-            <Legend as="legend" className="text-xl font-medium">
-              {t('checkout:billing-address')}
-            </Legend>
+            <Legend className="text-xl font-medium">{t('checkout:billing-address')}</Legend>
             <div className="grid grid-cols-2 gap-5">
               <Field className="flex flex-col gap-1">
                 <Label>{t('shop:addressForm.labels.country')}</Label>

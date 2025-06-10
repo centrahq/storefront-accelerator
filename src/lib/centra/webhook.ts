@@ -68,14 +68,8 @@ export const revalidateHandler = async (req: NextRequest): Promise<NextResponse>
     console.info('Revalidated products.', payload.DisplayItems);
     revalidateTag(TAGS.products);
     uniq(payload.DisplayItems).forEach((id) => {
-      revalidateTag(TAGS.productStatic(id));
-      revalidateTag(TAGS.productDynamic(id));
+      revalidateTag(TAGS.product(id));
     });
-  }
-
-  if (payload.Pricelists) {
-    console.info('Revalidated pricelists.');
-    revalidateTag(TAGS.pricelists);
   }
 
   if (payload.Markets) {

@@ -45,9 +45,7 @@ export const DeliveryForm = () => {
       <form onSubmit={onSubmit} className="flex flex-col gap-5">
         <Fieldset>
           <div className="flex flex-col gap-5">
-            <Legend as="legend" className="text-xl font-medium">
-              {t('checkout:delivery-method')}
-            </Legend>
+            <Legend className="text-xl font-medium">{t('checkout:delivery-method')}</Legend>
             <RadioGroup
               name="shippingMethod"
               key={selectedShippingMethod}
