@@ -190,11 +190,9 @@ export const usePaymentInstructions = () => {
                 ...checkout
               }
               userErrors {
+                __typename
                 message
                 path
-                ... on UnavailableItem {
-                  __typename
-                }
               }
             }
           }

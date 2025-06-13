@@ -65,7 +65,11 @@ const Listing = async ({ searchParams }: { searchParams: PageProps['searchParams
       {list && list.length > 0 ? (
         <ProductGrid>
           {list.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              imageSizes="(min-width: 1920px) 420px, (min-width: 1440px) 33vw, (min-width: 1024px) 50vw, 100vw"
+              product={product}
+            />
           ))}
         </ProductGrid>
       ) : (

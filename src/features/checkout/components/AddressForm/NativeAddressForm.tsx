@@ -212,9 +212,9 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
           </Field>
           <Field className="relative flex flex-col gap-1">
             <Label>{t('shop:addressForm.labels.address2')}</Label>
-            <p aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
+            <div aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
               {t('shop:addressForm.optional')}
-            </p>
+            </div>
             <Input
               className="border-mono-300 border px-6 py-3 text-sm"
               name="shipping.address2"
@@ -253,9 +253,9 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
           </Field>
           <Field className="relative flex flex-col gap-1">
             <Label>{t('shop:addressForm.labels.phoneNumber')}</Label>
-            <p aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
+            <div aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
               {t('shop:addressForm.optional')}
-            </p>
+            </div>
             <Input
               type="tel"
               className="border-mono-300 border px-6 py-3 text-sm"
@@ -324,9 +324,9 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
             <div className="grid grid-cols-2 gap-5">
               <Field className="relative flex flex-col gap-1">
                 <Label>{t('shop:addressForm.labels.firstName')}</Label>
-                <p aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
+                <div aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
                   {t('shop:addressForm.optional')}
-                </p>
+                </div>
                 <Input
                   className="border-mono-300 border px-6 py-3 text-sm"
                   name="billing.firstName"
@@ -335,9 +335,9 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
               </Field>
               <Field className="relative flex flex-col gap-1">
                 <Label>{t('shop:addressForm.labels.lastName')}</Label>
-                <p aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
+                <div aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
                   {t('shop:addressForm.optional')}
-                </p>
+                </div>
                 <Input
                   className="border-mono-300 border px-6 py-3 text-sm"
                   name="billing.lastName"
@@ -349,9 +349,9 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
             <div className="grid grid-cols-2 gap-5">
               <Field className="relative flex flex-col gap-1">
                 <Label>{t('shop:addressForm.labels.companyName')}</Label>
-                <p aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
+                <div aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
                   {t('shop:addressForm.optional')}
-                </p>
+                </div>
                 <Input
                   className="border-mono-300 border px-6 py-3 text-sm"
                   name="billing.companyName"
@@ -360,9 +360,9 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
               </Field>
               <Field className="relative flex flex-col gap-1">
                 <Label>{t('shop:addressForm.labels.vatNumber')}</Label>
-                <p aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
+                <div aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
                   {t('shop:addressForm.optional')}
-                </p>
+                </div>
                 <Input
                   className="border-mono-300 border px-6 py-3 text-sm"
                   name="billing.vatNumber"
@@ -382,9 +382,9 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
             </Field>
             <Field className="relative flex flex-col gap-1">
               <Label>{t('shop:addressForm.labels.address2')}</Label>
-              <p aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
+              <div aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
                 {t('shop:addressForm.optional')}
-              </p>
+              </div>
               <Input
                 className="border-mono-300 border px-6 py-3 text-sm"
                 name="billing.address2"
@@ -424,9 +424,9 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
             </Field>
             <Field className="relative flex flex-col gap-1">
               <Label>{t('shop:addressForm.labels.phoneNumber')}</Label>
-              <p aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
+              <div aria-hidden className="text-mono-500 absolute top-0 right-0 text-sm font-medium">
                 {t('shop:addressForm.optional')}
-              </p>
+              </div>
               <Input
                 className="border-mono-300 border px-6 py-3 text-sm"
                 type="tel"

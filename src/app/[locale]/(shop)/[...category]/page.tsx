@@ -81,7 +81,13 @@ const CategoryProducts = async ({ id, uri }: { id: number; uri: string }) => {
       {list && list.length > 0 ? (
         <ProductGrid>
           {list.map((product, index) => (
-            <ProductCard key={product.id} product={product} priority={index === 0} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              imageSizes="(min-width: 1920px) 420px, (min-width: 1440px) 33vw, (min-width: 1024px) 50vw, 100vw"
+              priority={index === 0}
+              prefetch
+            />
           ))}
         </ProductGrid>
       ) : (

@@ -63,7 +63,7 @@ export const OrderDetails = async ({ order }: { order: OrderFragment }) => {
                     <Image
                       className="size-20 object-cover"
                       src={line.displayItem.media[0].source.url}
-                      alt={getItemName(line.item, country)}
+                      alt={line.displayItem.media[0].altText || line.displayItem.name}
                       width={80}
                       height={80}
                     />
@@ -77,7 +77,7 @@ export const OrderDetails = async ({ order }: { order: OrderFragment }) => {
                       <ShopLink className="font-medium" href={`/product/${line.displayItem.uri}`}>
                         {line.displayItem.name}
                       </ShopLink>
-                      <p className="shrink-0 text-sm">{line.lineValue.formattedValue}</p>
+                      <div className="shrink-0 text-sm">{line.lineValue.formattedValue}</div>
                     </div>
                     <dl>
                       {(line.__typename === 'ProductLine' || line.bundle?.type === BundleType.Fixed) && (

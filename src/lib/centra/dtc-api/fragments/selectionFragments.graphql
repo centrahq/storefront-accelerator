@@ -28,6 +28,7 @@ fragment line on Line {
     name
     uri
     media {
+      altText
       source(sizeName: "mini") {
         url
       }

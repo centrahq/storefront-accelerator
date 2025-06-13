@@ -16,7 +16,7 @@ export const RelatedProducts = async ({ relatedProducts }: { relatedProducts: Pr
       <h2 className="text-2xl font-medium">{t('server:product.related-products')}</h2>
       <ul className="flex gap-8 overflow-x-auto *:basis-[clamp(16rem,25vw,24rem)] *:shrink-0 *:grow-0 custom-scrollbar">
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} imageSizes="384px" product={product} />
         ))}
       </ul>
     </div>

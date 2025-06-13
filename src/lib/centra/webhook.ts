@@ -10,6 +10,10 @@ const getCurrentTime = () => Date.now() / 1000;
 const uniq = <T>(arr: T[]) => [...new Set(arr)];
 
 const timingSafeEqual = (a: string, b: string) => {
+  if (a.length !== b.length) {
+    return false;
+  }
+
   const bufferA = Buffer.from(a);
   const bufferB = Buffer.from(b);
 

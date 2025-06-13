@@ -98,7 +98,7 @@ export default async function ProductPage({ params }: PageProps) {
         <ProductMedia productUri={uri} />
         <div className="flex flex-col gap-3 md:gap-5 md:only:col-span-2">
           <h1 className="text-4xl font-medium">{product.name}</h1>
-          <p className="text-3xl font-medium">
+          <div className="text-3xl font-medium">
             {product.bundle?.type === BundleType.Flexible && product.bundle.priceType === BundlePriceType.Dynamic ? (
               <>
                 <span>{product.bundle.minPrice?.formattedValue}</span>
@@ -108,7 +108,7 @@ export default async function ProductPage({ params }: PageProps) {
             ) : (
               product.price?.formattedValue
             )}
-          </p>
+          </div>
           <Variants productUri={uri} />
           <Bundle productUri={uri} />
           <Items productUri={uri} />

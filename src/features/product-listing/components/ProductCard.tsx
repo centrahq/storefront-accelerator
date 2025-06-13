@@ -29,10 +29,12 @@ export const ProductCard = async ({
   product,
   prefetch,
   priority,
+  imageSizes,
 }: {
   product: ListProductFragment;
   prefetch?: LinkProps['prefetch'];
   priority?: boolean;
+  imageSizes: string;
 }) => {
   const variants = product.relatedDisplayItems.find(({ relation }) => relation === 'variant')?.displayItems ?? [];
   const { t } = await getTranslation(['server']);
@@ -55,8 +57,9 @@ export const ProductCard = async ({
       <div className="relative aspect-2/3">
         {product.media[0] && (
           <Image
+            sizes={imageSizes}
             src={product.media[0].source.url}
-            alt={product.name}
+            alt={product.media[0].altText || product.name}
             className="absolute inset-0 object-cover"
             fill
             priority={priority}
@@ -71,13 +74,13 @@ export const ProductCard = async ({
         >
           {product.name}
         </ShopLink>
-        <p className="text-mono-600">
+        <div className="text-mono-600">
           {product.bundle?.type === BundleType.Flexible &&
           product.bundle.priceType === BundlePriceType.Dynamic &&
           product.bundle.minPrice
             ? t('server:products.from-price', { price: product.bundle.minPrice.formattedValue })
             : product.price?.formattedValue}
-        </p>
+        </div>
         {swatches.length > 1 && (
           <ul className="flex gap-2 flex-wrap mt-1">
             {swatches.slice(0, MAX_SWATCHES).map((swatch) => (

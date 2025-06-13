@@ -50,7 +50,7 @@ export const CartItems = () => {
                   <Image
                     className="size-20 object-cover"
                     src={line.displayItem.media[0].source.url}
-                    alt={getItemName(line.item, country)}
+                    alt={line.displayItem.media[0].altText || line.displayItem.name}
                     width={80}
                     height={80}
                   />
@@ -68,7 +68,7 @@ export const CartItems = () => {
                     >
                       {line.displayItem.name}
                     </ShopLink>
-                    <p className="shrink-0 text-sm">{isUpdating ? '...' : line.lineValue.formattedValue}</p>
+                    <div className="shrink-0 text-sm">{isUpdating ? '...' : line.lineValue.formattedValue}</div>
                   </div>
                   {(line.__typename === 'ProductLine' || line.bundle?.type === BundleType.Fixed) && (
                     <dl className="flex gap-2 text-sm">

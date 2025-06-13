@@ -32,6 +32,7 @@ module.exports = {
               },
               config: {
                 documentMode: 'string',
+                skipTypename: true,
               },
             },
             'gql/dtc_schema.graphql': {

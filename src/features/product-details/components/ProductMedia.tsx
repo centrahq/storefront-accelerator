@@ -23,26 +23,29 @@ export const ProductMedia = async ({ productUri }: { productUri: string }) => {
       <div className="relative aspect-3/4 w-full">
         <Image
           src={product.media[0].source.url}
-          alt={product.name}
+          alt={product.media[0].altText || product.name}
           className="object-cover"
           priority
           fill
-          sizes="(min-width: 1800px) 848px, (min-width: 768px) 45vw, 100vw"
+          sizes="(min-width: 1800px) 848px, (min-width: 768px) 45vw, 30vh"
+          fetchPriority="high"
         />
       </div>
-      <div className="contents md:grid md:grid-cols-2 md:gap-6">
-        {product.media.slice(1).map((image) => (
-          <div key={image.source.url} className="relative aspect-3/4 md:aspect-square">
-            <Image
-              src={image.source.url}
-              alt={product.name}
-              className="object-cover"
-              fill
-              sizes="(min-width: 1800px) 412px, (min-width: 768px) 22vw, 100vw"
-            />
-          </div>
-        ))}
-      </div>
+      {product.media.length > 1 && (
+        <div className="contents md:grid md:grid-cols-2 md:gap-6">
+          {product.media.slice(1).map((medium) => (
+            <div key={medium.id} className="relative aspect-3/4 md:aspect-square">
+              <Image
+                src={medium.source.url}
+                alt={medium.altText || product.name}
+                className="object-cover"
+                fill
+                sizes="(min-width: 1800px) 412px, (min-width: 768px) 22vw, 30vh"
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

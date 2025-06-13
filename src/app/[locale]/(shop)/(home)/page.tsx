@@ -44,8 +44,14 @@ const FeaturedItems = async () => {
 
   return (
     <ProductGrid>
-      {featuredItems.map((product) => (
-        <ProductCard key={product.id} product={product} prefetch />
+      {featuredItems.map((product, index) => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          imageSizes="(min-width: 1920px) 420px, (min-width: 1440px) 33vw, (min-width: 1024px) 50vw, 100vw"
+          priority={index === 0}
+          prefetch
+        />
       ))}
     </ProductGrid>
   );

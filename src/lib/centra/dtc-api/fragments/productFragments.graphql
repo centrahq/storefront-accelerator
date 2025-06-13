@@ -24,8 +24,10 @@ fragment bundle on Bundle {
     items {
       id
       name
+      uri
       media {
-        source(sizeName: "standard") {
+        altText
+        source {
           url
         }
       }
@@ -66,7 +68,8 @@ fragment listProduct on DisplayItem {
   uri
   name
   media {
-    source(sizeName: "standard") {
+    altText
+    source(sizeName: "1350x0") {
       url
     }
   }

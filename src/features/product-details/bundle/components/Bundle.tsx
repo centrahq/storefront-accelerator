@@ -1,6 +1,7 @@
 import Image from 'next/image';
 
 import { localeParam } from '@/features/i18n/routing/localeParam';
+import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { lookupProduct } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
@@ -37,16 +38,23 @@ export const Bundle = async ({ productUri }: { productUri: string }) => {
               return (
                 <li key={sectionItem.id} className="flex flex-row gap-4">
                   {sectionItem.media[0] && (
-                    <div>
-                      <div className="relative aspect-3/4 w-[6rem]">
-                        <Image src={sectionItem.media[0].source.url} alt="" className="object-cover" fill />
-                      </div>
+                    <div className="shrink-0">
+                      <ShopLink href={`/product/${sectionItem.uri}`}>
+                        <Image
+                          src={sectionItem.media[0].source.url}
+                          alt={sectionItem.media[0].altText || sectionItem.name}
+                          className="object-cover"
+                          width={96}
+                          height={128}
+                          unoptimized
+                        />
+                      </ShopLink>
                     </div>
                   )}
                   <div className="flex w-full flex-col gap-2">
                     <div className="flex w-full flex-row items-center justify-between gap-2">
-                      <p>{sectionItem.name}</p>
-                      <p>{sectionItem.price?.formattedValue}</p>
+                      <ShopLink href={`/product/${sectionItem.uri}`}>{sectionItem.name}</ShopLink>
+                      <span>{sectionItem.price?.formattedValue}</span>
                     </div>
                     <dl className="flex flex-col gap-2">
                       <div className="flex gap-2 text-sm">

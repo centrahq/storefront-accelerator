@@ -95,7 +95,9 @@ export const lookupProduct = async (variables: LookupProductMutationVariables) =
                 formatted
               }
               media {
-                source(sizeName: "full") {
+                id
+                altText
+                source(sizeName: "1350x0") {
                   url
                 }
               }
