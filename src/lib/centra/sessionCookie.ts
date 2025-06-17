@@ -1,5 +1,9 @@
+import 'server-only';
+
+import { decodeJwt, jwtVerify, SignJWT } from 'jose';
 import { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { cookies } from 'next/headers';
+import { cache } from 'react';
 import { z } from 'zod';
 
 import { DEFAULT_LANGUAGE } from '@/features/i18n/settings';
@@ -7,7 +11,27 @@ import { SessionFragment } from '@gql/graphql';
 
 import { sessionCookie } from './cookies';
 
-export const sessionCookieSchema = z.object({
+const encodedKey = new TextEncoder().encode(process.env.SESSION_SECRET);
+
+const signSessionCookie = async (payload: Session) => {
+  return new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(sessionCookie.maxAge)
+    .sign(encodedKey);
+};
+
+const decodeSessionCookie = cache((jwt: string) => decodeJwt(jwt) as Session);
+
+export const verifySessionCookie = async (session: string | undefined = '') => {
+  const { payload } = await jwtVerify(session, encodedKey, {
+    algorithms: ['HS256'],
+  });
+
+  return sessionCookieSchema.parse(payload);
+};
+
+const sessionCookieSchema = z.object({
   country: z.string(),
   state: z.string().nullable(),
   language: z.string(),
@@ -16,7 +40,7 @@ export const sessionCookieSchema = z.object({
   isLoggedIn: z.boolean(),
 });
 
-export type SessionCookie = z.infer<typeof sessionCookieSchema>;
+type Session = z.infer<typeof sessionCookieSchema>;
 
 export const getSession = async () => {
   const cookieStore = await cookies();
@@ -26,10 +50,10 @@ export const getSession = async () => {
     throw new Error('Session cookie not found');
   }
 
-  return JSON.parse(cookie.value) as SessionCookie;
+  return decodeSessionCookie(cookie.value);
 };
 
-export const mapSession = (session: SessionFragment): SessionCookie => ({
+export const mapSession = (session: SessionFragment): Session => ({
   country: session.country.code,
   state: session.countryState?.code ?? null,
   language: session.language?.code ?? DEFAULT_LANGUAGE.code,
@@ -38,9 +62,9 @@ export const mapSession = (session: SessionFragment): SessionCookie => ({
   isLoggedIn: !!session.loggedIn,
 });
 
-export const createSessionCookie = (session: SessionFragment | SessionCookie): ResponseCookie => {
+export const createSessionCookie = async (session: Session): Promise<ResponseCookie> => {
   return {
     ...sessionCookie,
-    value: JSON.stringify('isLoggedIn' in session ? session : mapSession(session)),
+    value: await signSessionCookie(session),
   };
 };

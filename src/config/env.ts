@@ -7,6 +7,7 @@ const envSchema = z.object({
   NO_SESSION_GQL_AUTHORIZATION: z.string(),
   NO_SESSION_GQL_SHARED_SECRET: z.string(),
   CENTRA_WEBHOOK_SECRET: z.string(),
+  SESSION_SECRET: z.string().min(32, 'SESSION_SECRET must be at least 32 characters long'),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -19,6 +20,7 @@ export const validateEnv = () => {
     NO_SESSION_GQL_AUTHORIZATION: process.env.NO_SESSION_GQL_AUTHORIZATION,
     NO_SESSION_GQL_SHARED_SECRET: process.env.NO_SESSION_GQL_SHARED_SECRET,
     CENTRA_WEBHOOK_SECRET: process.env.CENTRA_WEBHOOK_SECRET,
+    SESSION_SECRET: process.env.SESSION_SECRET,
   });
 
   if (!parsedEnv.success) {

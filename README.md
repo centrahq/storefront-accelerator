@@ -17,6 +17,7 @@ NO_SESSION_GQL_API="API Endpoint of no-session dtc api plugin"
 NO_SESSION_GQL_AUTHORIZATION="Non-session mode token of no-session dtc api plugin"
 NO_SESSION_GQL_SHARED_SECRET="Shared secret of no-session dtc api plugin"
 CENTRA_WEBHOOK_SECRET="Endpoint secret of Centra webhook plugin"
+SESSION_SECRET="At least 256 bit (32 byte) secret for signing session cookies"
 ```
 
 Run the development server:

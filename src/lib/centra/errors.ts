@@ -3,7 +3,7 @@ export class UserError extends Error {
     public userErrors: Array<{ message: string }>,
     public traceId?: string,
   ) {
-    super(JSON.stringify(userErrors));
+    super(JSON.stringify(userErrors, null, 2));
     this.name = 'UserError';
   }
 }
@@ -13,7 +13,7 @@ export class CentraError extends Error {
     public centraErrors: Array<{ message: string }>,
     public traceId?: string,
   ) {
-    super(JSON.stringify(centraErrors));
+    super(JSON.stringify(centraErrors, null, 2));
     this.name = 'CentraError';
   }
 }

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { apiTokenCookie, sessionCookie } from '@/lib/centra/cookies';
 import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
-import { createSessionCookie, mapSession, sessionCookieSchema } from '@/lib/centra/sessionCookie';
+import { createSessionCookie, mapSession, verifySessionCookie } from '@/lib/centra/sessionCookie';
 import { graphql } from '@gql/gql';
 
 import { matchLocaleParam, serializeLocale } from './localeParam';
@@ -30,15 +30,15 @@ const getSession = async (request: NextRequest) => {
   const cookieSession = request.cookies.get(sessionCookie.name);
 
   if (cookieApiKey && cookieSession) {
-    const parsedSession = sessionCookieSchema.safeParse(JSON.parse(cookieSession.value));
+    try {
+      const session = await verifySessionCookie(cookieSession.value);
 
-    if (parsedSession.success) {
       return {
-        session: parsedSession.data,
+        session,
         apiToken: cookieApiKey.value,
         isFreshSession: false,
       };
-    }
+    } catch {}
   }
 
   // If session cookie doesn't exist or is expired, fetch fresh session from Centra
@@ -137,7 +137,7 @@ export const routingMiddleware = async (request: NextRequest) => {
 
   if (isFreshSession) {
     // Cache the session in cookies
-    response.cookies.set(createSessionCookie(session));
+    response.cookies.set(await createSessionCookie(session));
   }
 
   response.cookies.set({

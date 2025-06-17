@@ -10,7 +10,7 @@ import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { apiTokenCookie, sessionCookie } from '@/lib/centra/cookies';
 import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
 import { UserError } from '@/lib/centra/errors';
-import { createSessionCookie, getSession } from '@/lib/centra/sessionCookie';
+import { createSessionCookie, getSession, mapSession } from '@/lib/centra/sessionCookie';
 import { graphql } from '@gql/gql';
 
 export async function login(_prevState: unknown, formData: FormData) {
@@ -68,7 +68,7 @@ export async function login(_prevState: unknown, formData: FormData) {
       country: response.data.login.session.country.code,
       language: response.data.login.session.language?.code ?? DEFAULT_LANGUAGE.code,
     });
-    cookieStore.set(createSessionCookie(response.data.login.session));
+    cookieStore.set(await createSessionCookie(mapSession(response.data.login.session)));
   } catch {
     const { t } = await getTranslation(['server'], language);
 
@@ -184,7 +184,7 @@ export const logout = async () => {
       throw new Error('No session data found');
     }
 
-    cookieStore.set(createSessionCookie(sessionData));
+    cookieStore.set(await createSessionCookie(mapSession(sessionData)));
     locale = serializeLocale({
       country: sessionData.country.code,
       language: sessionData.language?.code ?? DEFAULT_LANGUAGE.code,
