@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { OrderDetails } from '@/features/order/components/OrderDetails';
 import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
@@ -17,8 +16,7 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function Confirmation({ params }: { params: Promise<{ locale: string }> }) {
-  localeParam.parse((await params).locale);
+export default async function Confirmation() {
   // `order` query will always return the last order. We can display last order details even after user refreshes the page.
   const receiptResponse = await centraFetch(
     graphql(`

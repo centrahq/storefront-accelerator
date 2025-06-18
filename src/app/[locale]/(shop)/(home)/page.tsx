@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 
 import { generateAlternates } from '@/features/i18n/metadata';
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { ProductCard } from '@/features/product-listing/components/ProductCard';
 import { ProductGrid } from '@/features/product-listing/components/ProductGrid';
@@ -25,8 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 const FeaturedItems = async () => {
-  const { language } = localeParam;
-  const { market, pricelist } = await getSession();
+  const { market, pricelist, language } = await getSession();
 
   const featuredItems = await filterProducts({
     page: 1,
@@ -57,9 +55,7 @@ const FeaturedItems = async () => {
   );
 };
 
-export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
-  localeParam.parse((await params).locale);
-
+export default async function Home() {
   const { t } = await getTranslation(['server']);
 
   return (

@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 
@@ -12,8 +11,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function Failed({ params }: { params: Promise<{ locale: string }> }) {
-  localeParam.parse((await params).locale);
+export default async function Failed() {
   const { t } = await getTranslation(['server']);
 
   return (

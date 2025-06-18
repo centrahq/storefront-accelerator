@@ -1,11 +1,9 @@
 import { AddressInfo } from '@/features/checkout/components/AddressInfo';
 import { DeliveryInfo } from '@/features/checkout/components/DeliveryInfo';
 import { Payment } from '@/features/checkout/components/Payment/Payment';
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 
-export default async function PaymentPage({ params }: { params: Promise<{ locale: string }> }) {
-  localeParam.parse((await params).locale);
+export default async function PaymentPage() {
   const { t } = await getTranslation(['server']);
 
   return (

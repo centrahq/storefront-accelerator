@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { ReactNode } from 'react';
 
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { LogoutButton } from '@/features/profile/components/LogoutButton';
 import { getSession } from '@/lib/centra/sessionCookie';
@@ -15,14 +14,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function AccountLayout({
-  params,
-  children,
-}: {
-  params: Promise<{ locale: string }>;
-  children: ReactNode;
-}) {
-  localeParam.parse((await params).locale);
+export default async function AccountLayout({ children }: { children: ReactNode }) {
   const { t } = await getTranslation(['server']);
   const { isLoggedIn } = await getSession();
 

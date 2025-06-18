@@ -3234,6 +3234,14 @@ export type PaymentResultMutationVariables = Exact<{
 
 export type PaymentResultMutation = { paymentResult: { type: PaymentResultType, userErrors: Array<{ message: string, path?: Array<string> | null } | { message: string, path?: Array<string> | null }> } | { type: PaymentResultType, userErrors: Array<{ message: string, path?: Array<string> | null } | { message: string, path?: Array<string> | null }> } };
 
+export type ChangeLocaleMutationVariables = Exact<{
+  country: Scalars['String']['input'];
+  language: Scalars['String']['input'];
+}>;
+
+
+export type ChangeLocaleMutation = { setCountryState: { userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> } | { userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> } | { userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> } | { userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> }, setLanguage: { session: { country: { code: string }, countryState?: { code: string } | null, language?: { code: string } | null, market: { id: number }, pricelist: { id: number }, loggedIn?: { id: number } | null } } };
+
 export type AddFlexibleBundleToCartMutationVariables = Exact<{
   item: Scalars['String']['input'];
   sections: Array<BundleSectionInput> | BundleSectionInput;
@@ -4154,6 +4162,41 @@ export const PaymentResultDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PaymentResultMutation, PaymentResultMutationVariables>;
+export const ChangeLocaleDocument = new TypedDocumentString(`
+    mutation changeLocale($country: String!, $language: String!) {
+  setCountryState(countryCode: $country) {
+    userErrors {
+      __typename
+      message
+      path
+    }
+  }
+  setLanguage(code: $language) {
+    session {
+      ...session
+    }
+  }
+}
+    fragment session on Session {
+  country {
+    code
+  }
+  countryState {
+    code
+  }
+  language {
+    code
+  }
+  market {
+    id
+  }
+  pricelist {
+    id
+  }
+  loggedIn {
+    id
+  }
+}`) as unknown as TypedDocumentString<ChangeLocaleMutation, ChangeLocaleMutationVariables>;
 export const AddFlexibleBundleToCartDocument = new TypedDocumentString(`
     mutation addFlexibleBundleToCart($item: String!, $sections: [BundleSectionInput!]!, $quantity: Int = 1) {
   addFlexibleBundle(item: $item, quantity: $quantity, sections: $sections) {

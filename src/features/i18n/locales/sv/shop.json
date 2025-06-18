@@ -58,6 +58,10 @@
     "size": "Storlek",
     "sort-by": "Sortera efter:"
   },
+  "items-removed": {
+    "message": "Vissa föremål i din vagn tas bort på grund av otillgänglighet.",
+    "title": "Otillgängliga föremål"
+  },
   "localization": {
     "country": "Land",
     "hint": "Ändra dina inställningar för land och språk.",

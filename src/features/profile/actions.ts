@@ -20,7 +20,6 @@ export async function login(_prevState: unknown, formData: FormData) {
   });
 
   const cookieStore = await cookies();
-  const { language } = await getSession();
 
   const parsedInput = loginSchema.safeParse({
     email: formData.get('email'),
@@ -28,7 +27,7 @@ export async function login(_prevState: unknown, formData: FormData) {
   });
 
   if (!parsedInput.success) {
-    const { t } = await getTranslation(['server'], language);
+    const { t } = await getTranslation(['server']);
 
     return { error: t('server:user.errors.required-fields') };
   }
@@ -70,7 +69,7 @@ export async function login(_prevState: unknown, formData: FormData) {
     });
     cookieStore.set(await createSessionCookie(mapSession(response.data.login.session)));
   } catch {
-    const { t } = await getTranslation(['server'], language);
+    const { t } = await getTranslation(['server']);
 
     return { error: t('server:user.errors.invalid-login') };
   }
@@ -105,7 +104,7 @@ export async function register(_prevState: unknown, formData: FormData) {
   });
 
   if (parsedInput.error) {
-    const { t } = await getTranslation(['server'], session.language);
+    const { t } = await getTranslation(['server']);
 
     return { error: t('server:user.errors.required-fields') };
   }
@@ -142,7 +141,7 @@ export async function register(_prevState: unknown, formData: FormData) {
     });
     cookieStore.delete(sessionCookie.name);
   } catch {
-    const { t } = await getTranslation(['server'], session.language);
+    const { t } = await getTranslation(['server']);
 
     return { error: t('server:user.errors.invalid-register') };
   }
@@ -202,7 +201,7 @@ export async function forgotPassword(_prevState: unknown, formData: FormData) {
   });
 
   const session = await getSession();
-  const { t } = await getTranslation(['server'], session.language);
+  const { t } = await getTranslation(['server']);
 
   const parsedInput = forgotPasswordSchema.safeParse({
     email: formData.get('email'),
@@ -238,8 +237,7 @@ export async function forgotPassword(_prevState: unknown, formData: FormData) {
 }
 
 export async function resetPassword(_prevState: unknown, formData: FormData) {
-  const session = await getSession();
-  const { t } = await getTranslation(['server'], session.language);
+  const { t } = await getTranslation(['server']);
 
   const resetPasswordSchema = z
     .object({

@@ -4,7 +4,6 @@ import { Suspense } from 'react';
 import { Product, WithContext } from 'schema-dts';
 
 import { generateAlternates } from '@/features/i18n/metadata';
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { Bundle } from '@/features/product-details/bundle/components/Bundle';
 import { Items } from '@/features/product-details/components/Items';
 import { ProductMedia } from '@/features/product-details/components/ProductMedia';
@@ -24,8 +23,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps, parent: ResolvingMetadata): Promise<Metadata> {
   const { locale, uri } = await params;
-  const { language } = localeParam.parse(locale);
-  const { market, pricelist } = await getSession();
+  const { market, language, pricelist } = await getSession();
 
   const product = await lookupProduct({
     uri,
@@ -56,9 +54,8 @@ export async function generateMetadata({ params }: PageProps, parent: ResolvingM
 }
 
 export default async function ProductPage({ params }: PageProps) {
-  const { locale, uri } = await params;
-  const { language } = localeParam.parse(locale);
-  const { market, pricelist } = await getSession();
+  const { uri } = await params;
+  const { market, pricelist, language } = await getSession();
 
   const relatedProductsPromise = getRelatedProducts({
     uri,

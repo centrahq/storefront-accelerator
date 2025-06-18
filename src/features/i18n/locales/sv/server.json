@@ -34,6 +34,7 @@
     "no-products-found": "Inga produkter hittades",
     "title": "Produkt"
   },
+  "something-went-wrong": "Något gick fel.",
   "user": {
     "errors": {
       "invalid-login": "Ogiltig e-postadress eller lösenord",

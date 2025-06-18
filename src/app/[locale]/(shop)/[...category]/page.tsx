@@ -5,7 +5,6 @@ import { Suspense } from 'react';
 import { z } from 'zod';
 
 import { Pagination } from '@/components/Pagination';
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { ProductCard, ProductCardSkeleton } from '@/features/product-listing/components/ProductCard';
 import { ProductFilters, ProductFiltersSkeleton } from '@/features/product-listing/components/ProductFilters';
@@ -111,13 +110,11 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ locale: string; category: string[] }>;
+  params: Promise<{ category: string[] }>;
   searchParams: Promise<SearchParams>;
 }) {
-  const { locale } = await params;
-  const { language } = localeParam.parse(locale);
   await productsFilterParamsCache.parse(searchParams);
-  const { market } = await getSession();
+  const { market, language } = await getSession();
 
   const category = await lookupCategory({
     uri: (await params).category.join('/'),

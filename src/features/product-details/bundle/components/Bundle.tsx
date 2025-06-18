@@ -1,6 +1,5 @@
 import Image from 'next/image';
 
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { lookupProduct } from '@/lib/centra/dtc-api/fetchers/noSession';
@@ -11,8 +10,7 @@ import { BundleType } from '@gql/graphql';
 import { BundleItemSelector } from './BundleItemSelector';
 
 export const Bundle = async ({ productUri }: { productUri: string }) => {
-  const { language, country } = localeParam;
-  const { market, pricelist } = await getSession();
+  const { market, pricelist, language, country } = await getSession();
 
   const product = await lookupProduct({
     uri: productUri,

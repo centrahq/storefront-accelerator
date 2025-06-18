@@ -1,20 +1,12 @@
 import { SearchParams } from 'nuqs';
 import { Suspense } from 'react';
 
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { OrdersSkeleton } from '@/features/order/components/OrdersSkeleton';
 import { OrdersTable } from '@/features/order/components/OrdersTable';
 import { orderFilterParamsCache, serializeOrderFilters } from '@/features/order/orderListSearchParams';
 
-export default async function AccountPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ locale: string }>;
-  searchParams: Promise<SearchParams>;
-}) {
-  localeParam.parse((await params).locale);
+export default async function AccountPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   await orderFilterParamsCache.parse(searchParams);
   const { t } = await getTranslation(['server']);
 

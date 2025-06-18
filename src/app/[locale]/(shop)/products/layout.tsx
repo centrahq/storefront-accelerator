@@ -1,16 +1,8 @@
 import { ReactNode } from 'react';
 
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 
-export default async function ProductsLayout({
-  params,
-  children,
-}: {
-  params: Promise<{ locale: string }>;
-  children: ReactNode;
-}) {
-  localeParam.parse((await params).locale);
+export default async function ProductsLayout({ children }: { children: ReactNode }) {
   const { t } = await getTranslation(['server']);
 
   return (

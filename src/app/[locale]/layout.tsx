@@ -7,7 +7,8 @@ import { Inter } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { Toaster } from 'sonner';
 
-import { localeParam } from '@/features/i18n/routing/localeParam';
+import { ItemsRemovedToast } from '@/components/ItemsRemovedToast';
+import { parseLocale } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { getLanguages } from '@/lib/centra/dtc-api/fetchers/noSession';
 
@@ -18,8 +19,7 @@ const deployedUrl =
     ? process.env.VERCEL_BRANCH_URL || process.env.VERCEL_URL
     : process.env.VERCEL_PROJECT_PRODUCTION_URL;
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-  localeParam.parse((await params).locale);
+export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getTranslation(['server']);
 
   return {
@@ -36,7 +36,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export default async function RootLayout(props: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
   const languages = await getLanguages();
-  const { language } = localeParam.parse((await props.params).locale);
+  const { language } = parseLocale((await props.params).locale);
 
   const languageCode = languages.find((lang) => lang.code === language)?.languageCode;
 
@@ -49,6 +49,7 @@ export default async function RootLayout(props: { children: React.ReactNode; par
       <body className={clsx(inter.className, 'text-mono-900')}>
         <Providers>{props.children}</Providers>
         <Toaster />
+        <ItemsRemovedToast />
       </body>
     </html>
   );

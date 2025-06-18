@@ -9,7 +9,6 @@ import { selectionQuery } from '@/features/cart/queries';
 import { CheckoutScript } from '@/features/checkout/components/CheckoutScript';
 import { Totals } from '@/features/checkout/components/Totals/Totals';
 import { checkoutQuery } from '@/features/checkout/queries';
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { getQueryClient } from '@/lib/centra/dtc-api/queryClient';
 
@@ -23,14 +22,7 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function CheckoutLayout({
-  children,
-  params,
-}: {
-  children: ReactNode;
-  params: Promise<{ locale: string }>;
-}) {
-  localeParam.parse((await params).locale);
+export default async function CheckoutLayout({ children }: { children: ReactNode }) {
   const queryClient = getQueryClient();
   await Promise.all([queryClient.prefetchQuery(selectionQuery), queryClient.prefetchQuery(checkoutQuery)]);
 

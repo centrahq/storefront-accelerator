@@ -5,7 +5,7 @@ import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
 import { createSessionCookie, mapSession, verifySessionCookie } from '@/lib/centra/sessionCookie';
 import { graphql } from '@gql/gql';
 
-import { matchLocaleParam, serializeLocale } from './localeParam';
+import { parseLocale, serializeLocale } from './localeParam';
 
 const createSession = (request: NextRequest, apiToken: string) => {
   return centraFetch(
@@ -101,7 +101,7 @@ const updateSession = async ({
 };
 
 export const routingMiddleware = async (request: NextRequest) => {
-  const url = matchLocaleParam(request.nextUrl.pathname.split('/')[1] ?? '');
+  const url = parseLocale(request.nextUrl.pathname.split('/')[1] ?? '');
 
   // Get session from cookies or Centra
   let { session, apiToken, isFreshSession } = await getSession(request);

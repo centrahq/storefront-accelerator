@@ -34,6 +34,7 @@
     "no-products-found": "No products found",
     "title": "Products"
   },
+  "something-went-wrong": "Something went wrong.",
   "user": {
     "errors": {
       "invalid-login": "Invalid email or password",

@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { ForgotPasswordForm } from '@/features/profile/components/ForgotPasswordForm';
 import { getSession } from '@/lib/centra/sessionCookie';
@@ -14,8 +13,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function ForgotPasswordPage({ params }: { params: Promise<{ locale: string }> }) {
-  localeParam.parse((await params).locale);
+export default async function ForgotPasswordPage() {
   const { t } = await getTranslation(['server']);
   const { isLoggedIn } = await getSession();
 

@@ -2,7 +2,6 @@ import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { generateAlternates } from '@/features/i18n/metadata';
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { lookupCategory } from '@/lib/centra/dtc-api/fetchers/noSession';
@@ -13,8 +12,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
   const { locale } = await params;
-  const { language } = localeParam.parse(locale);
-  const { market } = await getSession();
+  const { market, language } = await getSession();
 
   const category = await lookupCategory({
     uri: (await params).category.join('/'),
@@ -39,11 +37,9 @@ export default async function CategoryLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string; category: string[] }>;
+  params: Promise<{ category: string[] }>;
 }) {
-  const { locale } = await params;
-  const { language } = localeParam.parse(locale);
-  const { market } = await getSession();
+  const { market, language } = await getSession();
   const { t } = await getTranslation(['server']);
 
   const uris = (await params).category;

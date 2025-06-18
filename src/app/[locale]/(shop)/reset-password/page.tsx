@@ -3,7 +3,6 @@ import { notFound, redirect } from 'next/navigation';
 import { SearchParams } from 'nuqs';
 import { z } from 'zod';
 
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { ResetPasswordForm } from '@/features/profile/components/ResetPasswordForm';
 import { getSession } from '@/lib/centra/sessionCookie';
@@ -16,14 +15,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function ResetPasswordPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ locale: string }>;
-  searchParams: Promise<SearchParams>;
-}) {
-  localeParam.parse((await params).locale);
+export default async function ResetPasswordPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const { t } = await getTranslation(['server']);
   const { isLoggedIn } = await getSession();
 

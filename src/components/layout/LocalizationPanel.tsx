@@ -2,12 +2,16 @@
 
 import { CloseButton, Dialog, DialogBackdrop, DialogPanel, DialogTitle, Field, Label, Select } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import clsx from 'clsx';
 import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
+import { toast } from 'sonner';
 
-import { serializeLocale } from '@/features/i18n/routing/localeParam';
 import { useLocale } from '@/features/i18n/routing/useLocale';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
+
+import { REMOVED_ITEMS_PARAM } from '../ItemsRemovedToast';
+import { changeLocale } from './actions';
 
 interface Props {
   countries: {
@@ -29,6 +33,7 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
   const { locale } = useParams<{ locale: string }>();
   const [selectedCountry, setSelectedCountry] = useState(country);
   const [selectedLanguage, setSelectedLanguage] = useState(language);
+  const [isPending, startTransition] = useTransition();
 
   const languageOptions = languages
     .map((language) => ({
@@ -46,15 +51,30 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
 
   const handleSave = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const newLocale = serializeLocale({
-      language: selectedLanguage,
-      country: selectedCountry,
-    });
 
-    router.push(
-      document.querySelector<HTMLLinkElement>(`link[rel="alternate"][hreflang="${newLocale}"]`)?.href ??
-        location.pathname.replace(`/${locale}`, `/${newLocale}`),
-    );
+    startTransition(async () => {
+      const result = await changeLocale({
+        country: selectedCountry,
+        language: selectedLanguage,
+      });
+
+      if (result.status === 'error') {
+        toast.error(result.message);
+        return;
+      }
+
+      const newUrl = new URL(
+        document.querySelector<HTMLLinkElement>(`link[rel="alternate"][hreflang="${result.locale}"]`)?.href ??
+          location.pathname.replace(`/${locale}`, `/${result.locale}`),
+        window.location.origin,
+      );
+
+      if (result.hasRemovedItems) {
+        newUrl.searchParams.set(REMOVED_ITEMS_PARAM, 'true');
+      }
+
+      router.push(newUrl.href);
+    });
   };
 
   return (
@@ -108,7 +128,11 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
             </Field>
             <button
               type="submit"
-              className="bg-mono-900 text-mono-0 flex w-full items-center justify-center px-6 py-4 text-xs font-bold uppercase"
+              disabled={isPending}
+              className={clsx(
+                'bg-mono-900 text-mono-0 flex w-full items-center justify-center px-6 py-4 text-xs font-bold uppercase',
+                { 'animate-pulse': isPending },
+              )}
             >
               {t('shop:localization.save')}
             </button>

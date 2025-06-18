@@ -4,7 +4,6 @@ import { Suspense } from 'react';
 import { z } from 'zod';
 
 import { Pagination } from '@/components/Pagination';
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { ProductCard, ProductCardSkeleton } from '@/features/product-listing/components/ProductCard';
 import { ProductFilters, ProductFiltersSkeleton } from '@/features/product-listing/components/ProductFilters';
@@ -19,11 +18,6 @@ import { SortKey, SortOrder } from '@gql/graphql';
 
 const ITEMS_PER_PAGE = 24;
 
-type PageProps = {
-  searchParams: Promise<SearchParams>;
-  params: Promise<{ locale: string }>;
-};
-
 export const metadata: Metadata = {
   robots: {
     index: false,
@@ -32,8 +26,8 @@ export const metadata: Metadata = {
   },
 };
 
-const Listing = async ({ searchParams }: { searchParams: PageProps['searchParams'] }) => {
-  const { q: query, brands, categories, sizes, page, sort } = await productsFilterParamsCache.parse(searchParams);
+const Listing = async () => {
+  const { q: query, brands, categories, sizes, page, sort } = productsFilterParamsCache.all();
   const allFilters = productsFilterParamsCache.all();
   const { market, pricelist, language } = await getSession();
   const { t } = await getTranslation(['server']);
@@ -89,8 +83,7 @@ const Listing = async ({ searchParams }: { searchParams: PageProps['searchParams
   );
 };
 
-export default async function ProductsPage({ searchParams, params }: PageProps) {
-  localeParam.parse((await params).locale);
+export default async function ProductsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   await productsFilterParamsCache.parse(searchParams);
 
   return (
@@ -107,7 +100,7 @@ export default async function ProductsPage({ searchParams, params }: PageProps) 
         </>
       }
     >
-      <Listing searchParams={searchParams} />
+      <Listing />
     </Suspense>
   );
 }

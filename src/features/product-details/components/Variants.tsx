@@ -1,6 +1,5 @@
 import clsx from 'clsx';
 
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { lookupProduct } from '@/lib/centra/dtc-api/fetchers/noSession';
@@ -8,8 +7,7 @@ import { getSession } from '@/lib/centra/sessionCookie';
 import { getSwatchColorCode } from '@/lib/utils/product';
 
 export const Variants = async ({ productUri }: { productUri: string }) => {
-  const { language } = localeParam;
-  const { market, pricelist } = await getSession();
+  const { market, pricelist, language } = await getSession();
   const product = await lookupProduct({
     uri: productUri,
     language,

@@ -1,5 +1,4 @@
 import { AddToCartButton } from '@/features/cart/components/AddToCartButton';
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { lookupProduct } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
@@ -9,8 +8,7 @@ import { BundleType } from '@gql/graphql';
 import { ItemSelector } from './ItemSelector';
 
 export const Items = async ({ productUri }: { productUri: string }) => {
-  const { market, pricelist, country } = await getSession();
-  const { language } = localeParam;
+  const { market, pricelist, country, language } = await getSession();
   const { t } = await getTranslation(['server']);
 
   const product = await lookupProduct({

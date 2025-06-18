@@ -58,6 +58,10 @@
     "size": "Size",
     "sort-by": "Sort by:"
   },
+  "items-removed": {
+    "message": "Some items in your cart are removed due to unavailability.",
+    "title": "Unavailable items"
+  },
   "localization": {
     "country": "Country",
     "hint": "Change your country and language settings.",

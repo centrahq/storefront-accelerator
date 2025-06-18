@@ -1,4 +1,4 @@
-import { TypedDocumentString } from '@gql/graphql';
+import { ResultOf, VariablesOf } from '@graphql-typed-document-node/core';
 
 import { apiTokenCookie } from '../../cookies';
 import { CentraError } from '../../errors';
@@ -24,17 +24,9 @@ type BaseRequest = Omit<RequestInit, 'body' | 'method' | 'cache' | 'headers'> & 
   headers?: Record<string, string>;
 };
 
-type Result<T> = {
-  data: T;
-  extensions: {
-    token: string;
-    traceId: string;
-  };
-};
-
 /**
  * Fetches data from Centra DTC API with session. Can be used on client and server side.
- * Using this function in a layout or page will opt it into dynamic rendering.
+ * API token can be provided, if it's not provided it will be taken from cookies.
  * Use `graphql` function to get type safety.
  *
  * @example
@@ -46,19 +38,13 @@ type Result<T> = {
  *   }
  * `))
  */
-export async function centraFetch<TResult>(
-  query: TypedDocumentString<TResult, { [key: string]: never }>,
-  options?: BaseRequest & { variables?: never },
-): Promise<Result<TResult>>;
-export async function centraFetch<TResult, TVariables>(
-  query: TypedDocumentString<TResult, TVariables>,
-  options: BaseRequest & { variables: TVariables },
-): Promise<Result<TResult>>;
-export async function centraFetch<TResult, TVariables>(
-  query: TypedDocumentString<TResult, TVariables>,
-  options?: BaseRequest & { variables?: TVariables },
-): Promise<Result<TResult>> {
-  const { apiToken, headers, variables, ...rest } = options ?? {};
+export async function centraFetch<T>(
+  query: T,
+  ...options: VariablesOf<T> extends { [key: string]: never }
+    ? [options?: BaseRequest & { variables?: VariablesOf<T> }]
+    : [options: BaseRequest & { variables: VariablesOf<T> }]
+) {
+  const { apiToken, headers, variables, ...rest } = options[0] ?? {};
   const result = await fetch(process.env.NEXT_PUBLIC_GQL_API, {
     method: 'POST',
     headers: {
@@ -71,7 +57,7 @@ export async function centraFetch<TResult, TVariables>(
     ...rest,
   });
 
-  const body = (await result.json()) as CentraResponse<TResult>;
+  const body = (await result.json()) as CentraResponse<ResultOf<T>>;
 
   if ('errors' in body) {
     throw new CentraError(body.errors, body.extensions?.traceId);

@@ -3,16 +3,16 @@ import Image from 'next/image';
 import { LocaleDate } from '@/components/LocaleDate';
 import { PlainAddress } from '@/components/PlainAddress';
 import { TotalRow } from '@/components/TotalRow';
-import { localeParam } from '@/features/i18n/routing/localeParam';
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
+import { getSession } from '@/lib/centra/sessionCookie';
 import { getItemName } from '@/lib/utils/product';
 import { BundleType, OrderFragment, SelectionTotalRowType } from '@gql/graphql';
 
 import { OrderStatus } from './OrderStatus';
 
 export const OrderDetails = async ({ order }: { order: OrderFragment }) => {
-  const { country } = localeParam;
+  const { country } = await getSession();
   const { t } = await getTranslation(['server', 'checkout', 'shop']);
 
   return (
