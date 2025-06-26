@@ -2,11 +2,16 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { sessionCookie } from '@/lib/centra/cookies';
 import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
+import { mutationMutex } from '@/lib/centra/dtc-api/mutationLock';
 import { UserError } from '@/lib/centra/errors';
 import { graphql } from '@gql/gql';
-import { PaymentInstructionsInput, SetAddressMutationVariables, SetCountryStateMutationVariables } from '@gql/graphql';
+import {
+  PaymentInstructionsInput,
+  SetAddressMutationVariables,
+  SetCountryStateMutationVariables,
+  UpdateLineCheckoutMutationVariables,
+} from '@gql/graphql';
 
-import { selectionQuery } from '../cart/queries';
 import { checkoutQuery } from './queries';
 
 export const useSetAddress = () => {
@@ -15,24 +20,25 @@ export const useSetAddress = () => {
   return useMutation({
     mutationKey: ['checkout', 'setAddress'],
     mutationFn: async (variables: SetAddressMutationVariables) => {
-      const response = await centraFetch(
-        graphql(`
-          mutation setAddress($billingAddress: AddressInput!, $shippingAddress: AddressInput!) {
-            setAddress(separateBillingAddress: $billingAddress, shippingAddress: $shippingAddress) {
-              selection {
-                ...cart
-                ...checkout
-              }
-              userErrors {
-                message
-                path
+      const response = await mutationMutex.runExclusive(() =>
+        centraFetch(
+          graphql(`
+            mutation setAddress($billingAddress: AddressInput!, $shippingAddress: AddressInput!) {
+              setAddress(separateBillingAddress: $billingAddress, shippingAddress: $shippingAddress) {
+                selection {
+                  ...checkout
+                }
+                userErrors {
+                  message
+                  path
+                }
               }
             }
-          }
-        `),
-        {
-          variables,
-        },
+          `),
+          {
+            variables,
+          },
+        ),
       );
 
       if (response.data.setAddress.userErrors.length > 0) {
@@ -49,15 +55,9 @@ export const useSetAddress = () => {
       };
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(checkoutQuery.queryKey, {
-        discounts: data.discounts,
-        checkout: data.checkout,
-      });
-
-      queryClient.setQueryData(selectionQuery.queryKey, {
-        lines: data.lines,
-        grandTotal: data.grandTotal,
-      });
+      queryClient.setQueryData(checkoutQuery.queryKey, data);
+      // Reset the session cookie, in case it's affected by the address change
+      document.cookie = `${sessionCookie.name}=;PATH=${sessionCookie.path};Max-Age=-99999999;`;
     },
   });
 };
@@ -68,26 +68,27 @@ export const useSetShippingMethod = () => {
   return useMutation({
     mutationKey: ['checkout', 'setShippingMethod'],
     mutationFn: async (id: number) => {
-      const response = await centraFetch(
-        graphql(`
-          mutation setShippingMethod($id: Int!) {
-            setShippingMethod(id: $id) {
-              selection {
-                ...cart
-                ...checkout
-              }
-              userErrors {
-                message
-                path
+      const response = await mutationMutex.runExclusive(() =>
+        centraFetch(
+          graphql(`
+            mutation setShippingMethod($id: Int!) {
+              setShippingMethod(id: $id) {
+                selection {
+                  ...checkout
+                }
+                userErrors {
+                  message
+                  path
+                }
               }
             }
-          }
-        `),
-        {
-          variables: {
-            id,
+          `),
+          {
+            variables: {
+              id,
+            },
           },
-        },
+        ),
       );
 
       if (response.data.setShippingMethod.userErrors.length > 0) {
@@ -104,15 +105,7 @@ export const useSetShippingMethod = () => {
       };
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(checkoutQuery.queryKey, {
-        discounts: data.discounts,
-        checkout: data.checkout,
-      });
-
-      queryClient.setQueryData(selectionQuery.queryKey, {
-        lines: data.lines,
-        grandTotal: data.grandTotal,
-      });
+      queryClient.setQueryData(checkoutQuery.queryKey, data);
     },
   });
 };
@@ -123,26 +116,27 @@ export const useSetPaymentMethod = () => {
   return useMutation({
     mutationKey: ['checkout', 'startPayment'],
     mutationFn: async (paymentMethod: number) => {
-      const response = await centraFetch(
-        graphql(`
-          mutation setPaymentMethod($paymentMethod: Int!) {
-            setPaymentMethod(id: $paymentMethod) {
-              selection {
-                ...cart
-                ...checkout
-              }
-              userErrors {
-                message
-                path
+      const response = await mutationMutex.runExclusive(() =>
+        centraFetch(
+          graphql(`
+            mutation setPaymentMethod($paymentMethod: Int!) {
+              setPaymentMethod(id: $paymentMethod) {
+                selection {
+                  ...checkout
+                }
+                userErrors {
+                  message
+                  path
+                }
               }
             }
-          }
-        `),
-        {
-          variables: {
-            paymentMethod,
+          `),
+          {
+            variables: {
+              paymentMethod,
+            },
           },
-        },
+        ),
       );
 
       if (response.data.setPaymentMethod.userErrors.length > 0) {
@@ -159,15 +153,7 @@ export const useSetPaymentMethod = () => {
       };
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(checkoutQuery.queryKey, {
-        discounts: data.discounts,
-        checkout: data.checkout,
-      });
-
-      queryClient.setQueryData(selectionQuery.queryKey, {
-        lines: data.lines,
-        grandTotal: data.grandTotal,
-      });
+      queryClient.setQueryData(checkoutQuery.queryKey, data);
     },
   });
 };
@@ -178,33 +164,34 @@ export const usePaymentInstructions = () => {
   return useMutation({
     mutationKey: ['checkout', 'startPayment'],
     mutationFn: async (variables: Omit<PaymentInstructionsInput, 'termsAndConditions'>) => {
-      const response = await centraFetch(
-        graphql(`
-          mutation paymentInstructions($input: PaymentInstructionsInput!) {
-            paymentInstructions(input: $input) {
-              action {
-                ...paymentAction
-              }
-              selection {
-                ...cart
-                ...checkout
-              }
-              userErrors {
-                __typename
-                message
-                path
+      const response = await mutationMutex.runExclusive(() =>
+        centraFetch(
+          graphql(`
+            mutation paymentInstructions($input: PaymentInstructionsInput!) {
+              paymentInstructions(input: $input) {
+                action {
+                  ...paymentAction
+                }
+                selection {
+                  ...checkout
+                }
+                userErrors {
+                  __typename
+                  message
+                  path
+                }
               }
             }
-          }
-        `),
-        {
-          variables: {
-            input: {
-              ...variables,
-              termsAndConditions: true,
+          `),
+          {
+            variables: {
+              input: {
+                ...variables,
+                termsAndConditions: true,
+              },
             },
           },
-        },
+        ),
       );
 
       if (response.data.paymentInstructions.userErrors.length > 0) {
@@ -224,19 +211,10 @@ export const usePaymentInstructions = () => {
       };
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(checkoutQuery.queryKey, {
-        discounts: data.selection.discounts,
-        checkout: data.selection.checkout,
-      });
-
-      queryClient.setQueryData(selectionQuery.queryKey, {
-        lines: data.selection.lines,
-        grandTotal: data.selection.grandTotal,
-      });
+      queryClient.setQueryData(checkoutQuery.queryKey, data.selection);
     },
     onError: () => {
       void queryClient.invalidateQueries(checkoutQuery);
-      void queryClient.invalidateQueries(selectionQuery);
     },
   });
 };
@@ -247,25 +225,27 @@ export const useSendWidgetData = () => {
   return useMutation({
     mutationKey: ['checkout', 'sendWidgetData'],
     mutationFn: async (data: Record<string, unknown>) => {
-      const response = await centraFetch(
-        graphql(`
-          mutation widgetEvent($payload: Map!) {
-            handleWidgetEvent(payload: $payload) {
-              selection {
-                ...checkout
-              }
-              userErrors {
-                message
-                path
+      const response = await mutationMutex.runExclusive(() =>
+        centraFetch(
+          graphql(`
+            mutation widgetEvent($payload: Map!) {
+              handleWidgetEvent(payload: $payload) {
+                selection {
+                  ...checkout
+                }
+                userErrors {
+                  message
+                  path
+                }
               }
             }
-          }
-        `),
-        {
-          variables: {
-            payload: data,
+          `),
+          {
+            variables: {
+              payload: data,
+            },
           },
-        },
+        ),
       );
 
       if (response.data.handleWidgetEvent.userErrors.length > 0) {
@@ -293,27 +273,32 @@ export const useAddVoucher = () => {
   return useMutation({
     mutationKey: ['checkout', 'addVoucher'],
     mutationFn: async (code: string) => {
-      const response = await centraFetch(
-        graphql(`
-          mutation addVoucher($code: String!) {
-            addVoucher(code: $code) {
-              selection {
-                ...cart
-                ...checkout
-              }
-              userErrors {
-                message
-                path
+      const response = await mutationMutex.runExclusive(() => {
+        window.CentraCheckout?.suspend();
+
+        return centraFetch(
+          graphql(`
+            mutation addVoucher($code: String!) {
+              addVoucher(code: $code) {
+                selection {
+                  ...checkout
+                }
+                userErrors {
+                  message
+                  path
+                }
               }
             }
-          }
-        `),
-        {
-          variables: {
-            code,
+          `),
+          {
+            variables: {
+              code,
+            },
           },
-        },
-      );
+        ).finally(() => {
+          window.CentraCheckout?.resume();
+        });
+      });
 
       if (response.data.addVoucher.userErrors.length > 0) {
         throw new UserError(response.data.addVoucher.userErrors, response.extensions.traceId);
@@ -328,19 +313,9 @@ export const useAddVoucher = () => {
         checkout: response.data.addVoucher.selection.checkout,
       };
     },
-    onMutate: () => window.CentraCheckout?.suspend(),
     onSuccess: (data) => {
-      queryClient.setQueryData(checkoutQuery.queryKey, {
-        discounts: data.discounts,
-        checkout: data.checkout,
-      });
-
-      queryClient.setQueryData(selectionQuery.queryKey, {
-        lines: data.lines,
-        grandTotal: data.grandTotal,
-      });
+      queryClient.setQueryData(checkoutQuery.queryKey, data);
     },
-    onSettled: () => window.CentraCheckout?.resume(),
   });
 };
 
@@ -350,27 +325,32 @@ export const useRemoveVoucher = () => {
   return useMutation({
     mutationKey: ['checkout', 'removeVoucher'],
     mutationFn: async (code: string) => {
-      const response = await centraFetch(
-        graphql(`
-          mutation removeVoucher($code: String!) {
-            removeVoucher(code: $code) {
-              selection {
-                ...cart
-                ...checkout
-              }
-              userErrors {
-                message
-                path
+      const response = await mutationMutex.runExclusive(() => {
+        window.CentraCheckout?.suspend();
+
+        return centraFetch(
+          graphql(`
+            mutation removeVoucher($code: String!) {
+              removeVoucher(code: $code) {
+                selection {
+                  ...checkout
+                }
+                userErrors {
+                  message
+                  path
+                }
               }
             }
-          }
-        `),
-        {
-          variables: {
-            code,
+          `),
+          {
+            variables: {
+              code,
+            },
           },
-        },
-      );
+        ).finally(() => {
+          window.CentraCheckout?.resume();
+        });
+      });
 
       if (response.data.removeVoucher.userErrors.length > 0) {
         throw new UserError(response.data.removeVoucher.userErrors, response.extensions.traceId);
@@ -385,19 +365,9 @@ export const useRemoveVoucher = () => {
         checkout: response.data.removeVoucher.selection.checkout,
       };
     },
-    onMutate: () => window.CentraCheckout?.suspend(),
     onSuccess: (data) => {
-      queryClient.setQueryData(checkoutQuery.queryKey, {
-        discounts: data.discounts,
-        checkout: data.checkout,
-      });
-
-      queryClient.setQueryData(selectionQuery.queryKey, {
-        lines: data.lines,
-        grandTotal: data.grandTotal,
-      });
+      queryClient.setQueryData(checkoutQuery.queryKey, data);
     },
-    onSettled: () => window.CentraCheckout?.resume(),
   });
 };
 
@@ -407,24 +377,25 @@ export const useSetCountryState = () => {
   return useMutation({
     mutationKey: ['checkout', 'setCountryState'],
     mutationFn: async (variables: SetCountryStateMutationVariables) => {
-      const response = await centraFetch(
-        graphql(`
-          mutation setCountryState($countryCode: String!, $stateCode: String!) {
-            setCountryState(countryCode: $countryCode, stateCode: $stateCode) {
-              selection {
-                ...cart
-                ...checkout
-              }
-              userErrors {
-                message
-                path
+      const response = await mutationMutex.runExclusive(() =>
+        centraFetch(
+          graphql(`
+            mutation setCountryState($countryCode: String!, $stateCode: String!) {
+              setCountryState(countryCode: $countryCode, stateCode: $stateCode) {
+                selection {
+                  ...checkout
+                }
+                userErrors {
+                  message
+                  path
+                }
               }
             }
-          }
-        `),
-        {
-          variables,
-        },
+          `),
+          {
+            variables,
+          },
+        ),
       );
 
       if (response.data.setCountryState.userErrors.length > 0) {
@@ -441,19 +412,59 @@ export const useSetCountryState = () => {
       };
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(checkoutQuery.queryKey, {
-        discounts: data.discounts,
-        checkout: data.checkout,
-      });
-
-      queryClient.setQueryData(selectionQuery.queryKey, {
-        lines: data.lines,
-        grandTotal: data.grandTotal,
-      });
-    },
-    onSettled: () => {
+      queryClient.setQueryData(checkoutQuery.queryKey, data);
       // Reset the session cookie, in case the country or state has changed
       document.cookie = `${sessionCookie.name}=;PATH=${sessionCookie.path};Max-Age=-99999999;`;
+    },
+  });
+};
+
+export const useUpdateLineCheckout = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['checkout', 'updateLine'],
+    mutationFn: async (variables: UpdateLineCheckoutMutationVariables) => {
+      const response = await mutationMutex.runExclusive(() => {
+        window.CentraCheckout?.suspend();
+
+        return centraFetch(
+          graphql(`
+            mutation updateLineCheckout($id: String!, $quantity: Int!) {
+              updateLine(lineId: $id, quantity: $quantity) {
+                userErrors {
+                  message
+                  path
+                }
+                selection {
+                  ...checkout
+                }
+              }
+            }
+          `),
+          {
+            variables,
+          },
+        ).finally(() => {
+          window.CentraCheckout?.resume();
+        });
+      });
+
+      if (response.data.updateLine.userErrors.length > 0) {
+        throw new UserError(response.data.updateLine.userErrors, response.extensions.traceId);
+      }
+
+      if (!response.data.updateLine.selection?.checkout) {
+        throw new Error('No selection');
+      }
+
+      return {
+        ...response.data.updateLine.selection,
+        checkout: response.data.updateLine.selection.checkout,
+      };
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(checkoutQuery.queryKey, data);
     },
   });
 };

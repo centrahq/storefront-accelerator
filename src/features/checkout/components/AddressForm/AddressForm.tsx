@@ -40,6 +40,9 @@ export const AddressForm = ({ countries }: AddressProps) => {
     <>
       <Widget
         html={ingridWidget.snippet}
+        onMount={() => {
+          window.CentraCheckout?.reInitiate('ingrid');
+        }}
         cleanUp={() => {
           window._sw?.((api) => api.destroy?.());
         }}

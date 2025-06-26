@@ -1,9 +1,9 @@
 import { Field, Fieldset, Label, Legend, Radio, RadioGroup } from '@headlessui/react';
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-import { selectionQuery } from '@/features/cart/queries';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
+import { useDebouncedState } from '@/hooks/useDebouncedState';
 
 import { useSetPaymentMethod } from '../../mutations';
 import { checkoutQuery } from '../../queries';
@@ -12,24 +12,22 @@ export const PaymentMethodField = () => {
   const { t } = useTranslation(['checkout']);
   const { data } = useSuspenseQuery(checkoutQuery);
   const setPaymentMethodMutation = useSetPaymentMethod();
-  const queryClient = useQueryClient();
 
   const { paymentMethods, paymentMethod } = data.checkout;
-  const selectedMethod = setPaymentMethodMutation.isPending ? setPaymentMethodMutation.variables : paymentMethod?.id;
 
-  const onChange = (newMethod: number) => {
-    setPaymentMethodMutation.mutate(newMethod, {
-      onError: () => {
-        toast.error(t('checkout:errors.set-payment-method'), {
-          id: 'payment-error',
-        });
-      },
-      onSettled: () => {
-        void queryClient.invalidateQueries(checkoutQuery);
-        void queryClient.invalidateQueries(selectionQuery);
-      },
-    });
-  };
+  const paymentMethodId = setPaymentMethodMutation.isPending ? setPaymentMethodMutation.variables : paymentMethod?.id;
+
+  const [selectedMethod, setSelectedMethod] = useDebouncedState(paymentMethodId, (newMethod) => {
+    if (newMethod) {
+      setPaymentMethodMutation.mutate(newMethod, {
+        onError: () => {
+          toast.error(t('checkout:errors.set-payment-method'), {
+            id: 'payment-error',
+          });
+        },
+      });
+    }
+  });
 
   if (paymentMethods.length === 0) {
     return <p>{t('checkout:no-payment-methods')}</p>;
@@ -41,7 +39,7 @@ export const PaymentMethodField = () => {
       <div className="flex flex-col gap-5">
         <RadioGroup
           value={selectedMethod}
-          onChange={onChange}
+          onChange={setSelectedMethod}
           className="border-mono-200 bg-mono-0 flex flex-col border"
         >
           {paymentMethods.map((paymentMethod) => (

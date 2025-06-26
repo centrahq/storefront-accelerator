@@ -3,10 +3,7 @@ fragment cart on Selection {
     ...line
   }
   grandTotal {
-    value
     currency {
-      denominator
-      code
       prefix
       suffix
     }

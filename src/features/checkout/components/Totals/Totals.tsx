@@ -15,7 +15,7 @@ export const Totals = () => {
   const { data } = useSuspenseQuery(checkoutQuery);
   const totals = data.checkout.totals;
 
-  const isMutatingSelection = useIsMutating({ mutationKey: ['selection'] }) > 0;
+  const isMutatingCart = useIsMutating({ mutationKey: ['checkout', 'updateLine'] }) > 0;
   const { t } = useTranslation(['checkout']);
   const [isVoucherFormOpen, setIsVoucherFormOpen] = useState(false);
 
@@ -34,33 +34,33 @@ export const Totals = () => {
       {isVoucherFormOpen && <AddVoucherForm />}
       <dl className="text-mono-500 text-sm">
         <TotalRow
-          pending={isMutatingSelection}
+          pending={isMutatingCart}
           totals={totals}
           type={SelectionTotalRowType.ItemsSubtotal}
           term={t('checkout:receipt.subtotal')}
         />
         <TotalRow
-          pending={isMutatingSelection}
+          pending={isMutatingCart}
           totals={totals}
           type={SelectionTotalRowType.Discount}
           term={t('checkout:receipt.discount')}
           optional
         />
         <TotalRow
-          pending={isMutatingSelection}
+          pending={isMutatingCart}
           totals={totals}
           type={SelectionTotalRowType.Credit}
           term={t('checkout:receipt.credit')}
           optional
         />
         <TotalRow
-          pending={isMutatingSelection}
+          pending={isMutatingCart}
           totals={totals}
           type={SelectionTotalRowType.Shipping}
           term={t('checkout:receipt.shipping')}
         />
         <TotalRow
-          pending={isMutatingSelection}
+          pending={isMutatingCart}
           totals={totals}
           type={SelectionTotalRowType.Handling}
           term={t('checkout:receipt.handling')}
@@ -70,7 +70,7 @@ export const Totals = () => {
       <VoucherList discounts={data.discounts} />
       <dl className="text-mono-900 text-base">
         <TotalRow
-          pending={isMutatingSelection}
+          pending={isMutatingCart}
           totals={totals}
           type={SelectionTotalRowType.GrandTotal}
           term={t('checkout:receipt.grand-total')}

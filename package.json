@@ -2,7 +2,7 @@
   "name": "centra-commerce",
   "version": "0.1.0",
   "engines": {
-    "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+    "node": "^22"
   },
   "private": true,
   "scripts": {
@@ -20,13 +20,14 @@
   "dependencies": {
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
-    "@tanstack/react-query": "^5.80.7",
+    "@tanstack/react-query": "^5.81.2",
+    "async-mutex": "^0.5.0",
     "clsx": "^2.1.1",
     "i18next": "^25.2.1",
     "i18next-browser-languagedetector": "^8.2.0",
     "i18next-resources-to-backend": "^1.2.1",
     "jose": "^6.0.11",
-    "next": "^15.4.0-canary.85",
+    "next": "^15.4.0-canary.97",
     "nuqs": "^2.4.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -37,24 +38,24 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.7",
-    "@graphql-codegen/client-preset": "^4.8.2",
+    "@graphql-codegen/client-preset": "^4.8.3",
     "@graphql-codegen/schema-ast": "^4.1.0",
     "@parcel/watcher": "^2.5.1",
-    "@tailwindcss/postcss": "^4.1.10",
+    "@tailwindcss/postcss": "^4.1.11",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "@types/node": "^22.15.32",
+    "@types/node": "^22.15.33",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
-    "concurrently": "^9.1.2",
+    "concurrently": "^9.2.0",
     "eslint": "^9.29.0",
-    "eslint-config-next": "^15.4.0-canary.85",
+    "eslint-config-next": "^15.4.0-canary.97",
     "postcss": "^8.5.6",
-    "prettier": "^3.5.3",
-    "prettier-plugin-tailwindcss": "^0.6.12",
+    "prettier": "^3.6.1",
+    "prettier-plugin-tailwindcss": "^0.6.13",
     "schema-dts": "^1.1.5",
     "tailwindcss": "^4.0.9",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.34.1"
+    "typescript-eslint": "^8.35.0"
   },
   "overrides": {
     "nuqs": {

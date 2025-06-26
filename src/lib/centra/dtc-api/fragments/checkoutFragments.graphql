@@ -1,4 +1,14 @@
 fragment checkout on Selection {
+  lines {
+    ...line
+  }
+  grandTotal {
+    value
+    currency {
+      denominator
+      code
+    }
+  }
   discounts {
     ...voucher
   }

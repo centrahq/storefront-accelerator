@@ -13,9 +13,9 @@ import { Widget } from './Widget';
 
 export const CheckoutScript = () => {
   const { data } = useSuspenseQuery(checkoutQuery);
-  const sendWidgetDataMutation = useSendWidgetData();
-  const setShippingMethodMutation = useSetShippingMethod();
-  const setCountryStateMutation = useSetCountryState();
+  const { mutate: sendWidgetData } = useSendWidgetData();
+  const { mutate: setShippingMethod } = useSetShippingMethod();
+  const { mutate: setCountryState } = useSetCountryState();
   const { totals } = data.checkout;
 
   const grandTotal = totals.find((total) => total.type === SelectionTotalRowType.GrandTotal)?.price.value;
@@ -26,26 +26,39 @@ export const CheckoutScript = () => {
   }, [grandTotal]);
 
   useEffect(() => {
-    // Redirect widget events to Centra
+    let timeout: ReturnType<typeof setTimeout> | null = null;
+
+    // Redirect widget events to Centra, small debounce to avoid multiple rapid calls.
     const handleCheckoutCallback = (event: CheckoutEvent) => {
-      sendWidgetDataMutation.mutate(event.detail, {
-        onSettled: () => {
-          window.CentraCheckout?.resume(event.detail.additionalFields?.suspendIgnore);
-        },
-      });
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+
+      timeout = setTimeout(() => {
+        sendWidgetData(event.detail, {
+          onSettled: () => {
+            window.CentraCheckout?.resume(event.detail.additionalFields?.suspendIgnore);
+          },
+        });
+        timeout = null;
+      }, 0);
     };
 
     document.addEventListener('centra_checkout_callback', handleCheckoutCallback);
 
     return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+
       document.removeEventListener('centra_checkout_callback', handleCheckoutCallback);
     };
-  }, [sendWidgetDataMutation]);
+  }, [sendWidgetData]);
 
   useEffect(() => {
     // Update the shipping method when a payment widget wants to change it.
     const handleShippingMethodUpdate = ({ detail }: ShippingMethodChangedEvent) => {
-      setShippingMethodMutation.mutate(Number(detail.shippingMethod), {
+      setShippingMethod(Number(detail.shippingMethod), {
         onSuccess: (data) => {
           document.dispatchEvent(new CentraShippingMethodResponseEvent(data));
         },
@@ -60,12 +73,12 @@ export const CheckoutScript = () => {
     return () => {
       document.removeEventListener('centra_checkout_shipping_method_callback', handleShippingMethodUpdate);
     };
-  }, [setShippingMethodMutation]);
+  }, [setShippingMethod]);
 
   useEffect(() => {
     // Update the country and state when a payment widget wants to change them.
     const handleShippingAddressUpdate = ({ detail }: ShippingAddressChangedEvent) => {
-      setCountryStateMutation.mutate(
+      setCountryState(
         {
           countryCode: detail.shippingCountry,
           stateCode: detail.shippingState,
@@ -86,7 +99,7 @@ export const CheckoutScript = () => {
     return () => {
       document.removeEventListener('centra_checkout_shipping_address_callback', handleShippingAddressUpdate);
     };
-  }, [setCountryStateMutation]);
+  }, [setCountryState]);
 
   if (data.checkout.checkoutScript) {
     return (

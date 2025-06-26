@@ -9,7 +9,6 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useTranslation } from '@/features/i18n/useTranslation/client';
-import { sessionCookie } from '@/lib/centra/cookies';
 
 import { useSetAddress } from '../../mutations';
 import { checkoutQuery } from '../../queries';
@@ -129,8 +128,6 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
 
     setAddressMutation.mutate(parsedAddress.data, {
       onSuccess: () => {
-        // Reset the session cookie, in case it's affected by the address change
-        document.cookie = `${sessionCookie.name}=;PATH=${sessionCookie.path};Max-Age=-99999999;`;
         router.push(`/checkout/delivery`);
       },
       onError: () => {

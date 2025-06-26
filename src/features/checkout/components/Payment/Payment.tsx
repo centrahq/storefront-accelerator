@@ -26,7 +26,6 @@ export const Payment = () => {
   const { data } = useSuspenseQuery(checkoutQuery);
   const paymentInstructionsMutation = usePaymentInstructions();
   const isMutatingCheckout = useIsMutating({ mutationKey: ['checkout'] }) > 0;
-  const isMutatingSelection = useIsMutating({ mutationKey: ['selection'] }) > 0;
 
   const { shippingAddress, separateBillingAddress: billingAddress, paymentMethod } = data.checkout;
 
@@ -165,10 +164,10 @@ export const Payment = () => {
             className={clsx(
               'bg-mono-900 text-mono-0 flex w-full items-center justify-center px-6 py-4 text-xs font-bold uppercase',
               {
-                'animate-pulse': isMutatingCheckout || isMutatingSelection,
+                'animate-pulse': isMutatingCheckout,
               },
             )}
-            disabled={isMutatingCheckout || isMutatingSelection}
+            disabled={isMutatingCheckout}
           >
             {t('checkout:proceed')}
           </button>

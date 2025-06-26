@@ -53,7 +53,7 @@ export const InitiateOnlyPayment = ({ id, uri }: { id: number; uri: string }) =>
 
     hasInitiated.current = true;
 
-    void paymentInstructionsMutation
+    paymentInstructionsMutation
       .mutateAsync({
         paymentFailedPage: `${window.location.origin}/failed`,
         paymentReturnPage: `${window.location.origin}/success`,
@@ -67,7 +67,12 @@ export const InitiateOnlyPayment = ({ id, uri }: { id: number; uri: string }) =>
       .then((data) => {
         if (data.action && 'formType' in data.action) {
           setWidget(data.action.html);
+        } else {
+          throw new Error('No payment action or unsupported action type');
         }
+      })
+      .catch((error: unknown) => {
+        console.error(`Could not initiate payment method ${id}`, error);
       });
   }, [country, id, paymentInstructionsMutation, state]);
 

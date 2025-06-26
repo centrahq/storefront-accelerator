@@ -11,7 +11,7 @@ declare global {
     CentraCheckout?: {
       suspend: (...args: unknown[]) => void;
       resume: (...args: unknown[]) => void;
-      reInitiate: (handler: string) => void;
+      reInitiate: (handler: 'ingrid' | (string & {})) => void;
       destroy: VoidFunction;
     };
     // Ingrid/Shipwallet

@@ -4,8 +4,7 @@ import Link from 'next/link';
 import { ReactNode } from 'react';
 
 import { Logo } from '@/components/layout/Logo';
-import { CartItems } from '@/features/cart/components/CartItems';
-import { selectionQuery } from '@/features/cart/queries';
+import { CheckoutItems } from '@/features/checkout/components/CheckoutItems';
 import { CheckoutScript } from '@/features/checkout/components/CheckoutScript';
 import { Totals } from '@/features/checkout/components/Totals/Totals';
 import { checkoutQuery } from '@/features/checkout/queries';
@@ -24,7 +23,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function CheckoutLayout({ children }: { children: ReactNode }) {
   const queryClient = getQueryClient();
-  await Promise.all([queryClient.prefetchQuery(selectionQuery), queryClient.prefetchQuery(checkoutQuery)]);
+  await queryClient.prefetchQuery(checkoutQuery);
 
   const { t } = await getTranslation(['server', 'checkout']);
 
@@ -51,7 +50,7 @@ export default async function CheckoutLayout({ children }: { children: ReactNode
               <h2 className="text-3xl font-medium">{t('server:checkout.summary')}</h2>
               <p className="text-mono-500">{t('checkout:cart.hint')}</p>
             </div>
-            <CartItems />
+            <CheckoutItems />
             <Totals />
           </div>
         </div>

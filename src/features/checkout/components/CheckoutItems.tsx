@@ -11,13 +11,13 @@ import { useDebouncedState } from '@/hooks/useDebouncedState';
 import { getItemName } from '@/lib/utils/product';
 import { BundleType, LineFragment } from '@gql/graphql';
 
-import { useUpdateLine } from '../mutations';
-import { selectionQuery } from '../queries';
+import { useUpdateLineCheckout } from '../mutations';
+import { checkoutQuery } from '../queries';
 
-const CartItem = ({ line }: { line: LineFragment }) => {
+const CheckoutItem = ({ line }: { line: LineFragment }) => {
   const { country } = useLocale();
   const { t } = useTranslation(['shop']);
-  const updateLineMutation = useUpdateLine();
+  const updateLineMutation = useUpdateLineCheckout();
 
   const optimisticQuantity = updateLineMutation.isPending ? updateLineMutation.variables.quantity : line.quantity;
   const [quantity, setQuantity] = useDebouncedState(optimisticQuantity, (newQuantity) => {
@@ -110,9 +110,9 @@ const CartItem = ({ line }: { line: LineFragment }) => {
   );
 };
 
-export const CartItems = () => {
+export const CheckoutItems = () => {
   const { t } = useTranslation(['shop']);
-  const { data } = useSuspenseQuery(selectionQuery);
+  const { data } = useSuspenseQuery(checkoutQuery);
   const { lines } = data;
 
   if (lines.length === 0) {
@@ -124,7 +124,7 @@ export const CartItems = () => {
       {lines
         .filter((line) => !!line)
         .map((line) => (
-          <CartItem key={line.id} line={line} />
+          <CheckoutItem key={line.id} line={line} />
         ))}
     </ul>
   );
