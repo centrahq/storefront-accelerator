@@ -5,6 +5,7 @@ import i18next from 'i18next';
 import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import { Toaster } from 'sonner';
 
 import { ItemsRemovedToast } from '@/components/ItemsRemovedToast';
@@ -49,7 +50,9 @@ export default async function RootLayout(props: { children: React.ReactNode; par
       <body className={clsx(inter.className, 'text-mono-900')}>
         <Providers>{props.children}</Providers>
         <Toaster />
-        <ItemsRemovedToast />
+        <Suspense fallback={null}>
+          <ItemsRemovedToast />
+        </Suspense>
       </body>
     </html>
   );

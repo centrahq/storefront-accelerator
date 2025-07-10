@@ -1,15 +1,19 @@
 'use client';
 
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 import { Translation } from '@/features/i18n';
-
-export const REMOVED_ITEMS_PARAM = 'removedItems';
+import { REMOVED_ITEMS_PARAM } from '@/lib/utils/unavailableItems';
 
 export const ItemsRemovedToast = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const hasRemovedItems = searchParams.get(REMOVED_ITEMS_PARAM) === 'true';
+
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).has(REMOVED_ITEMS_PARAM)) {
+    if (hasRemovedItems) {
       toast.warning(<Translation>{(t) => t('shop:items-removed.title')}</Translation>, {
         id: 'removed-items',
         duration: Infinity,
@@ -17,12 +21,12 @@ export const ItemsRemovedToast = () => {
         onDismiss: () => {
           const url = new URL(window.location.href);
           url.searchParams.delete(REMOVED_ITEMS_PARAM);
-          window.history.replaceState(null, '', url.href);
+          router.replace(url.href);
         },
         description: <Translation>{(t) => t('shop:items-removed.message')}</Translation>,
       });
     }
-  }, []);
+  }, [hasRemovedItems, router]);
 
   return null;
 };

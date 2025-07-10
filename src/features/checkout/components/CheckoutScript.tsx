@@ -3,12 +3,15 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
+import { UserError } from '@/lib/centra/errors';
 import { CentraShippingAddressResponseEvent, CentraShippingMethodResponseEvent } from '@/lib/centra/events';
 import { CheckoutEvent, ShippingAddressChangedEvent, ShippingMethodChangedEvent } from '@/lib/centra/types/events';
+import { checkUnavailableItems } from '@/lib/utils/unavailableItems';
 import { SelectionTotalRowType } from '@gql/graphql';
 
 import { useSendWidgetData, useSetCountryState, useSetShippingMethod } from '../mutations';
 import { checkoutQuery } from '../queries';
+import { showItemsRemovedToast } from '../utils/showItemsRemovedToast';
 import { Widget } from './Widget';
 
 export const CheckoutScript = () => {
@@ -87,8 +90,12 @@ export const CheckoutScript = () => {
           onSuccess: (data) => {
             document.dispatchEvent(new CentraShippingAddressResponseEvent(data));
           },
-          onError: () => {
+          onError: (error) => {
             document.dispatchEvent(new CentraShippingAddressResponseEvent(null));
+
+            if (error instanceof UserError && checkUnavailableItems(error.userErrors)) {
+              showItemsRemovedToast();
+            }
           },
         },
       );

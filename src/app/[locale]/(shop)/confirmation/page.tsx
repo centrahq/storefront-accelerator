@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function Confirmation() {
-  // `order` query will always return the last order. We can display last order details even after user refreshes the page.
+  // `order` query will always return the last order. This way, we can display last order details even after user refreshes the page.
   const receiptResponse = await centraFetch(
     graphql(`
       query receipt {

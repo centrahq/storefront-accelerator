@@ -130,7 +130,7 @@ export enum AffiliateSort {
 export type AffiliateUriLookupPayload = Payload & UriLookupPayload & {
   affiliate: Affiliate;
   found: UriLookupType;
-  /** Required scope: SESSION */
+  /** Required [operating mode](#operating-mode): `SESSION` */
   selection?: Maybe<Selection>;
   userErrors: Array<UserError>;
 };
@@ -185,14 +185,11 @@ export enum AttentionReason {
   OutOfStock = 'OUT_OF_STOCK',
   /**
    * Payment has failed but future attempts might succeed.
+   *
    * This might happen when card has insufficient funds.
    */
   PaymentDeclined = 'PAYMENT_DECLINED',
-  /**
-   * The payment method associated with this subscription is no longer valid
-   * and will not become valid without on-session customer interaction (eg.
-   * providing a new card details).
-   */
+  /** The payment method associated with this subscription is no longer valid and will not become valid without on-session customer interaction (eg. providing a new card details). */
   PaymentRevoked = 'PAYMENT_REVOKED',
   /** Reasons for this subscriptions failing are unknown and should undergo investigation. */
   Unknown = 'UNKNOWN'
@@ -301,12 +298,12 @@ export type Brand = {
 export type BrandFilterValue = FilterValue & {
   active: Scalars['Boolean']['output'];
   brand?: Maybe<Brand>;
-  /** Number of matches with the current filtering */
+  /** Number of matches with the current filtering. */
   count: Scalars['Int']['output'];
   /** Number of matches with the current filtering when you discount the other selected values in this group. */
   filterCount: Scalars['Int']['output'];
   name?: Maybe<Scalars['String']['output']>;
-  /** The number of items in total available, independent of filtering */
+  /** The number of items in total available, independent of filtering. */
   totalCount: Scalars['Int']['output'];
   value: Scalars['String']['output'];
 };
@@ -351,7 +348,7 @@ export type BrickAndMortarList = {
 
 export type BrickAndMortarListFilter = {
   countryCode?: InputMaybe<Scalars['String']['input']>;
-  /** The user's location in latitude / longitude */
+  /** The user's location in latitude / longitude. */
   location?: InputMaybe<GeoPositionInput>;
   maxDistance?: InputMaybe<MaxDistance>;
   stateCode?: InputMaybe<Scalars['String']['input']>;
@@ -381,7 +378,7 @@ export type Bundle = {
    * The maximum possible prices available for a flexible bundle with dynamic price.
    * Will be null if the bundle is fixed or has a static price.
    *
-   * Required scope: NO_SESSION
+   * Required [operating mode](#operating-mode): `NO_SESSION`
    */
   maxPriceByPricelist: Array<PricelistPrice>;
   /**
@@ -393,7 +390,7 @@ export type Bundle = {
    * The minimum possible prices available for a flexible bundle with dynamic price
    * Will be null if the bundle is fixed or has a static price.
    *
-   * Required scope: NO_SESSION
+   * Required [operating mode](#operating-mode): `NO_SESSION`
    */
   minPriceByPricelist: Array<PricelistPrice>;
   priceType: BundlePriceType;
@@ -509,7 +506,7 @@ export type CampaignInfoAttributesArgs = {
 };
 
 export type CampaignSite = {
-  /** Required scope: NO_SESSION */
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
   market: Market;
   name?: Maybe<Scalars['String']['output']>;
   sendToPage?: Maybe<Scalars['String']['output']>;
@@ -530,7 +527,7 @@ export enum CampaignSiteSort {
 export type CampaignSiteUriLookupPayload = Payload & UriLookupPayload & {
   campaignSite: CampaignSite;
   found: UriLookupType;
-  /** Required scope: SESSION */
+  /** Required [operating mode](#operating-mode): `SESSION` */
   selection?: Maybe<Selection>;
   userErrors: Array<UserError>;
 };
@@ -545,23 +542,18 @@ export type CaptchaVerifyPayload = Payload & {
   verified: Scalars['Boolean']['output'];
 };
 
-export type CarrierInformation = {
-  carrierName?: Maybe<Scalars['String']['output']>;
-  serviceName?: Maybe<Scalars['String']['output']>;
-};
-
 export type Category = {
   attributes: Array<Attribute>;
   childCategories: Array<Category>;
   id: Scalars['Int']['output'];
-  /** Required scope: NO_SESSION */
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
   markets: Array<Market>;
   metaDescription: Scalars['String']['output'];
   metaKeywords: Scalars['String']['output'];
   metaTitle: Scalars['String']['output'];
   name?: Maybe<Array<Scalars['String']['output']>>;
   parentCategory?: Maybe<Category>;
-  /** Required scope: NO_SESSION */
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
   pricelists: Array<Pricelist>;
   sortOrder: Scalars['Int']['output'];
   translations: Array<TranslatedCategory>;
@@ -583,12 +575,12 @@ export type CategoryChildCategoriesArgs = {
 export type CategoryFilterValue = FilterValue & {
   active: Scalars['Boolean']['output'];
   category: Category;
-  /** Number of matches with the current filtering */
+  /** Number of matches with the current filtering. */
   count: Scalars['Int']['output'];
   /** Number of matches with the current filtering when you discount the other selected values in this group. */
   filterCount: Scalars['Int']['output'];
   name?: Maybe<Scalars['String']['output']>;
-  /** The number of items in total available, independent of filtering */
+  /** The number of items in total available, independent of filtering. */
   totalCount: Scalars['Int']['output'];
   value: Scalars['String']['output'];
 };
@@ -677,10 +669,10 @@ export type CodeVoucher = Voucher & {
 
 export type Collection = {
   id: Scalars['Int']['output'];
-  /** Required scope: NO_SESSION */
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
   markets: Array<Market>;
   name: Scalars['String']['output'];
-  /** Required scope: NO_SESSION */
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
   pricelists: Array<Pricelist>;
   uri: Scalars['String']['output'];
 };
@@ -688,12 +680,12 @@ export type Collection = {
 export type CollectionFilterValue = FilterValue & {
   active: Scalars['Boolean']['output'];
   collection?: Maybe<Collection>;
-  /** Number of matches with the current filtering */
+  /** Number of matches with the current filtering. */
   count: Scalars['Int']['output'];
   /** Number of matches with the current filtering when you discount the other selected values in this group. */
   filterCount: Scalars['Int']['output'];
   name?: Maybe<Scalars['String']['output']>;
-  /** The number of items in total available, independent of filtering */
+  /** The number of items in total available, independent of filtering. */
   totalCount: Scalars['Int']['output'];
   value: Scalars['String']['output'];
 };
@@ -780,12 +772,12 @@ export type CustomSortInput = {
 export type Customer = {
   attributes: Array<Attribute>;
   billingAddress?: Maybe<Address>;
-  /** Required permission: customer.birthdate */
+  /** Required permission: `customer.birthdate` */
   birthdate?: Maybe<Scalars['Date']['output']>;
   cellPhoneNumber?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   firstName?: Maybe<Scalars['String']['output']>;
-  /** Required permission: customer.gender */
+  /** Required permission: `customer.gender` */
   gender?: Maybe<Gender>;
   id: Scalars['Int']['output'];
   language?: Maybe<Language>;
@@ -919,11 +911,11 @@ export type DisplayItem = {
   campaignInfo?: Maybe<CampaignInfo>;
   canonicalCategory?: Maybe<Category>;
   canonicalUri: Scalars['String']['output'];
-  /** Required scope: NO_SESSION */
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
   categories?: Maybe<Array<Category>>;
   category?: Maybe<Category>;
   collection?: Maybe<Collection>;
-  /** Required permission: displayItem.countryOfOrigin */
+  /** Required permission: `displayItem.countryOfOrigin` */
   countryOfOrigin?: Maybe<Country>;
   createdAt: Scalars['String']['output'];
   description: FormattedString;
@@ -931,15 +923,15 @@ export type DisplayItem = {
   id: Scalars['Int']['output'];
   isPrimaryVariant: Scalars['Boolean']['output'];
   items: Array<Item>;
-  /** Required scope: SESSION */
+  /** Required [operating mode](#operating-mode): `SESSION` */
   language?: Maybe<Language>;
   languages: Array<Language>;
   lowestPrice?: Maybe<LowestPrice>;
-  /** Required scope: NO_SESSION */
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
   lowestPriceByPricelist: Array<PricelistLowestPrice>;
-  /** Required scope: SESSION */
+  /** Required [operating mode](#operating-mode): `SESSION` */
   market: Market;
-  /** Required scope: NO_SESSION */
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
   markets: Array<Market>;
   measurementTable?: Maybe<MeasurementTable>;
   media: Array<ProductMedia>;
@@ -951,26 +943,25 @@ export type DisplayItem = {
   name: Scalars['String']['output'];
   orderQuantityDenominator: Scalars['Int']['output'];
   originalPrice?: Maybe<MonetaryValue>;
-  /** Required scope: NO_SESSION */
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
   preview: Scalars['Boolean']['output'];
   /**
    * Price with current market and pricelist, either from session or if _one_ market and pricelist is provided in no session.
+   *
    * For dynamically priced flexible bundles, price will be null since there is a range of possible prices depending on the sections when added to cart.
-   * minPrice and maxPrice can be found under `bundle`
+   *
+   * minPrice and maxPrice can be found under `bundle`.
    */
   price?: Maybe<MonetaryValue>;
   /**
-   * Price by pricelist
-   * For dynamically priced flexible bundles priceByPricelist will be empty, since there is a range of possible prices depending on the sections when added to cart.
-   * minPriceByPricelist and maxPriceByPricelist can be found under `bundle`
-   * Only available for NO_SESSION scoped tokens.
+   * For dynamically priced flexible bundles priceByPricelist will be empty, since there is a range of possible prices depending on the sections when added to cart. minPriceByPricelist and maxPriceByPricelist can be found under `bundle`.
    *
-   * Required scope: NO_SESSION
+   * Required [operating mode](#operating-mode): `NO_SESSION`
    */
   priceByPricelist: Array<PricelistPrice>;
-  /** Required scope: SESSION */
+  /** Required [operating mode](#operating-mode): `SESSION` */
   pricelist: Pricelist;
-  /** Required scope: NO_SESSION */
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
   pricelists: Array<Pricelist>;
   primaryVariant?: Maybe<DisplayItem>;
   productNumber: Scalars['String']['output'];
@@ -1001,6 +992,13 @@ export type DisplayItemFilter = {
   filters?: InputMaybe<Array<FilterInput>>;
   id?: InputMaybe<Array<Scalars['Int']['input']>>;
   onlyAvailable?: Scalars['Boolean']['input'];
+  /**
+   * When true, limits results to only the primary variant of each display.
+   * Primary variant is defined as the first display variant.
+   *
+   * When false (default), all product variants are included in results.
+   */
+  onlyPrimaryVariant?: Scalars['Boolean']['input'];
   /** Input for full-text search query. */
   search?: InputMaybe<Scalars['String']['input']>;
   /** Fields to include in full-text search. */
@@ -1059,9 +1057,9 @@ export type DynamicSelectionAttributeUnsetInput = {
 };
 
 export type FilterInput = {
-  /** Filter key from FilterOption.key */
+  /** Filter key from `FilterOption.key` */
   key: Scalars['String']['input'];
-  /** Filter values from FilterOption.values */
+  /** Filter values from `FilterOption.values` */
   values: Array<Scalars['String']['input']>;
 };
 
@@ -1074,11 +1072,11 @@ export type FilterOption = {
 
 export type FilterValue = {
   active: Scalars['Boolean']['output'];
-  /** Number of matches with the current filtering */
+  /** Number of matches with the current filtering. */
   count: Scalars['Int']['output'];
   /** Number of matches with the current filtering when you discount the other selected values in this group. */
   filterCount: Scalars['Int']['output'];
-  /** The number of items in total available, independent of filtering */
+  /** The number of items in total available, independent of filtering. */
   totalCount: Scalars['Int']['output'];
   value: Scalars['String']['output'];
 };
@@ -1156,7 +1154,7 @@ export type Item = {
   sizeLocalization: Array<LocalizedSize>;
   sku: Scalars['String']['output'];
   stock: Stock;
-  /** Required scope: NO_SESSION */
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
   stockByWarehouse: Array<WarehouseStock>;
   verticalLabelIndex: Scalars['Int']['output'];
 };
@@ -1182,12 +1180,12 @@ export type KlarnaPaymentWidget = Widget & {
 
 export type Language = {
   code: Scalars['String']['output'];
-  /** ISO-3166 code */
+  /** [ISO-3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) */
   countryCode?: Maybe<Scalars['String']['output']>;
   default: Scalars['Boolean']['output'];
-  /** ISO-639 code */
+  /** [ISO-639-1](https://en.wikipedia.org/wiki/ISO_639-1) code */
   languageCode?: Maybe<Scalars['String']['output']>;
-  /** ISO-639 description */
+  /** [ISO-639](https://en.wikipedia.org/wiki/ISO_639-1) name */
   languageName?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
 };
@@ -1322,11 +1320,11 @@ export type MappedAttribute = Attribute & {
 export type MappedAttributeFilterValue = FilterValue & {
   active: Scalars['Boolean']['output'];
   attribute: MappedAttribute;
-  /** Number of matches with the current filtering */
+  /** Number of matches with the current filtering. */
   count: Scalars['Int']['output'];
   /** Number of matches with the current filtering when you discount the other selected values in this group. */
   filterCount: Scalars['Int']['output'];
-  /** The number of items in total available, independent of filtering */
+  /** The number of items in total available, independent of filtering. */
   totalCount: Scalars['Int']['output'];
   value: Scalars['String']['output'];
 };
@@ -1345,9 +1343,9 @@ export type MappedSelectionAttributeUnsetInput = {
 };
 
 export type Market = {
-  /** Required scope: NO_SESSION */
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
   countries?: Maybe<Array<Country>>;
-  /** Required scope: NO_SESSION */
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
   hasCampaignSite: Scalars['Boolean']['output'];
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
@@ -1407,337 +1405,324 @@ export type MonetaryValue = {
 
 export type Mutation = {
   /**
-   * Add flexible bundle to the current selection
+   * Add flexible bundle to the current selection.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   addFlexibleBundle: AddItemPayload;
   /**
-   * Add display item or fixed bundle to the current selection
+   * Add display item or fixed bundle to the current selection.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   addItem: AddItemPayload;
   /**
-   * Add a subscription to an existing subscription contract
+   * Add a subscription to an existing subscription contract.
    *
-   * Required scope: LOGGED_IN
+   * Required [operating mode](#operating-mode): `LOGGED_IN`
    */
   addSubscription: SubscriptionContractPayload;
   /**
-   * Add a code voucher to the current selection
+   * Add a code voucher to the current selection.
    *
-   * Can be protected by captcha
+   * Can be protected by captcha.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   addVoucher: SelectionMutationPayload;
   /**
    * Apply a gift card on the current selection.
+   *
    * Possible Error Codes:
    *
-   * internal_error: An internal issue not directly related to the shopper.
-   *
-   * invalid_input: A validation error, such as the gift card not existing or an incorrect PIN being provided.
-   *
-   * inactive_card: The gift card being used is either inactive or expired.
-   *
-   * insufficient_funds: The gift card does not have sufficient funds.
-   *
-   * invalid_gift_card_currency: The gift card’s currency does not match the current currency of the selection.
-   *
-   * empty_card_balance: The gift card balance is zero.
+   * * `internal_error`- An internal issue not directly related to the shopper.
+   * * `invalid_input`- A validation error, such as the gift card not existing or an incorrect PIN being provided.
+   * * `inactive_card`- The gift card being used is either inactive or expired.
+   * * `insufficient_funds`- The gift card does not have sufficient funds.
+   * * `invalid_gift_card_currency`- The gift card’s currency does not match the current currency of the selection.
+   * * `empty_card_balance`- The gift card balance is zero.
    *
    * Can be protected by captcha.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   applyGiftCard: SelectionMutationPayload;
   /**
-   * Change the subscription contract address
+   * Change the subscription contract address.
    *
-   * Required scope: LOGGED_IN
+   * Required [operating mode](#operating-mode): `LOGGED_IN`
    */
   changeSubscriptionContractAddress: SubscriptionContractPayload;
   /**
-   * Claim a selection from a purchase link
+   * Claim a selection from a purchase link.
    *
-   * id: selection id from a purchase link
-   * hash: hash from a purchase link
-   *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   claimSelection: SelectionMutationPayload;
   /**
-   * Delete selection line by its id
+   * Delete selection line by its id.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   deleteLine: SelectionMutationPayload;
   /**
-   * Finalize the recurring payment process by send all variables received to paymentReturnPage
+   * Finalize the recurring payment process by send all variables received to paymentReturnPage.
    *
-   * Required scope: LOGGED_IN
+   * Required [operating mode](#operating-mode): `LOGGED_IN`
    */
   handleStoredPaymentResult: StoredPaymentResultPayload;
   /**
-   * Handle event triggered by widget
+   * Handle event triggered by widget.
    *
-   * Provided values are passed to the plugins that supports them
+   * Provided values are passed to the plugins that supports them.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   handleWidgetEvent: SelectionMutationPayload;
   /**
-   * Initiate the recurring payment process for the provided subscription contracts
+   * Initiate the recurring payment process for the provided subscription contracts.
    *
-   * Required scope: LOGGED_IN
+   * Required [operating mode](#operating-mode): `LOGGED_IN`
    */
   initializeStoredPaymentInstructions: StoredPaymentInstructionsPayload;
   /**
-   * Login as the customer in the current session
+   * Login as the customer in the current session.
    *
-   * The current selection is merged with the selection associated with the customer
+   * The current selection is merged with the selection associated with the customer.
    *
-   * Can be protected by captcha
+   * Can be protected by captcha.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    *
-   * Rate limit: 10 requests per minute
+   * Rate limit: 10 requests per minute.
    */
   login: LoginPayload;
   /**
-   * Log out customer from the current session
+   * Log out customer from the current session.
    *
    * Customer selection can be kept after logout if `Retain session after logout` plugin fields is set to `Yes`. Otherwise, selection is detached from the session.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   logout?: Maybe<LogoutPayload>;
   /**
    * Use Centra as a routing mechanism based on request path/URI
    *
-   * DISPLAY_ITEM - looks for display item
-   * CATEGORY - looks for category
-   * AFFILIATE - looks for affiliate and sets it on the current selection in SESSION mode
-   * CAMPAIGN_SITE - looks for campaign site and sets it on the current selection in SESSION mode
-   * URL_VOUCHER - looks for URL voucher and sets it on the current selection in SESSION mode
-   *
-   * Required scope: SESSION, NO_SESSION
+   * * `DISPLAY_ITEM` - looks for display item
+   * * `CATEGORY` - looks for category
+   * * `AFFILIATE` - looks for affiliate and sets it on the current selection in SESSION mode
+   * * `CAMPAIGN_SITE` - looks for campaign site and sets it on the current selection in SESSION mode
+   * * `URL_VOUCHER` - looks for URL voucher and sets it on the current selection in SESSION mode
    */
   lookupUri?: Maybe<UriLookupPayload>;
   /**
-   * Initiate the payment process for the current selection
+   * Initiate the payment process for the current selection.
    *
-   * Can be protected by captcha
+   * Can be protected by captcha.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   paymentInstructions: PaymentInstructionsPayload;
   /**
-   * Verify payment to create order
+   * Verify payment to create order.
    *
-   * Send all POST/GET variables received to paymentReturnPage to verify if payment was successfully processed
+   * Send all POST/GET variables received to paymentReturnPage to verify if payment was successfully processed.
    *
-   * Selection is converted into order on successful payment and is detached from the current session
+   * Selection is converted into order on successful payment and is detached from the current session.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   paymentResult: PaymentResultPayload;
   /**
-   * Register customer
+   * Register customer.
    *
-   * Can be protected by captcha
+   * Can be protected by captcha.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   registerCustomer: CustomerRegisterPayload;
   /**
-   * Remove subscription plan from the selection line by line id
+   * Remove subscription plan from the selection line by line id.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   removeSubscriptionPlanFromLine: SelectionMutationPayload;
   /**
-   * Remove applied voucher from the current selection
+   * Remove applied voucher from the current selection.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   removeVoucher: SelectionMutationPayload;
   /**
-   * Request reset password email to be sent to the provided email
+   * Request reset password email to be sent to the provided email.
    *
-   * The password reset link will be the domain from a Centra setting, resetPasswordExternalUrl is added as a path
+   * The password reset link will be the domain from a Centra setting, resetPasswordExternalUrl is added as a path.
    * Example:
    *   domain - https://example.com
    *   resetPasswordExternalUrl - hello/world
    *   link customer receives - https://example.com/hello/world?i=123&id=567
    *
-   * Can be protected by captcha
+   * Can be protected by captcha.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   requestPasswordResetEmail: RequestPasswordResetEmailPayload;
   /**
-   * Finalize reset password flow providing new password
+   * Finalize reset password flow providing new password.
    *
-   * Provide `i` and `id` GET request variables received on reset password page
+   * Provide `i` and `id` GET request variables received on reset password page.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   resetPassword: ResetPasswordPayload;
   /**
-   * Set shipping and billing addresses on the current selection
+   * Set shipping and billing addresses on the current selection.
    *
-   * If separateBillingAddress not provided, the billing address defaults to the shipping address
-   *
-   * By default, a cart abandonment email is sent. To prevent this, set sendCartAbandonmentEmail to false
-   *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   setAddress: SelectionMutationPayload;
   /**
-   * Set an affiliate on the current session by its uri
+   * Set an affiliate on the current session by its uri.
    *
-   * Any selection created for the current session during affiliate `Cookie expiration in days` will have an affiliate set on it
+   * Any selection created for the current session during affiliate `Cookie expiration in days` will have an affiliate set on it.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   setAffiliate: SelectionMutationPayload;
   /**
-   * Set allocation rule to request for fulfillment of order
+   * Set allocation rule to request for fulfillment of order.
    *
-   * Required scope: SESSION, SHARED_SECRET
+   * Required [operating mode](#operating-mode): `SHARED_SECRET`
    */
   setAllocationRule: SelectionMutationPayload;
   /**
-   * Set a brick and mortar store on the current selection, to request for fulfillment of order
+   * Set a brick and mortar store on the current selection, to request for fulfillment of order.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   setBrickAndMortar: SelectionMutationPayload;
   /**
-   * Set campaign site market on the current selection by its uri
+   * Set campaign site market on the current selection by its uri.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   setCampaignSite: SelectionMutationPayload;
   /**
-   * Set the current session and selection country and state
+   * Set the current session and selection country and state.
    *
-   * Can trigger pricelist/market change along with unavailable products removal froom the current selection
+   * Can trigger pricelist/market change along with unavailable products removal froom the current selection.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   setCountryState: SelectionMutationPayload;
   /**
-   * Set the language on the current session and selection
+   * Set the language on the current session and selection.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   setLanguage: SessionPayload;
   /**
-   * Set the market on the current selection
+   * Set the market on the current selection.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SHARED_SECRET`
    */
   setMarket: SessionPayload;
   /**
-   * Set the paymentMethod on the current selection
+   * Set the paymentMethod on the current selection.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   setPaymentMethod: SelectionMutationPayload;
   /**
-   * Attach open selection to the token, it now becomes the current selection for the session
+   * Attach open selection to the token, it now becomes the current selection for the session.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   setSelection: SelectionMutationPayload;
   /**
-   * Set dynamic and mapped attributes on the current selection
+   * Set dynamic and mapped attributes on the current selection.
    *
-   * Required scope: SESSION, SHARED_SECRET
+   * Required [operating mode](#operating-mode): `SHARED_SECRET`
    */
   setSelectionAttributes: SelectionMutationPayload;
   /**
-   * Set the shipping method on the current selection
+   * Set the shipping method on the current selection.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   setShippingMethod: SelectionMutationPayload;
   /**
-   * Subscribe to back in stock notification
+   * Subscribe to back in stock notification.
    *
-   * Can be protected by captcha
+   * Can be protected by captcha.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   subscribeToBackInStock: StockSubscribePayload;
   /**
-   * Subscribe to newsletter for the provided email address
+   * Subscribe to newsletter for the provided email address.
    *
-   * Can be protected by captcha
+   * Can be protected by captcha.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   subscribeToNewsletter: NewsletterSubscribePayload;
   /**
-   * Trigger selection action such as external allocation process
+   * Trigger selection action such as external allocation process.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   triggerSelectionAction: TriggerSelectionActionPayload;
   /**
-   * Unset dynamic and mapped attributes from the current selection
+   * Unset dynamic and mapped attributes from the current selection.
    *
-   * Required scope: SESSION, SHARED_SECRET
+   * Required [operating mode](#operating-mode): `SHARED_SECRET`
    */
   unsetSelectionAttributes: SelectionMutationPayload;
   /**
-   * Update currently logged in customer
+   * Update currently logged in customer.
    *
-   * Required scope: LOGGED_IN
+   * Required [operating mode](#operating-mode): `LOGGED_IN`
    */
   updateCustomer: CustomerUpdatePayload;
   /**
-   * Update a selection line by its id
+   * Update a selection line by its id.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   updateLine: SelectionMutationPayload;
   /**
-   * Update the interval for a subscription owned by the logged in customer
+   * Update the interval for a subscription owned by the logged in customer.
    *
-   * Interval is taken from the provided subscription plan
+   * Interval is taken from the provided subscription plan.
    *
-   * Required scope: LOGGED_IN
+   * Required [operating mode](#operating-mode): `LOGGED_IN`
    */
   updateSubscriptionInterval: SubscriptionContractPayload;
   /**
-   * Update the quantity for a subscription owned by the logged in customer
+   * Update the quantity for a subscription owned by the logged in customer.
    *
-   * Required scope: LOGGED_IN
+   * Required [operating mode](#operating-mode): `LOGGED_IN`
    */
   updateSubscriptionQuantity: SubscriptionContractPayload;
   /**
-   * Update the status for a subscription owned by the logged in customer
+   * Update the status for a subscription owned by the logged in customer.
    *
-   * Required scope: LOGGED_IN
+   * Required [operating mode](#operating-mode): `LOGGED_IN`
    */
   updateSubscriptionStatus: SubscriptionContractPayload;
   /**
-   * Validate captcha response
+   * Validate captcha response.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   verifyCaptcha: CaptchaVerifyPayload;
   /**
-   * Verify if password hashes received on reset password page are correct
+   * Verify if password hashes received on reset password page are correct.
    *
-   * Provide `i` and `id` GET request variables received on reset password page
+   * Provide `i` and `id` GET request variables received on reset password page.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   verifyResetPasswordHashes: VerifyResetPasswordHashesPayload;
 };
@@ -2138,7 +2123,7 @@ export enum OrderStatus {
 }
 
 export type PaginationInfo = {
-  /**  The page can be different from the requested page if an invalid page was requested  */
+  /** The page can be different from the requested page if an invalid page was requested. */
   currentPage: Scalars['Int']['output'];
   hasNextPage: Scalars['Boolean']['output'];
   hasPreviousPage: Scalars['Boolean']['output'];
@@ -2269,7 +2254,7 @@ export enum PaymentResultType {
 
 export type Pricelist = {
   comment?: Maybe<Scalars['String']['output']>;
-  /** Required scope: NO_SESSION */
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
   countries?: Maybe<Array<Country>>;
   currency: Currency;
   id: Scalars['Int']['output'];
@@ -2364,8 +2349,10 @@ export type ProductVariant = {
 
 /**
  * A promotion is information about how you can trigger certain deals by adding an item to cart.
- * E.g. add to cart and get 50% off on your cheapest product, save 20% when bought with X
- * It interacts with auto vouchers
+ *
+ * E.g. add to cart and get 50% off on your cheapest product, save 20% when bought with X.
+ *
+ * It interacts with auto vouchers.
  */
 export type Promotion = {
   action: PromotionAction;
@@ -2383,148 +2370,121 @@ export enum PromotionResult {
 
 export type Query = {
   /**
-   * Get an affiliate by its uri
-   * Required scope: NO_SESSION
+   * Get an affiliate by its uri.
+   *
+   * Required [operating mode](#operating-mode): `NO_SESSION`
    */
   affiliate?: Maybe<Affiliate>;
   /**
-   * Get a paginated list of affiliates
-   * Required scope: NO_SESSION
+   * Get a paginated list of affiliates.
+   *
+   * Required [operating mode](#operating-mode): `NO_SESSION`
    */
   affiliates: AffiliateList;
   /**
-   * Get a list of brands
+   * Get a list of brands.
    *
-   * Required scope: SESSION, NO_SESSION
-   *
-   * Filtered by session's market and pricelist in session mode
+   * Filtered by session's market and pricelist in session mode.
    */
   brands?: Maybe<BrandList>;
-  /**
-   * Get a brick and mortar by its id
-   *
-   * Required scope: SESSION, NO_SESSION
-   */
+  /** Get a brick and mortar by its id. */
   brickAndMortar?: Maybe<BrickAndMortar>;
-  /**
-   * Get a paginated list of brick and mortars
-   *
-   * Required scope: SESSION, NO_SESSION
-   */
+  /** Get a paginated list of brick and mortars. */
   brickAndMortars?: Maybe<BrickAndMortarList>;
   /**
-   * Get a campaign site by its uri
+   * Get a campaign site by its uri.
    *
-   * Required scope: NO_SESSION
+   * Required [operating mode](#operating-mode): `NO_SESSION`
    */
   campaignSite?: Maybe<CampaignSite>;
   /**
-   * Get a paginated list of campaign sites
+   * Get a paginated list of campaign sites.
    *
-   * Required scope: NO_SESSION
+   * Required [operating mode](#operating-mode): `NO_SESSION`
    */
   campaignSites: CampaignSiteList;
   /**
-   * Get a paginated list of categories
+   * Get a paginated list of categories.
    *
-   * Required scope: SESSION, NO_SESSION
+   * Filtered by session's market and pricelist in session mode.
    *
-   * Filtered by session's market and pricelist in session mode
-   *
-   * Filter by parent: 0 to get only top level categories
+   * Filter by parent: 0 to get only top level categories.
    */
   categories?: Maybe<CategoryList>;
   /**
-   * Get a paginated list of collections
+   * Get a paginated list of collections.
    *
-   * Required scope: SESSION, NO_SESSION
-   *
-   * Filtered by session's market and pricelist in session mode
+   * Filtered by session's market and pricelist in session mode.
    */
   collections?: Maybe<CollectionList>;
-  /**
-   * Get a list of countries
-   *
-   * Required scope: SESSION, NO_SESSION
-   */
+  /** Get a list of countries. */
   countries: Array<Country>;
   /**
-   * Get the currently logged in customer
+   * Get the currently logged in customer.
    *
-   * Required scope: LOGGED_IN
+   * Required [operating mode](#operating-mode): `LOGGED_IN`
    */
   customer?: Maybe<Customer>;
   /**
-   * Get a display item by its id
-   *
-   * Required scope: SESSION, NO_SESSION
+   * Get a display item by its id.
    *
    * In session mode, results are filtered by the session's market and pricelist. Translated values are returned if available for either session or input language.
    */
   displayItem?: Maybe<DisplayItem>;
   /**
-   * Get a paginated list of display items
-   *
-   * Required scope: SESSION, NO_SESSION
+   * Get a paginated list of display items.
    *
    * In session mode, results are filtered by the session's market and pricelist. Translated values are returned if available for either session or input language.
    */
   displayItems: DisplayItemList;
-  /**
-   * Check which brick and mortars can fulfill the current selection
-   *
-   * Required scope: SESSION, NO_SESSION
-   */
+  /** Check which brick and mortars can fulfill the current selection. */
   fulfillmentCheck: FulfillmentCheckPayload;
-  /**
-   * Get a list of languages
-   *
-   * Required scope: SESSION, NO_SESSION
-   */
+  /** Get a list of languages. */
   languages: Array<Language>;
   /**
-   * Get a list of markets
+   * Get a list of markets.
    *
-   * Required scope: NO_SESSION
+   * Required [operating mode](#operating-mode): `NO_SESSION`
    */
   markets: Array<Market>;
   /**
-   * Get the latest order, null if none
+   * Get the latest order, null if none.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   order?: Maybe<Order>;
   /**
-   * Get a list of pricelists
+   * Get a list of pricelists.
    *
-   * Required scope: NO_SESSION
+   * Required [operating mode](#operating-mode): `NO_SESSION`
    */
   pricelists: Array<Pricelist>;
   /**
-   * Get the current selection
+   * Get the current selection.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   selection: Selection;
   /**
-   * Get the current session
+   * Get the current session.
    *
-   * Required scope: SESSION
+   * Required [operating mode](#operating-mode): `SESSION`
    */
   session: Session;
   /**
-   * Get payment methods supporting recurring payment
+   * Get payment methods supporting recurring payment.
    *
-   * Required scope: LOGGED_IN
+   * Filters by session market, pricelist and country code by default.
    *
-   * Filters by session market, pricelist and country code by default
-   * Filters by contract market, pricelist and country code if provided
+   * Filters by contract market, pricelist and country code if provided.
+   *
+   * Required [operating mode](#operating-mode): `LOGGED_IN`
    */
   storedPaymentMethods: StoredPaymentMethodPayload;
   /**
-   * Get customer's subscription contract list
+   * Get customer's subscription contract list.
    *
-   * Required scope: LOGGED_IN
+   * Required [operating mode](#operating-mode): `LOGGED_IN`
    */
   subscriptionContracts: Array<SubscriptionContract>;
 };
@@ -2694,12 +2654,12 @@ export type Selection = {
   attributes: Array<Attribute>;
   availableAttributes: Array<Attribute>;
   brickAndMortar?: Maybe<BrickAndMortar>;
-  /** slow fields for checkout */
+  /** Slow fields for checkout. */
   checkout?: Maybe<CheckoutSelection>;
   comment?: Maybe<Scalars['String']['output']>;
   discounts: Array<Voucher>;
   externalGiftCardAvailable: Scalars['Boolean']['output'];
-  /** does not contain added tax */
+  /** Does not contain added tax. */
   grandTotal: MonetaryValue;
   id?: Maybe<Scalars['String']['output']>;
   language?: Maybe<Language>;
@@ -2812,12 +2772,12 @@ export type SizeChart = {
 
 export type SizeNameFilterValue = FilterValue & {
   active: Scalars['Boolean']['output'];
-  /** Number of matches with the current filtering */
+  /** Number of matches with the current filtering. */
   count: Scalars['Int']['output'];
   /** Number of matches with the current filtering when you discount the other selected values in this group. */
   filterCount: Scalars['Int']['output'];
   sizeLocalization: Array<LocalizedSize>;
-  /** The number of items in total available, independent of filtering */
+  /** The number of items in total available, independent of filtering. */
   totalCount: Scalars['Int']['output'];
   value: Scalars['String']['output'];
 };
@@ -2849,7 +2809,7 @@ export type StateAddressField = AddressField & {
 
 export type Stock = {
   available: Scalars['Boolean']['output'];
-  /** Required permission: stock.quantity */
+  /** Required permission: `stock.quantity` */
   quantity: Scalars['Int']['output'];
 };
 
@@ -3004,6 +2964,7 @@ export enum SubscriptionStatus {
 
 export type SuccessPaymentAction = PaymentAction & {
   action: PaymentActionType;
+  formFields?: Maybe<Scalars['Map']['output']>;
   order: Order;
 };
 
@@ -3021,12 +2982,12 @@ export type TextAddressField = AddressField & {
 
 export type TextFilterValue = FilterValue & {
   active: Scalars['Boolean']['output'];
-  /** Number of matches with the current filtering */
+  /** Number of matches with the current filtering. */
   count: Scalars['Int']['output'];
   /** Number of matches with the current filtering when you discount the other selected values in this group. */
   filterCount: Scalars['Int']['output'];
   name?: Maybe<Scalars['String']['output']>;
-  /** The number of items in total available, independent of filtering */
+  /** The number of items in total available, independent of filtering. */
   totalCount: Scalars['Int']['output'];
   value: Scalars['String']['output'];
 };
@@ -3097,7 +3058,7 @@ export enum UriLookupType {
 
 export type UrlVoucher = Voucher & {
   actions: Array<VoucherAction>;
-  /** Required scope: SESSION */
+  /** Required [operating mode](#operating-mode): `SESSION` */
   appliedOn: Array<VoucherAppliedOn>;
   attributes: Array<Attribute>;
   expiryDate: Scalars['String']['output'];
@@ -3106,21 +3067,21 @@ export type UrlVoucher = Voucher & {
   lineIds: Array<Scalars['String']['output']>;
   method: VoucherMethod;
   name: Scalars['String']['output'];
-  /** Required scope: SESSION */
+  /** Required [operating mode](#operating-mode): `SESSION` */
   orderReduction: MonetaryValue;
-  /** Required scope: SESSION */
+  /** Required [operating mode](#operating-mode): `SESSION` */
   totalItemReduction: MonetaryValue;
-  /** Required scope: SESSION */
+  /** Required [operating mode](#operating-mode): `SESSION` */
   totalShippingReduction: MonetaryValue;
   type: VoucherType;
   url: Scalars['String']['output'];
-  /** Required scope: SESSION */
+  /** Required [operating mode](#operating-mode): `SESSION` */
   value: MonetaryValue;
 };
 
 export type UrlVoucherUriLookupPayload = Payload & UriLookupPayload & {
   found: UriLookupType;
-  /** Required scope: SESSION */
+  /** Required [operating mode](#operating-mode): `SESSION` */
   selection?: Maybe<Selection>;
   userErrors: Array<UserError>;
   voucherApplied: UrlVoucher;
@@ -3278,7 +3239,7 @@ export type SetAddressMutationVariables = Exact<{
 }>;
 
 
-export type SetAddressMutation = { setAddress: { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ message: string, path?: Array<string> | null } | { message: string, path?: Array<string> | null }> } | { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ message: string, path?: Array<string> | null } | { message: string, path?: Array<string> | null }> } | { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ message: string, path?: Array<string> | null } | { message: string, path?: Array<string> | null }> } | { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ message: string, path?: Array<string> | null } | { message: string, path?: Array<string> | null }> } };
+export type SetAddressMutation = { setAddress: { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> } | { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> } | { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> } | { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> } };
 
 export type SetShippingMethodMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -3328,7 +3289,7 @@ export type SetCountryStateMutationVariables = Exact<{
 }>;
 
 
-export type SetCountryStateMutation = { setCountryState: { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ message: string, path?: Array<string> | null } | { message: string, path?: Array<string> | null }> } | { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ message: string, path?: Array<string> | null } | { message: string, path?: Array<string> | null }> } | { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ message: string, path?: Array<string> | null } | { message: string, path?: Array<string> | null }> } | { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ message: string, path?: Array<string> | null } | { message: string, path?: Array<string> | null }> } };
+export type SetCountryStateMutation = { setCountryState: { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> } | { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> } | { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> } | { selection?: { lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<{ name: string, value: { value: number, formattedValue: string } } | { code: string, name: string, value: { value: number, formattedValue: string } } | { name: string, value: { value: number, formattedValue: string } }>, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, widgets?: Array<{ __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean } | { __typename: 'KlarnaCheckoutWidget' } | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }> | null } | null } | null, userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> } };
 
 export type UpdateLineCheckoutMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -3355,7 +3316,7 @@ export type SetCountryAndLanguageMutationVariables = Exact<{
 }>;
 
 
-export type SetCountryAndLanguageMutation = { setCountryState: { userErrors: Array<{ message: string, path?: Array<string> | null } | { message: string, path?: Array<string> | null }> } | { userErrors: Array<{ message: string, path?: Array<string> | null } | { message: string, path?: Array<string> | null }> } | { userErrors: Array<{ message: string, path?: Array<string> | null } | { message: string, path?: Array<string> | null }> } | { userErrors: Array<{ message: string, path?: Array<string> | null } | { message: string, path?: Array<string> | null }> }, setLanguage: { session: { country: { code: string }, countryState?: { code: string } | null, language?: { code: string } | null, market: { id: number }, pricelist: { id: number }, loggedIn?: { id: number } | null } } };
+export type SetCountryAndLanguageMutation = { setCountryState: { userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> } | { userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> } | { userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> } | { userErrors: Array<{ __typename: 'UnavailableItem', message: string, path?: Array<string> | null } | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }> }, setLanguage: { session: { country: { code: string }, countryState?: { code: string } | null, language?: { code: string } | null, market: { id: number }, pricelist: { id: number }, loggedIn?: { id: number } | null } } };
 
 export type OrdersQueryVariables = Exact<{
   limit: Scalars['Int']['input'];
@@ -3364,6 +3325,16 @@ export type OrdersQueryVariables = Exact<{
 
 
 export type OrdersQuery = { customer?: { totalOrders: number, orders: Array<{ id: string, number: number, orderDate: string, status: OrderStatus, totals: Array<{ type: SelectionTotalRowType, price: { value: number, formattedValue: string } } | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }>, shippingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, billingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingMethod: { id: number, name: string, comment?: string | null, selected: boolean, price: { value: number, formattedValue: string } }, lines: Array<{ __typename: 'BundleLine', id: string, quantity: number, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | { __typename: 'ProductLine', id: string, quantity: number, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }> } } | null> }> } | null };
+
+export type RelatedProductsQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+  language: Scalars['String']['input'];
+  market: Scalars['Int']['input'];
+  pricelist: Scalars['Int']['input'];
+}>;
+
+
+export type RelatedProductsQuery = { displayItem?: { relatedDisplayItems: Array<{ relation: string, displayItems?: Array<{ id: number, uri: string, name: string, media: Array<{ altText?: string | null, source: { url: string } }>, productVariant: { name?: string | null }, relatedDisplayItems: Array<{ relation: string, displayItems?: Array<{ uri: string, productVariant: { name?: string | null }, swatch: Array<{ __typename: 'DynamicAttribute', elements: Array<{ __typename: 'AttributeChoiceElement', key: string } | { __typename: 'AttributeFileElement', key: string } | { __typename: 'AttributeImageElement', key: string } | { __typename: 'AttributeStringElement', value: string, key: string }> } | { __typename: 'MappedAttribute' }> }> | null }>, price?: { formattedValue: string } | null, bundle?: { type: BundleType, priceType: BundlePriceType, minPrice?: { formattedValue: string } | null } | null, swatch: Array<{ __typename: 'DynamicAttribute', elements: Array<{ __typename: 'AttributeChoiceElement', key: string } | { __typename: 'AttributeFileElement', key: string } | { __typename: 'AttributeImageElement', key: string } | { __typename: 'AttributeStringElement', value: string, key: string }> } | { __typename: 'MappedAttribute' }> }> | null }> } | null };
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -3412,16 +3383,6 @@ export type LookupProductMutationVariables = Exact<{
 
 
 export type LookupProductMutation = { lookupUri?: { __typename: 'AffiliateUriLookupPayload' } | { __typename: 'CampaignSiteUriLookupPayload' } | { __typename: 'CategoryUriLookupPayload' } | { __typename: 'DisplayItemUriLookupPayload', displayItem: { id: number, available: boolean, uri: string, name: string, metaTitle: string, metaDescription: string, description: { formatted: string }, media: Array<{ id: number, altText?: string | null, source: { url: string } }>, price?: { formattedValue: string, value: number, currency: { code: string } } | null, items: Array<{ id: string, name: string, stock: { available: boolean }, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }>, relatedDisplayItems: Array<{ relation: string, displayItems?: Array<{ uri: string, productVariant: { name?: string | null }, swatch: Array<{ __typename: 'DynamicAttribute', elements: Array<{ __typename: 'AttributeChoiceElement', key: string } | { __typename: 'AttributeFileElement', key: string } | { __typename: 'AttributeImageElement', key: string } | { __typename: 'AttributeStringElement', value: string, key: string }> } | { __typename: 'MappedAttribute' }> }> | null }>, productVariant: { name?: string | null }, translations: Array<{ uri: string, language: { code: string } }>, bundle?: { type: BundleType, priceType: BundlePriceType, minPrice?: { formattedValue: string } | null, maxPrice?: { formattedValue: string } | null, sections: Array<{ id: number, quantity: number, items: Array<{ id: number, name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, price?: { formattedValue: string, value: number, currency: { code: string } } | null, items: Array<{ id: string, name: string, stock: { available: boolean }, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }> }> }> } | null, swatch: Array<{ __typename: 'DynamicAttribute', elements: Array<{ __typename: 'AttributeChoiceElement', key: string } | { __typename: 'AttributeFileElement', key: string } | { __typename: 'AttributeImageElement', key: string } | { __typename: 'AttributeStringElement', value: string, key: string }> } | { __typename: 'MappedAttribute' }> } } | { __typename: 'NotFoundUriLookupPayload' } | { __typename: 'UrlVoucherUriLookupPayload' } | null };
-
-export type LookupRelatedProductsMutationVariables = Exact<{
-  uri: Scalars['String']['input'];
-  language: Scalars['String']['input'];
-  market: Scalars['Int']['input'];
-  pricelist: Scalars['Int']['input'];
-}>;
-
-
-export type LookupRelatedProductsMutation = { lookupUri?: { __typename: 'AffiliateUriLookupPayload' } | { __typename: 'CampaignSiteUriLookupPayload' } | { __typename: 'CategoryUriLookupPayload' } | { __typename: 'DisplayItemUriLookupPayload', displayItem: { relatedDisplayItems: Array<{ relation: string, displayItems?: Array<{ id: number, uri: string, name: string, media: Array<{ altText?: string | null, source: { url: string } }>, productVariant: { name?: string | null }, relatedDisplayItems: Array<{ relation: string, displayItems?: Array<{ uri: string, productVariant: { name?: string | null }, swatch: Array<{ __typename: 'DynamicAttribute', elements: Array<{ __typename: 'AttributeChoiceElement', key: string } | { __typename: 'AttributeFileElement', key: string } | { __typename: 'AttributeImageElement', key: string } | { __typename: 'AttributeStringElement', value: string, key: string }> } | { __typename: 'MappedAttribute' }> }> | null }>, price?: { formattedValue: string } | null, bundle?: { type: BundleType, priceType: BundlePriceType, minPrice?: { formattedValue: string } | null } | null, swatch: Array<{ __typename: 'DynamicAttribute', elements: Array<{ __typename: 'AttributeChoiceElement', key: string } | { __typename: 'AttributeFileElement', key: string } | { __typename: 'AttributeImageElement', key: string } | { __typename: 'AttributeStringElement', value: string, key: string }> } | { __typename: 'MappedAttribute' }> }> | null }> } } | { __typename: 'NotFoundUriLookupPayload' } | { __typename: 'UrlVoucherUriLookupPayload' } | null };
 
 export type ProductsQueryVariables = Exact<{
   page: Scalars['Int']['input'];
@@ -4563,6 +4524,7 @@ export const SetAddressDocument = new TypedDocumentString(`
       ...checkout
     }
     userErrors {
+      __typename
       message
       path
     }
@@ -5756,6 +5718,7 @@ export const SetCountryStateDocument = new TypedDocumentString(`
       ...checkout
     }
     userErrors {
+      __typename
       message
       path
     }
@@ -6274,6 +6237,7 @@ export const SetCountryAndLanguageDocument = new TypedDocumentString(`
     mutation setCountryAndLanguage($country: String!, $state: String, $language: String!) {
   setCountryState(countryCode: $country, stateCode: $state) {
     userErrors {
+      __typename
       message
       path
     }
@@ -6416,6 +6380,71 @@ fragment line on Line {
     }
   }
 }`) as unknown as TypedDocumentString<OrdersQuery, OrdersQueryVariables>;
+export const RelatedProductsDocument = new TypedDocumentString(`
+    query relatedProducts($id: Int!, $language: String!, $market: Int!, $pricelist: Int!) {
+  displayItem(
+    id: $id
+    languageCode: [$language]
+    market: [$market]
+    pricelist: [$pricelist]
+  ) {
+    relatedDisplayItems(relationType: "standard") {
+      relation
+      displayItems {
+        ...listProduct
+      }
+    }
+  }
+}
+    fragment variantSwatch on DisplayItem {
+  swatch: attributes(keys: ["variant_swatch"]) {
+    __typename
+    ... on DynamicAttribute {
+      elements {
+        __typename
+        key
+        ... on AttributeStringElement {
+          value
+        }
+      }
+    }
+  }
+}
+fragment listProduct on DisplayItem {
+  id
+  uri
+  name
+  media {
+    altText
+    source(sizeName: "1350x0") {
+      url
+    }
+  }
+  productVariant {
+    name
+  }
+  ...variantSwatch
+  relatedDisplayItems(relationType: "variant") {
+    relation
+    displayItems {
+      uri
+      productVariant {
+        name
+      }
+      ...variantSwatch
+    }
+  }
+  price {
+    formattedValue
+  }
+  bundle {
+    type
+    priceType
+    minPrice {
+      formattedValue
+    }
+  }
+}`) as unknown as TypedDocumentString<RelatedProductsQuery, RelatedProductsQueryVariables>;
 export const LoginDocument = new TypedDocumentString(`
     mutation login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -6641,77 +6670,6 @@ fragment variantSwatch on DisplayItem {
     }
   }
 }`) as unknown as TypedDocumentString<LookupProductMutation, LookupProductMutationVariables>;
-export const LookupRelatedProductsDocument = new TypedDocumentString(`
-    mutation lookupRelatedProducts($uri: String!, $language: String!, $market: Int!, $pricelist: Int!) {
-  lookupUri(
-    uri: $uri
-    for: [DISPLAY_ITEM]
-    languageCode: [$language]
-    market: [$market]
-    pricelist: [$pricelist]
-  ) {
-    __typename
-    ... on DisplayItemUriLookupPayload {
-      displayItem {
-        relatedDisplayItems(relationType: "standard") {
-          relation
-          displayItems {
-            ...listProduct
-          }
-        }
-      }
-    }
-  }
-}
-    fragment variantSwatch on DisplayItem {
-  swatch: attributes(keys: ["variant_swatch"]) {
-    __typename
-    ... on DynamicAttribute {
-      elements {
-        __typename
-        key
-        ... on AttributeStringElement {
-          value
-        }
-      }
-    }
-  }
-}
-fragment listProduct on DisplayItem {
-  id
-  uri
-  name
-  media {
-    altText
-    source(sizeName: "1350x0") {
-      url
-    }
-  }
-  productVariant {
-    name
-  }
-  ...variantSwatch
-  relatedDisplayItems(relationType: "variant") {
-    relation
-    displayItems {
-      uri
-      productVariant {
-        name
-      }
-      ...variantSwatch
-    }
-  }
-  price {
-    formattedValue
-  }
-  bundle {
-    type
-    priceType
-    minPrice {
-      formattedValue
-    }
-  }
-}`) as unknown as TypedDocumentString<LookupRelatedProductsMutation, LookupRelatedProductsMutationVariables>;
 export const ProductsDocument = new TypedDocumentString(`
     query products($page: Int!, $search: String, $sort: [CustomSortInput!] = [], $filters: [FilterInput!] = [], $limit: Int = 40, $market: Int!, $pricelist: Int!, $language: String!, $withFilters: Boolean = true) {
   displayItems(

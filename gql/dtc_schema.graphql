@@ -113,7 +113,7 @@ type AffiliateUriLookupPayload implements Payload & URILookupPayload {
   affiliate: Affiliate!
   found: UriLookupType!
 
-  """Required scope: SESSION"""
+  """Required [operating mode](#operating-mode): `SESSION`"""
   selection(voucherMode: VOUCHER_MODE! = LINES): Selection
   userErrors: [UserError!]!
 }
@@ -167,14 +167,13 @@ enum AttentionReason {
 
   """
   Payment has failed but future attempts might succeed.
+  
   This might happen when card has insufficient funds.
   """
   PAYMENT_DECLINED
 
   """
-  The payment method associated with this subscription is no longer valid
-  and will not become valid without on-session customer interaction (eg.
-  providing a new card details).
+  The payment method associated with this subscription is no longer valid and will not become valid without on-session customer interaction (eg. providing a new card details).
   """
   PAYMENT_REVOKED
 
@@ -288,7 +287,7 @@ type BrandFilterValue implements FilterValue {
   active: Boolean!
   brand: Brand
 
-  """Number of matches with the current filtering"""
+  """Number of matches with the current filtering."""
   count: Int!
 
   """
@@ -297,7 +296,7 @@ type BrandFilterValue implements FilterValue {
   filterCount: Int!
   name: String
 
-  """The number of items in total available, independent of filtering"""
+  """The number of items in total available, independent of filtering."""
   totalCount: Int!
   value: String!
 }
@@ -338,7 +337,7 @@ type BrickAndMortarList {
 input BrickAndMortarListFilter {
   countryCode: String
 
-  """The user's location in latitude / longitude"""
+  """The user's location in latitude / longitude."""
   location: GeoPositionInput
   maxDistance: MaxDistance
   stateCode: String
@@ -370,7 +369,7 @@ type Bundle {
   The maximum possible prices available for a flexible bundle with dynamic price.
   Will be null if the bundle is fixed or has a static price.
   
-  Required scope: NO_SESSION
+  Required [operating mode](#operating-mode): `NO_SESSION`
   """
   maxPriceByPricelist(limit: Int, page: Int): [PricelistPrice!]!
 
@@ -384,7 +383,7 @@ type Bundle {
   The minimum possible prices available for a flexible bundle with dynamic price
   Will be null if the bundle is fixed or has a static price.
   
-  Required scope: NO_SESSION
+  Required [operating mode](#operating-mode): `NO_SESSION`
   """
   minPriceByPricelist(limit: Int, page: Int): [PricelistPrice!]!
   priceType: BundlePriceType!
@@ -458,7 +457,7 @@ type CampaignInfo {
 }
 
 type CampaignSite {
-  """Required scope: NO_SESSION"""
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
   market: Market!
   name: String
   sendToPage: String
@@ -480,7 +479,7 @@ type CampaignSiteUriLookupPayload implements Payload & URILookupPayload {
   campaignSite: CampaignSite!
   found: UriLookupType!
 
-  """Required scope: SESSION"""
+  """Required [operating mode](#operating-mode): `SESSION`"""
   selection(voucherMode: VOUCHER_MODE! = LINES): Selection
   userErrors: [UserError!]!
 }
@@ -490,17 +489,12 @@ type CaptchaVerifyPayload implements Payload {
   verified: Boolean!
 }
 
-type CarrierInformation {
-  carrierName: String
-  serviceName: String
-}
-
 type Category {
   attributes(keys: [String!]! = []): [Attribute!]!
   childCategories(limit: Int! = 20, page: Int! = 1, sort: [CategorySort!]! = [customOrder_ASC]): [Category!]!
   id: Int!
 
-  """Required scope: NO_SESSION"""
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
   markets: [Market!]!
   metaDescription: String!
   metaKeywords: String!
@@ -508,7 +502,7 @@ type Category {
   name: [String!]
   parentCategory: Category
 
-  """Required scope: NO_SESSION"""
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
   pricelists: [Pricelist!]!
   sortOrder: Int!
   translations: [TranslatedCategory!]!
@@ -519,7 +513,7 @@ type CategoryFilterValue implements FilterValue {
   active: Boolean!
   category: Category!
 
-  """Number of matches with the current filtering"""
+  """Number of matches with the current filtering."""
   count: Int!
 
   """
@@ -528,7 +522,7 @@ type CategoryFilterValue implements FilterValue {
   filterCount: Int!
   name: String
 
-  """The number of items in total available, independent of filtering"""
+  """The number of items in total available, independent of filtering."""
   totalCount: Int!
   value: String!
 }
@@ -613,11 +607,11 @@ type CodeVoucher implements Voucher {
 type Collection {
   id: Int!
 
-  """Required scope: NO_SESSION"""
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
   markets: [Market!]!
   name: String!
 
-  """Required scope: NO_SESSION"""
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
   pricelists: [Pricelist!]!
   uri: String!
 }
@@ -626,7 +620,7 @@ type CollectionFilterValue implements FilterValue {
   active: Boolean!
   collection: Collection
 
-  """Number of matches with the current filtering"""
+  """Number of matches with the current filtering."""
   count: Int!
 
   """
@@ -635,7 +629,7 @@ type CollectionFilterValue implements FilterValue {
   filterCount: Int!
   name: String
 
-  """The number of items in total available, independent of filtering"""
+  """The number of items in total available, independent of filtering."""
   totalCount: Int!
   value: String!
 }
@@ -723,13 +717,13 @@ type Customer {
   attributes: [Attribute!]!
   billingAddress: Address
 
-  """Required permission: customer.birthdate"""
+  """Required permission: `customer.birthdate`"""
   birthdate(format: String = "Y-m-d"): Date
   cellPhoneNumber: String
   email: String!
   firstName: String
 
-  """Required permission: customer.gender"""
+  """Required permission: `customer.gender`"""
   gender: Gender
   id: Int!
   language: Language
@@ -851,12 +845,12 @@ type DisplayItem {
   canonicalCategory: Category
   canonicalUri: String!
 
-  """Required scope: NO_SESSION"""
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
   categories: [Category!]
   category: Category
   collection: Collection
 
-  """Required permission: displayItem.countryOfOrigin"""
+  """Required permission: `displayItem.countryOfOrigin`"""
   countryOfOrigin: Country
   createdAt: String!
   description: FormattedString!
@@ -865,18 +859,18 @@ type DisplayItem {
   isPrimaryVariant: Boolean!
   items: [Item!]!
 
-  """Required scope: SESSION"""
+  """Required [operating mode](#operating-mode): `SESSION`"""
   language: Language
   languages: [Language!]!
   lowestPrice: LowestPrice
 
-  """Required scope: NO_SESSION"""
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
   lowestPriceByPricelist: [PricelistLowestPrice!]!
 
-  """Required scope: SESSION"""
+  """Required [operating mode](#operating-mode): `SESSION`"""
   market: Market!
 
-  """Required scope: NO_SESSION"""
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
   markets: [Market!]!
   measurementTable: MeasurementTable
   media: [ProductMedia!]!
@@ -889,30 +883,29 @@ type DisplayItem {
   orderQuantityDenominator: Int!
   originalPrice: MonetaryValue
 
-  """Required scope: NO_SESSION"""
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
   preview: Boolean!
 
   """
   Price with current market and pricelist, either from session or if _one_ market and pricelist is provided in no session.
-  For dynamically priced flexible bundles, price will be null since there is a range of possible prices depending on the sections when added to cart. 
-  minPrice and maxPrice can be found under `bundle`
+  
+  For dynamically priced flexible bundles, price will be null since there is a range of possible prices depending on the sections when added to cart.
+  
+  minPrice and maxPrice can be found under `bundle`.
   """
   price: MonetaryValue
 
   """
-  Price by pricelist
-  For dynamically priced flexible bundles priceByPricelist will be empty, since there is a range of possible prices depending on the sections when added to cart.
-  minPriceByPricelist and maxPriceByPricelist can be found under `bundle`
-  Only available for NO_SESSION scoped tokens.
+  For dynamically priced flexible bundles priceByPricelist will be empty, since there is a range of possible prices depending on the sections when added to cart. minPriceByPricelist and maxPriceByPricelist can be found under `bundle`.
   
-  Required scope: NO_SESSION
+  Required [operating mode](#operating-mode): `NO_SESSION`
   """
   priceByPricelist: [PricelistPrice!]!
 
-  """Required scope: SESSION"""
+  """Required [operating mode](#operating-mode): `SESSION`"""
   pricelist: Pricelist!
 
-  """Required scope: NO_SESSION"""
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
   pricelists: [Pricelist!]!
   primaryVariant: DisplayItem
   productNumber: String!
@@ -933,6 +926,14 @@ input DisplayItemFilter {
   filters: [FilterInput!]
   id: [Int!]
   onlyAvailable: Boolean! = false
+
+  """
+  When true, limits results to only the primary variant of each display.
+  Primary variant is defined as the first display variant.
+  
+  When false (default), all product variants are included in results.
+  """
+  onlyPrimaryVariant: Boolean! = false
 
   """Input for full-text search query."""
   search: String
@@ -988,10 +989,10 @@ input DynamicSelectionAttributeUnsetInput {
 }
 
 input FilterInput {
-  """Filter key from FilterOption.key"""
+  """Filter key from `FilterOption.key`"""
   key: String!
 
-  """Filter values from FilterOption.values"""
+  """Filter values from `FilterOption.values`"""
   values: [String!]!
 }
 
@@ -1005,7 +1006,7 @@ type FilterOption {
 interface FilterValue {
   active: Boolean!
 
-  """Number of matches with the current filtering"""
+  """Number of matches with the current filtering."""
   count: Int!
 
   """
@@ -1013,7 +1014,7 @@ interface FilterValue {
   """
   filterCount: Int!
 
-  """The number of items in total available, independent of filtering"""
+  """The number of items in total available, independent of filtering."""
   totalCount: Int!
   value: String!
 }
@@ -1087,7 +1088,7 @@ type Item {
   sku: String!
   stock: Stock!
 
-  """Required scope: NO_SESSION"""
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
   stockByWarehouse: [WarehouseStock!]!
   verticalLabelIndex: Int!
 }
@@ -1116,14 +1117,14 @@ type KlarnaPaymentWidget implements Widget {
 type Language {
   code: String!
 
-  """ISO-3166 code"""
+  """[ISO-3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)"""
   countryCode: String
   default: Boolean!
 
-  """ISO-639 code"""
+  """[ISO-639-1](https://en.wikipedia.org/wiki/ISO_639-1) code"""
   languageCode: String
 
-  """ISO-639 description"""
+  """[ISO-639](https://en.wikipedia.org/wiki/ISO_639-1) name"""
   languageName: String
   name(locale: String): String!
 }
@@ -1221,7 +1222,7 @@ type MappedAttributeFilterValue implements FilterValue {
   active: Boolean!
   attribute: MappedAttribute!
 
-  """Number of matches with the current filtering"""
+  """Number of matches with the current filtering."""
   count: Int!
 
   """
@@ -1229,7 +1230,7 @@ type MappedAttributeFilterValue implements FilterValue {
   """
   filterCount: Int!
 
-  """The number of items in total available, independent of filtering"""
+  """The number of items in total available, independent of filtering."""
   totalCount: Int!
   value: String!
 }
@@ -1248,10 +1249,10 @@ input MappedSelectionAttributeUnsetInput {
 }
 
 type Market {
-  """Required scope: NO_SESSION"""
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
   countries: [Country!]
 
-  """Required scope: NO_SESSION"""
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
   hasCampaignSite: Boolean!
   id: Int!
   name: String!
@@ -1311,120 +1312,113 @@ type MonetaryValue {
 
 type Mutation {
   """
-  Add flexible bundle to the current selection
+  Add flexible bundle to the current selection.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   addFlexibleBundle(categoryId: Int, comment: String! = "", item: String!, localizedProdSize: LocalizedProdSizeInput, productExternalUrl: String! = "", quantity: Int! = 1, sections: [BundleSectionInput!]!, subscriptionPlan: Int): AddItemPayload!
 
   """
-  Add display item or fixed bundle to the current selection
+  Add display item or fixed bundle to the current selection.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   addItem(categoryId: Int, comment: String! = "", item: String!, localizedProdSize: LocalizedProdSizeInput, productExternalUrl: String! = "", quantity: Int! = 1, subscriptionPlan: Int): AddItemPayload!
 
   """
-  Add a subscription to an existing subscription contract
+  Add a subscription to an existing subscription contract.
   
-  Required scope: LOGGED_IN
+  Required [operating mode](#operating-mode): `LOGGED_IN`
   """
   addSubscription(contractId: Int!, item: String!, nextOrderDate: Date!, quantity: Int!, subscriptionPlanId: Int!): SubscriptionContractPayload!
 
   """
-  Add a code voucher to the current selection
+  Add a code voucher to the current selection.
   
-  Can be protected by captcha
+  Can be protected by captcha.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   addVoucher(code: String!): SelectionMutationPayload!
 
   """
   Apply a gift card on the current selection.
+  
   Possible Error Codes:
   
-  internal_error: An internal issue not directly related to the shopper.
-  
-  invalid_input: A validation error, such as the gift card not existing or an incorrect PIN being provided.
-  
-  inactive_card: The gift card being used is either inactive or expired.
-  
-  insufficient_funds: The gift card does not have sufficient funds.
-  
-  invalid_gift_card_currency: The gift card’s currency does not match the current currency of the selection.
-  
-  empty_card_balance: The gift card balance is zero.
+  * `internal_error`- An internal issue not directly related to the shopper.
+  * `invalid_input`- A validation error, such as the gift card not existing or an incorrect PIN being provided.
+  * `inactive_card`- The gift card being used is either inactive or expired.
+  * `insufficient_funds`- The gift card does not have sufficient funds.
+  * `invalid_gift_card_currency`- The gift card’s currency does not match the current currency of the selection.
+  * `empty_card_balance`- The gift card balance is zero.
   
   Can be protected by captcha.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   applyGiftCard(input: ApplyGiftCardInput!): SelectionMutationPayload!
 
   """
-  Change the subscription contract address
+  Change the subscription contract address.
   
-  Required scope: LOGGED_IN
+  Required [operating mode](#operating-mode): `LOGGED_IN`
   """
   changeSubscriptionContractAddress(address: SubscriptionContractAddressInput!, contractId: Int!): SubscriptionContractPayload!
 
   """
-  Claim a selection from a purchase link
+  Claim a selection from a purchase link.
   
-  id: selection id from a purchase link
-  hash: hash from a purchase link
-  
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   claimSelection(
-    """hash from a purchase link"""
+    """Hash from a purchase link."""
     hash: String!
 
-    """selection id from a purchase link"""
+    """Selection id from a purchase link."""
     id: String!
   ): SelectionMutationPayload!
 
   """
-  Delete selection line by its id
+  Delete selection line by its id.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   deleteLine(lineId: String!): SelectionMutationPayload!
 
   """
-  Finalize the recurring payment process by send all variables received to paymentReturnPage
+  Finalize the recurring payment process by send all variables received to paymentReturnPage.
   
-  Required scope: LOGGED_IN
+  Required [operating mode](#operating-mode): `LOGGED_IN`
   """
   handleStoredPaymentResult(paymentMethodFields: Map!): StoredPaymentResultPayload!
 
   """
-  Handle event triggered by widget
+  Handle event triggered by widget.
   
-  Provided values are passed to the plugins that supports them
+  Provided values are passed to the plugins that supports them.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   handleWidgetEvent(payload: Map!): SelectionMutationPayload!
 
   """
-  Initiate the recurring payment process for the provided subscription contracts
+  Initiate the recurring payment process for the provided subscription contracts.
   
-  Required scope: LOGGED_IN
+  Required [operating mode](#operating-mode): `LOGGED_IN`
   """
   initializeStoredPaymentInstructions(input: StoredPaymentInstructionsInput!): StoredPaymentInstructionsPayload!
 
   """
-  Login as the customer in the current session
+  Login as the customer in the current session.
   
-  The current selection is merged with the selection associated with the customer
+  The current selection is merged with the selection associated with the customer.
   
-  Can be protected by captcha
+  Can be protected by captcha.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   
-  Rate limit: 10 requests per minute
+  Rate limit: 10 requests per minute.
   """
   login(
     email: String!
@@ -1437,103 +1431,101 @@ type Mutation {
   ): LoginPayload!
 
   """
-  Log out customer from the current session
+  Log out customer from the current session.
   
   Customer selection can be kept after logout if `Retain session after logout` plugin fields is set to `Yes`. Otherwise, selection is detached from the session.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   logout: LogoutPayload
 
   """
   Use Centra as a routing mechanism based on request path/URI
   
-  DISPLAY_ITEM - looks for display item
-  CATEGORY - looks for category
-  AFFILIATE - looks for affiliate and sets it on the current selection in SESSION mode
-  CAMPAIGN_SITE - looks for campaign site and sets it on the current selection in SESSION mode
-  URL_VOUCHER - looks for URL voucher and sets it on the current selection in SESSION mode
-  
-  Required scope: SESSION, NO_SESSION
+  * `DISPLAY_ITEM` - looks for display item
+  * `CATEGORY` - looks for category
+  * `AFFILIATE` - looks for affiliate and sets it on the current selection in SESSION mode
+  * `CAMPAIGN_SITE` - looks for campaign site and sets it on the current selection in SESSION mode
+  * `URL_VOUCHER` - looks for URL voucher and sets it on the current selection in SESSION mode
   """
   lookupUri(
     for: [UriLookupType!]!
     languageCode: [String!]
     limit: Int! = 20
 
-    """Required scope: NO_SESSION"""
+    """Required [operating mode](#operating-mode): `NO_SESSION`"""
     market: [Int!]
     page: Int! = 1
 
-    """Required scope: NO_SESSION"""
+    """Required [operating mode](#operating-mode): `NO_SESSION`"""
     pricelist: [Int!]
     uri: String!
   ): URILookupPayload
 
   """
-  Initiate the payment process for the current selection
+  Initiate the payment process for the current selection.
   
-  Can be protected by captcha
+  Can be protected by captcha.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   paymentInstructions(input: PaymentInstructionsInput!): PaymentInstructionsPayload!
 
   """
-  Verify payment to create order
+  Verify payment to create order.
   
-  Send all POST/GET variables received to paymentReturnPage to verify if payment was successfully processed
+  Send all POST/GET variables received to paymentReturnPage to verify if payment was successfully processed.
   
-  Selection is converted into order on successful payment and is detached from the current session
+  Selection is converted into order on successful payment and is detached from the current session.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   paymentResult(paymentMethodFields: Map!): PaymentResultPayload!
 
   """
-  Register customer
+  Register customer.
   
-  Can be protected by captcha
+  Can be protected by captcha.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   registerCustomer(input: CustomerRegisterInput!): CustomerRegisterPayload!
 
   """
-  Remove subscription plan from the selection line by line id
+  Remove subscription plan from the selection line by line id.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   removeSubscriptionPlanFromLine(lineId: String!): SelectionMutationPayload!
 
   """
-  Remove applied voucher from the current selection
+  Remove applied voucher from the current selection.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   removeVoucher(code: String!): SelectionMutationPayload!
 
   """
-  Request reset password email to be sent to the provided email
+  Request reset password email to be sent to the provided email.
   
-  The password reset link will be the domain from a Centra setting, resetPasswordExternalUrl is added as a path
+  The password reset link will be the domain from a Centra setting, resetPasswordExternalUrl is added as a path.
   Example:
     domain - https://example.com
     resetPasswordExternalUrl - hello/world
     link customer receives - https://example.com/hello/world?i=123&id=567
   
-  Can be protected by captcha
+  Can be protected by captcha.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   requestPasswordResetEmail(email: String!, resetPasswordExternalUrl: String!): RequestPasswordResetEmailPayload!
 
   """
-  Finalize reset password flow providing new password
+  Finalize reset password flow providing new password.
   
-  Provide `i` and `id` GET request variables received on reset password page
+  Provide `i` and `id` GET request variables received on reset password page.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   resetPassword(
     confirmPassword: String
@@ -1541,186 +1533,188 @@ type Mutation {
     id: String!
 
     """
-    controls weather customer will be logged in automatically or not on success password reset action
+    Controls weather customer will be logged in automatically or not on success password reset action.
     """
     loginOnSuccess: Boolean! = false
     password: String!
   ): ResetPasswordPayload!
 
   """
-  Set shipping and billing addresses on the current selection
+  Set shipping and billing addresses on the current selection.
   
-  If separateBillingAddress not provided, the billing address defaults to the shipping address
-  
-  By default, a cart abandonment email is sent. To prevent this, set sendCartAbandonmentEmail to false
-  
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
-  setAddress(sendCartAbandonmentEmail: Boolean, separateBillingAddress: AddressInput, shippingAddress: AddressInput!): SelectionMutationPayload!
+  setAddress(
+    sendCartAbandonmentEmail: Boolean = true
+
+    """Defaults to `shippingAddress`."""
+    separateBillingAddress: AddressInput
+    shippingAddress: AddressInput!
+  ): SelectionMutationPayload!
 
   """
-  Set an affiliate on the current session by its uri
+  Set an affiliate on the current session by its uri.
   
-  Any selection created for the current session during affiliate `Cookie expiration in days` will have an affiliate set on it
+  Any selection created for the current session during affiliate `Cookie expiration in days` will have an affiliate set on it.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   setAffiliate(uri: String!): SelectionMutationPayload!
 
   """
-  Set allocation rule to request for fulfillment of order
+  Set allocation rule to request for fulfillment of order.
   
-  Required scope: SESSION, SHARED_SECRET
+  Required [operating mode](#operating-mode): `SHARED_SECRET`
   """
   setAllocationRule(id: Int!): SelectionMutationPayload!
 
   """
-  Set a brick and mortar store on the current selection, to request for fulfillment of order
+  Set a brick and mortar store on the current selection, to request for fulfillment of order.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   setBrickAndMortar(id: Int!): SelectionMutationPayload!
 
   """
-  Set campaign site market on the current selection by its uri
+  Set campaign site market on the current selection by its uri.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   setCampaignSite(uri: String!): SelectionMutationPayload!
 
   """
-  Set the current session and selection country and state
+  Set the current session and selection country and state.
   
-  Can trigger pricelist/market change along with unavailable products removal froom the current selection
+  Can trigger pricelist/market change along with unavailable products removal froom the current selection.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   setCountryState(countryCode: String!, stateCode: String): SelectionMutationPayload!
 
   """
-  Set the language on the current session and selection
+  Set the language on the current session and selection.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   setLanguage(code: String!): SessionPayload!
 
   """
-  Set the market on the current selection
+  Set the market on the current selection.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SHARED_SECRET`
   """
   setMarket(id: Int!): SessionPayload!
 
   """
-  Set the paymentMethod on the current selection
+  Set the paymentMethod on the current selection.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   setPaymentMethod(id: Int!): SelectionMutationPayload!
 
   """
-  Attach open selection to the token, it now becomes the current selection for the session
+  Attach open selection to the token, it now becomes the current selection for the session.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   setSelection(id: String!): SelectionMutationPayload!
 
   """
-  Set dynamic and mapped attributes on the current selection
+  Set dynamic and mapped attributes on the current selection.
   
-  Required scope: SESSION, SHARED_SECRET
+  Required [operating mode](#operating-mode): `SHARED_SECRET`
   """
   setSelectionAttributes(dynamicAttributes: [DynamicSelectionAttributeSetInput!], mappedAttributes: [MappedSelectionAttributeSetInput!]): SelectionMutationPayload!
 
   """
-  Set the shipping method on the current selection
+  Set the shipping method on the current selection.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   setShippingMethod(id: Int!): SelectionMutationPayload!
 
   """
-  Subscribe to back in stock notification
+  Subscribe to back in stock notification.
   
-  Can be protected by captcha
+  Can be protected by captcha.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   subscribeToBackInStock(input: BackInStockSubscribeInput!): StockSubscribePayload!
 
   """
-  Subscribe to newsletter for the provided email address
+  Subscribe to newsletter for the provided email address.
   
-  Can be protected by captcha
+  Can be protected by captcha.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   subscribeToNewsletter(additionalInfo: NewsletterSubscribeInput, email: String!): NewsletterSubscribePayload!
 
   """
-  Trigger selection action such as external allocation process
+  Trigger selection action such as external allocation process.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   triggerSelectionAction(actionType: SelectionActionType!): TriggerSelectionActionPayload!
 
   """
-  Unset dynamic and mapped attributes from the current selection
+  Unset dynamic and mapped attributes from the current selection.
   
-  Required scope: SESSION, SHARED_SECRET
+  Required [operating mode](#operating-mode): `SHARED_SECRET`
   """
   unsetSelectionAttributes(dynamicAttributes: [DynamicSelectionAttributeUnsetInput!], mappedAttributes: [MappedSelectionAttributeUnsetInput!]): SelectionMutationPayload!
 
   """
-  Update currently logged in customer
+  Update currently logged in customer.
   
-  Required scope: LOGGED_IN
+  Required [operating mode](#operating-mode): `LOGGED_IN`
   """
   updateCustomer(input: CustomerUpdateInput!): CustomerUpdatePayload!
 
   """
-  Update a selection line by its id
+  Update a selection line by its id.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   updateLine(comment: String, lineId: String!, quantity: Int, subscriptionPlanId: Int): SelectionMutationPayload!
 
   """
-  Update the interval for a subscription owned by the logged in customer
+  Update the interval for a subscription owned by the logged in customer.
   
-  Interval is taken from the provided subscription plan
+  Interval is taken from the provided subscription plan.
   
-  Required scope: LOGGED_IN
+  Required [operating mode](#operating-mode): `LOGGED_IN`
   """
   updateSubscriptionInterval(subscriptionId: Int!, subscriptionPlanId: Int!): SubscriptionContractPayload!
 
   """
-  Update the quantity for a subscription owned by the logged in customer
+  Update the quantity for a subscription owned by the logged in customer.
   
-  Required scope: LOGGED_IN
+  Required [operating mode](#operating-mode): `LOGGED_IN`
   """
   updateSubscriptionQuantity(quantity: Int!, subscriptionId: Int!): SubscriptionContractPayload!
 
   """
-  Update the status for a subscription owned by the logged in customer
+  Update the status for a subscription owned by the logged in customer.
   
-  Required scope: LOGGED_IN
+  Required [operating mode](#operating-mode): `LOGGED_IN`
   """
   updateSubscriptionStatus(status: SubscriptionStatus!, subscriptionId: Int!): SubscriptionContractPayload!
 
   """
-  Validate captcha response
+  Validate captcha response.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   verifyCaptcha(captchaData: String!): CaptchaVerifyPayload!
 
   """
-  Verify if password hashes received on reset password page are correct
+  Verify if password hashes received on reset password page are correct.
   
-  Provide `i` and `id` GET request variables received on reset password page
+  Provide `i` and `id` GET request variables received on reset password page.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   verifyResetPasswordHashes(i: String!, id: String!): VerifyResetPasswordHashesPayload!
 }
@@ -1740,8 +1734,8 @@ type NewsletterSubscribePayload implements Payload {
 type NewsletterSubscription {
   country: Country
   createdAt(
-    """ISO-8601"""
-    format: String = "Y-m-d\\TH:i:sP"
+    """[ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)"""
+    format: String = "Y-m-dTH:i:sP"
   ): DateTimeTz!
   isActive: Boolean!
 }
@@ -1796,7 +1790,7 @@ type Order {
   market: Market
   number: Int!
   orderDate(
-    """ISO-8601"""
+    """[ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)"""
     format: String = "Y-m-dTH:i:sP"
   ): String!
   otherComment: String!
@@ -1860,7 +1854,8 @@ enum OrderStatus {
 }
 
 type PaginationInfo {
-  """ The page can be different from the requested page if an invalid page was requested 
+  """
+  The page can be different from the requested page if an invalid page was requested.
   """
   currentPage: Int!
   hasNextPage: Boolean!
@@ -1973,7 +1968,7 @@ enum PaymentResultType {
 type Pricelist {
   comment: String
 
-  """Required scope: NO_SESSION"""
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
   countries: [Country!]
   currency: Currency!
   id: Int!
@@ -2033,8 +2028,10 @@ type ProductVariant {
 
 """
 A promotion is information about how you can trigger certain deals by adding an item to cart.
-E.g. add to cart and get 50% off on your cheapest product, save 20% when bought with X
-It interacts with auto vouchers
+
+E.g. add to cart and get 50% off on your cheapest product, save 20% when bought with X.
+
+It interacts with auto vouchers.
 """
 interface Promotion {
   action: PromotionAction!
@@ -2052,62 +2049,54 @@ enum PromotionResult {
 
 type Query {
   """
-  Get an affiliate by its uri
-  Required scope: NO_SESSION
+  Get an affiliate by its uri.
+  
+  Required [operating mode](#operating-mode): `NO_SESSION`
   """
   affiliate(uri: String!): Affiliate
 
   """
-  Get a paginated list of affiliates
-  Required scope: NO_SESSION
+  Get a paginated list of affiliates.
+  
+  Required [operating mode](#operating-mode): `NO_SESSION`
   """
   affiliates(limit: Int! = 20, page: Int! = 1, sort: [AffiliateSort!]! = [name_ASC]): AffiliateList!
 
   """
-  Get a list of brands
+  Get a list of brands.
   
-  Required scope: SESSION, NO_SESSION
-  
-  Filtered by session's market and pricelist in session mode
+  Filtered by session's market and pricelist in session mode.
   """
   brands(
     """
-    Max limits
+    Max limits depend on your session mode.
     
-    SESSION: 40
+    `SESSION`: 40
     
-    NO_SESSION: 100
+    `NO_SESSION`: 100
     """
     limit: Int! = 20
 
-    """Required scope: NO_SESSION"""
+    """Required [operating mode](#operating-mode): `NO_SESSION`"""
     market: [Int!]
     page: Int! = 1
 
-    """Required scope: NO_SESSION"""
+    """Required [operating mode](#operating-mode): `NO_SESSION`"""
     pricelist: [Int!]
     sort: [BrandSort!]! = []
   ): BrandList
 
-  """
-  Get a brick and mortar by its id
-  
-  Required scope: SESSION, NO_SESSION
-  """
+  """Get a brick and mortar by its id."""
   brickAndMortar(id: Int!): BrickAndMortar
 
-  """
-  Get a paginated list of brick and mortars
-  
-  Required scope: SESSION, NO_SESSION
-  """
+  """Get a paginated list of brick and mortars."""
   brickAndMortars(
     """
-    Max limits
+    Max limits depend on your session mode.
     
-    SESSION: 40
+    `SESSION`: 40
     
-    NO_SESSION: 100
+    `NO_SESSION`: 100
     """
     limit: Int = 20
     page: Int = 1
@@ -2116,16 +2105,16 @@ type Query {
   ): BrickAndMortarList
 
   """
-  Get a campaign site by its uri
+  Get a campaign site by its uri.
   
-  Required scope: NO_SESSION
+  Required [operating mode](#operating-mode): `NO_SESSION`
   """
   campaignSite(uri: String!): CampaignSite
 
   """
-  Get a paginated list of campaign sites
+  Get a paginated list of campaign sites.
   
-  Required scope: NO_SESSION
+  Required [operating mode](#operating-mode): `NO_SESSION`
   """
   campaignSites(
     """
@@ -2139,86 +2128,76 @@ type Query {
   ): CampaignSiteList!
 
   """
-  Get a paginated list of categories
+  Get a paginated list of categories.
   
-  Required scope: SESSION, NO_SESSION
+  Filtered by session's market and pricelist in session mode.
   
-  Filtered by session's market and pricelist in session mode
-  
-  Filter by parent: 0 to get only top level categories
+  Filter by parent: 0 to get only top level categories.
   """
   categories(
     id: [Int!]
     languageCode: [String!]
 
     """
-    Max limits
+    Max limits depend on your session mode.
     
-    SESSION: 40
+    `SESSION`: 40
     
-    NO_SESSION: 100
+    `NO_SESSION`: 100
     """
     limit: Int! = 20
 
-    """Required scope: NO_SESSION"""
+    """Required [operating mode](#operating-mode): `NO_SESSION`"""
     market: [Int!]
     page: Int! = 1
     parent: Int
 
-    """Required scope: NO_SESSION"""
+    """Required [operating mode](#operating-mode): `NO_SESSION`"""
     pricelist: [Int!]
     sort: [CategorySort!]! = []
   ): CategoryList
 
   """
-  Get a paginated list of collections
+  Get a paginated list of collections.
   
-  Required scope: SESSION, NO_SESSION
-  
-  Filtered by session's market and pricelist in session mode
+  Filtered by session's market and pricelist in session mode.
   """
   collections(
     ids: [Int!]
     limit: Int! = 20
 
-    """Required scope: NO_SESSION"""
+    """Required [operating mode](#operating-mode): `NO_SESSION`"""
     market: [Int!]
 
     """
-    Max limits
+    Max limits depend on your session mode.
     
-    SESSION: 40
+    `SESSION`: 40
     
-    NO_SESSION: 100
+    `NO_SESSION`: 100
     """
     page: Int! = 1
 
-    """Required scope: NO_SESSION"""
+    """Required [operating mode](#operating-mode): `NO_SESSION`"""
     pricelist: [Int!]
     sort: [CollectionSort!]! = []
   ): CollectionList
 
-  """
-  Get a list of countries
-  
-  Required scope: SESSION, NO_SESSION
-  """
+  """Get a list of countries."""
   countries(
     """if true, returns only countries that can be shipped to."""
     onlyShipTo: Boolean!
   ): [Country!]!
 
   """
-  Get the currently logged in customer
+  Get the currently logged in customer.
   
-  Required scope: LOGGED_IN
+  Required [operating mode](#operating-mode): `LOGGED_IN`
   """
   customer: Customer
 
   """
-  Get a display item by its id
-  
-  Required scope: SESSION, NO_SESSION
+  Get a display item by its id.
   
   In session mode, results are filtered by the session's market and pricelist. Translated values are returned if available for either session or input language.
   """
@@ -2226,17 +2205,15 @@ type Query {
     id: Int!
     languageCode: [String!]
 
-    """Required scope: NO_SESSION"""
+    """Required [operating mode](#operating-mode): `NO_SESSION`"""
     market: [Int!]
 
-    """Required scope: NO_SESSION"""
+    """Required [operating mode](#operating-mode): `NO_SESSION`"""
     pricelist: [Int!]
   ): DisplayItem
 
   """
-  Get a paginated list of display items
-  
-  Required scope: SESSION, NO_SESSION
+  Get a paginated list of display items.
   
   In session mode, results are filtered by the session's market and pricelist. Translated values are returned if available for either session or input language.
   """
@@ -2244,99 +2221,92 @@ type Query {
     languageCode: [String!]
 
     """
-    Max limits
+    Max limits depend on your session mode.
     
-    SESSION: 40
+    `SESSION`: 40
     
-    NO_SESSION: 100
+    `NO_SESSION`: 100
     """
     limit: Int! = 20
 
-    """Required scope: NO_SESSION"""
+    """Required [operating mode](#operating-mode): `NO_SESSION`"""
     market: [Int!]
     page: Int! = 1
 
-    """Required scope: NO_SESSION"""
+    """Required [operating mode](#operating-mode): `NO_SESSION`"""
     pricelist: [Int!]
     sort: [CustomSortInput!]! = []
     where: DisplayItemFilter = null
   ): DisplayItemList!
 
-  """
-  Check which brick and mortars can fulfill the current selection
-  
-  Required scope: SESSION, NO_SESSION
-  """
+  """Check which brick and mortars can fulfill the current selection."""
   fulfillmentCheck(brickAndMortarIds: [Int!]!): FulfillmentCheckPayload!
 
-  """
-  Get a list of languages
-  
-  Required scope: SESSION, NO_SESSION
-  """
+  """Get a list of languages."""
   languages: [Language!]!
 
   """
-  Get a list of markets
+  Get a list of markets.
   
-  Required scope: NO_SESSION
+  Required [operating mode](#operating-mode): `NO_SESSION`
   """
   markets(
     """
-    only markets available in at least one of the specified countries are returned
+    Only markets available in at least one of the specified countries are returned.
     """
     countryCode: [String!]
     id: [Int!]
   ): [Market!]!
 
   """
-  Get the latest order, null if none
+  Get the latest order, null if none.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   order: Order
 
   """
-  Get a list of pricelists
+  Get a list of pricelists.
   
-  Required scope: NO_SESSION
+  Required [operating mode](#operating-mode): `NO_SESSION`
   """
   pricelists(
     """
-    only pricelists available in at least one of the specified countries are returned
+    Only pricelists available in at least one of the specified countries are returned.
     """
     countryCodes: [String!]
     id: [Int!]
   ): [Pricelist!]!
 
   """
-  Get the current selection
+  Get the current selection.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   selection(voucherMode: VOUCHER_MODE! = LINES): Selection!
 
   """
-  Get the current session
+  Get the current session.
   
-  Required scope: SESSION
+  Required [operating mode](#operating-mode): `SESSION`
   """
   session: Session!
 
   """
-  Get payment methods supporting recurring payment
+  Get payment methods supporting recurring payment.
   
-  Required scope: LOGGED_IN
+  Filters by session market, pricelist and country code by default.
   
-  Filters by session market, pricelist and country code by default
-  Filters by contract market, pricelist and country code if provided
+  Filters by contract market, pricelist and country code if provided.
+  
+  Required [operating mode](#operating-mode): `LOGGED_IN`
   """
   storedPaymentMethods(contract: Int): StoredPaymentMethodPayload!
 
   """
-  Get customer's subscription contract list
+  Get customer's subscription contract list.
   
-  Required scope: LOGGED_IN
+  Required [operating mode](#operating-mode): `LOGGED_IN`
   """
   subscriptionContracts: [SubscriptionContract!]!
 }
@@ -2388,13 +2358,13 @@ type Selection {
   availableAttributes: [Attribute!]!
   brickAndMortar: BrickAndMortar
 
-  """slow fields for checkout"""
+  """Slow fields for checkout."""
   checkout: CheckoutSelection
   comment: String
   discounts: [Voucher!]!
   externalGiftCardAvailable: Boolean!
 
-  """does not contain added tax"""
+  """Does not contain added tax."""
   grandTotal: MonetaryValue!
   id: String
   language: Language
@@ -2498,7 +2468,7 @@ type SizeChart {
 type SizeNameFilterValue implements FilterValue {
   active: Boolean!
 
-  """Number of matches with the current filtering"""
+  """Number of matches with the current filtering."""
   count: Int!
 
   """
@@ -2507,7 +2477,7 @@ type SizeNameFilterValue implements FilterValue {
   filterCount: Int!
   sizeLocalization: [LocalizedSize!]!
 
-  """The number of items in total available, independent of filtering"""
+  """The number of items in total available, independent of filtering."""
   totalCount: Int!
   value: String!
 }
@@ -2540,7 +2510,7 @@ type StateAddressField implements AddressField {
 type Stock {
   available: Boolean!
 
-  """Required permission: stock.quantity"""
+  """Required permission: `stock.quantity`"""
   quantity: Int!
 }
 
@@ -2578,8 +2548,8 @@ type StoredPaymentResultPayload implements Payload {
 type Subscription {
   attentionReasons: [AttentionReason!]!
   createdAt(
-    """ISO-8601"""
-    format: String = "Y-m-d\\TH:i:sP"
+    """[ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)"""
+    format: String = "Y-m-dTH:i:sP"
   ): DateTimeTz!
   discount: Float
   id: Int!
@@ -2599,15 +2569,15 @@ type Subscription {
   plan: SubscriptionPlan
   status: SubscriptionStatus!
   updatedAt(
-    """ISO-8601"""
-    format: String = "Y-m-d\\TH:i:sP"
+    """[ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)"""
+    format: String = "Y-m-dTH:i:sP"
   ): DateTimeTz!
 }
 
 type SubscriptionContract {
   createdAt(
-    """ISO-8601"""
-    format: String = "Y-m-d\\TH:i:sP"
+    """[ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)"""
+    format: String = "Y-m-dTH:i:sP"
   ): DateTimeTz!
   id: Int!
   market: Market
@@ -2618,8 +2588,8 @@ type SubscriptionContract {
   subscriptionPayment: [SubscriptionPayment!]!
   subscriptions: [Subscription!]!
   updatedAt(
-    """ISO-8601"""
-    format: String = "Y-m-d\\TH:i:sP"
+    """[ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)"""
+    format: String = "Y-m-dTH:i:sP"
   ): DateTimeTz!
 }
 
@@ -2641,15 +2611,15 @@ type SubscriptionContractPayload implements Payload {
 
 type SubscriptionPayment {
   createdAt(
-    """ISO-8601"""
-    format: String = "Y-m-d\\TH:i:sP"
+    """[ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)"""
+    format: String = "Y-m-dTH:i:sP"
   ): DateTimeTz!
   id: Int!
   paymentMethod: String!
   status: SubscriptionPaymentStatus!
   updatedAt(
-    """ISO-8601"""
-    format: String = "Y-m-d\\TH:i:sP"
+    """[ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)"""
+    format: String = "Y-m-dTH:i:sP"
   ): DateTimeTz!
 }
 
@@ -2674,6 +2644,7 @@ enum SubscriptionStatus {
 
 type SuccessPaymentAction implements PaymentAction {
   action: PaymentActionType!
+  formFields: Map
   order: Order!
 }
 
@@ -2692,7 +2663,7 @@ type TextAddressField implements AddressField {
 type TextFilterValue implements FilterValue {
   active: Boolean!
 
-  """Number of matches with the current filtering"""
+  """Number of matches with the current filtering."""
   count: Int!
 
   """
@@ -2701,7 +2672,7 @@ type TextFilterValue implements FilterValue {
   filterCount: Int!
   name: String
 
-  """The number of items in total available, independent of filtering"""
+  """The number of items in total available, independent of filtering."""
   totalCount: Int!
   value: String!
 }
@@ -2768,7 +2739,7 @@ enum UriLookupType {
 type UrlVoucher implements Voucher {
   actions: [VoucherAction!]!
 
-  """Required scope: SESSION"""
+  """Required [operating mode](#operating-mode): `SESSION`"""
   appliedOn: [VoucherAppliedOn!]!
   attributes: [Attribute!]!
   expiryDate: String!
@@ -2778,25 +2749,25 @@ type UrlVoucher implements Voucher {
   method: VoucherMethod!
   name: String!
 
-  """Required scope: SESSION"""
+  """Required [operating mode](#operating-mode): `SESSION`"""
   orderReduction: MonetaryValue!
 
-  """Required scope: SESSION"""
+  """Required [operating mode](#operating-mode): `SESSION`"""
   totalItemReduction: MonetaryValue!
 
-  """Required scope: SESSION"""
+  """Required [operating mode](#operating-mode): `SESSION`"""
   totalShippingReduction: MonetaryValue!
   type: VoucherType!
   url: String!
 
-  """Required scope: SESSION"""
+  """Required [operating mode](#operating-mode): `SESSION`"""
   value: MonetaryValue!
 }
 
 type UrlVoucherUriLookupPayload implements Payload & URILookupPayload {
   found: UriLookupType!
 
-  """Required scope: SESSION"""
+  """Required [operating mode](#operating-mode): `SESSION`"""
   selection(voucherMode: VOUCHER_MODE! = LINES): Selection
   userErrors: [UserError!]!
   voucherApplied: UrlVoucher!

@@ -36,6 +36,11 @@ type Payload = Partial<
   >
 >;
 
+/* 
+  Handler for Centra webhook.
+  Centra webhook plugin must be configured with desired event types, URL for this route and a secret.
+  The secret must be set in the environment variable `CENTRA_WEBHOOK_SECRET`.
+*/
 export const revalidateHandler = async (req: NextRequest): Promise<NextResponse> => {
   const signatureHeader = req.headers.get('X-Centra-Signature') ?? '';
   const signature: { t?: string; v1?: string } = signatureHeader
@@ -77,12 +82,12 @@ export const revalidateHandler = async (req: NextRequest): Promise<NextResponse>
   }
 
   if (payload.Markets) {
-    console.info('Revalidated markets.');
+    console.info('Revalidated markets.', payload.Markets);
     revalidateTag(TAGS.markets);
   }
 
   if (payload.Languages) {
-    console.info('Revalidated languages.');
+    console.info('Revalidated languages.', payload.Languages);
     revalidateTag(TAGS.languages);
   }
 

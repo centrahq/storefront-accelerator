@@ -88,6 +88,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
 
   return (
     <Suspense
+      // Use the serialized filters as a key to ensure the fallback is shown when filters change.
       key={serializeProductsFilters(productsFilterParamsCache.all())}
       fallback={
         <>

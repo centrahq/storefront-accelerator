@@ -1,7 +1,6 @@
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 
-// Footer content should be fetched from a CMS in most cases
-
+// Footer content would typically be fetched from a CMS
 export const Footer = () => {
   return (
     <footer className="text-mono-300 bleed-bg-mono-900 grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-12 py-10">

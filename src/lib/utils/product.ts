@@ -12,7 +12,8 @@ export const getItemName = (item: ItemFragment, countryCode: string | undefined)
 };
 
 /**
- * Extracts the color code from a variant swatch attribute. Assumes a swatch custom attribute is set with `variant_swatch`. Example:
+ * Extracts the color code from a variant swatch attribute.
+ * Assumes a swatch custom attribute is set with `variant_swatch` name. Example:
  * ```json
  * {
  *   "desc": "Variant swatch",

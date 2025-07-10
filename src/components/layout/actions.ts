@@ -7,6 +7,7 @@ import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { apiTokenCookie } from '@/lib/centra/cookies';
 import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
 import { createSessionCookie, mapSession } from '@/lib/centra/sessionCookie';
+import { checkUnavailableItems } from '@/lib/utils/unavailableItems';
 import { graphql } from '@gql/gql';
 
 export async function changeLocale({ country, language }: { country: string; language: string }) {
@@ -44,14 +45,14 @@ export async function changeLocale({ country, language }: { country: string; lan
     const session = mapSession(response.data.setLanguage.session);
     cookieStore.set(await createSessionCookie(session));
 
-    const hasRemovedItems = response.data.setCountryState.userErrors.some(
-      (error) => error.__typename === 'UnavailableItem',
-    );
-
     return {
       status: 'success' as const,
       locale: serializeLocale(session),
-      hasRemovedItems,
+      /* 
+        It is possible that some items in the cart are not available in the new selected country.
+        In this case, the `UnavailableItem` error is returned, and we should notify the user.
+      */
+      hasRemovedItems: checkUnavailableItems(response.data.setCountryState.userErrors),
     };
   } catch {
     return { status: 'error' as const, message: t('server:something-went-wrong') };

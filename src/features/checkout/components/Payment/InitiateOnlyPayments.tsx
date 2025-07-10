@@ -3,14 +3,18 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
+import { Translation } from '@/features/i18n';
+import { UserError } from '@/lib/centra/errors';
 import { CentraPaymentResponseEvent, mapAddress } from '@/lib/centra/events';
 import { PaymentEvent } from '@/lib/centra/types/events';
+import { checkUnavailableItems } from '@/lib/utils/unavailableItems';
 import { PaymentMethodKind } from '@gql/graphql';
 
 import { usePaymentInstructions } from '../../mutations';
 import { checkoutQuery } from '../../queries';
-import { handlePaymentError } from '../../utils/handlePaymentError';
+import { showItemsRemovedToast } from '../../utils/showItemsRemovedToast';
 import { Widget } from '../Widget';
 
 // Payment methods to display as quick checkout
@@ -136,7 +140,15 @@ export const InitiateOnlyPayment = ({ id, uri }: { id: number; uri: string }) =>
               }
             }
           },
-          onError: handlePaymentError,
+          onError: (error) => {
+            if (error instanceof UserError && checkUnavailableItems(error.userErrors)) {
+              showItemsRemovedToast();
+            } else {
+              toast.error(<Translation>{(t) => t('checkout:errors.could-not-finalize-payment')}</Translation>, {
+                id: 'payment-error',
+              });
+            }
+          },
         },
       );
     };

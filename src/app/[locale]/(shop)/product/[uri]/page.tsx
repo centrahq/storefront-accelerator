@@ -10,7 +10,7 @@ import { ProductMedia } from '@/features/product-details/components/ProductMedia
 import { RelatedProducts } from '@/features/product-details/components/RelatedProducts';
 import { Variants } from '@/features/product-details/components/Variants';
 import { ProductDescription } from '@/features/product-listing/components/ProductDescription/ProductDescription';
-import { getRelatedProducts, lookupProduct } from '@/lib/centra/dtc-api/fetchers/noSession';
+import { lookupProduct } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
 import { BundlePriceType, BundleType } from '@gql/graphql';
 
@@ -56,13 +56,6 @@ export async function generateMetadata({ params }: PageProps, parent: ResolvingM
 export default async function ProductPage({ params }: PageProps) {
   const { uri } = await params;
   const { market, pricelist, language } = await getSession();
-
-  const relatedProductsPromise = getRelatedProducts({
-    uri,
-    language,
-    market,
-    pricelist,
-  }).catch(() => []);
 
   const product = await lookupProduct({
     uri,
@@ -113,7 +106,7 @@ export default async function ProductPage({ params }: PageProps) {
         </div>
       </div>
       <Suspense fallback={null}>
-        <RelatedProducts relatedProducts={relatedProductsPromise} />
+        <RelatedProducts id={product.id} />
       </Suspense>
     </>
   );

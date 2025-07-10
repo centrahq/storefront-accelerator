@@ -41,6 +41,7 @@ const fetchCategoryProductsUncached = ({ category, filters, ...variables }: Fetc
   });
 };
 
+// Cache the results if we are fetching the first page with no filters.
 const fetchCategoryProducts = async (variables: FetchProductsVariables) => {
   return variables.filters.length === 0 && variables.page === 1
     ? fetchCategoryProductsCached(variables)
@@ -124,6 +125,7 @@ export default async function CategoryPage({
 
   return (
     <Suspense
+      // Use the serialized filters as a key to ensure the fallback is shown when filters change.
       key={serializeProductsFilters(productsFilterParamsCache.all())}
       fallback={
         <>

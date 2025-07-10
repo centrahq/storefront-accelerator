@@ -4,11 +4,6 @@ import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
 import { graphql } from '@gql/gql';
 import { PaymentResultType } from '@gql/graphql';
 
-/*
-  `/success` route is used to handle the payment result from the payment provider. It should always be passed as `paymentReturnPage` to `paymentInstructions` mutation.
-  The route will redirect to `/confirmation` page if the payment was successful, otherwise to `/failed` page.
-*/
-
 /**
  * Resolves brackets in object keys (max 1 depth)
  *
@@ -51,15 +46,18 @@ const getPaymentResult = (fields: Record<string, unknown>) => {
       },
     },
   )
-    .then((response) => response.data.paymentResult.type === PaymentResultType.Success)
-    .catch(() => false);
+    .then((response) => response.data.paymentResult.type)
+    .catch(() => PaymentResultType.Failed);
 };
 
+/*
+  The /success route handles the payment result from the payment provider. It must always be passed as `paymentReturnPage` to the `paymentInstructions` mutation.
+  If the payment is successful, the route redirects to the /confirmation page; otherwise, it redirects to the /failed page.
+*/
 export async function GET(request: NextRequest) {
   const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries());
   const paymentData = resolveBrackets(searchParams);
-
-  const redirectTo = (await getPaymentResult(paymentData)) ? '/confirmation' : '/failed';
+  const redirectTo = (await getPaymentResult(paymentData)) === PaymentResultType.Success ? '/confirmation' : '/failed';
 
   return NextResponse.redirect(new URL(redirectTo, request.url).toString());
 }
@@ -67,10 +65,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries());
   const body = Object.fromEntries((await request.formData()).entries());
-
   const paymentData = resolveBrackets({ ...searchParams, ...body });
-
-  const redirectTo = (await getPaymentResult(paymentData)) ? '/confirmation' : '/failed';
+  const redirectTo = (await getPaymentResult(paymentData)) === PaymentResultType.Success ? '/confirmation' : '/failed';
 
   return NextResponse.redirect(new URL(redirectTo, request.url).toString());
 }

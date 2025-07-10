@@ -1,8 +1,11 @@
-import { UserError } from '@gql/graphql';
-
 interface Extensions {
   token: string;
   traceId: string;
+}
+
+interface Error {
+  message: string;
+  path?: string[];
 }
 
 export type CentraSuccessResponse<TResult> = {
@@ -12,7 +15,7 @@ export type CentraSuccessResponse<TResult> = {
 
 export type CentraErrorResponse = {
   data: null;
-  errors: UserError[];
+  errors: Error[];
   extensions?: Extensions;
 };
 

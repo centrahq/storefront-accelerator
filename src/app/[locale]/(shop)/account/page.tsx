@@ -13,7 +13,11 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
   return (
     <div className="flex flex-col gap-8">
       <h2 className="text-3xl font-medium">{t('server:user.my-orders')}</h2>
-      <Suspense key={serializeOrderFilters(orderFilterParamsCache.all())} fallback={<OrdersSkeleton />}>
+      <Suspense
+        // Use the serialized filters as a key to ensure the fallback is shown when filters change.
+        key={serializeOrderFilters(orderFilterParamsCache.all())}
+        fallback={<OrdersSkeleton />}
+      >
         <OrdersTable />
       </Suspense>
     </div>

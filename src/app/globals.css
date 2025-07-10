@@ -13,8 +13,8 @@
 }
 
 @utility bleed-bg-* {
-  background-color: --value(--color- *, [color]);
-  border-image: linear-gradient(--value(--color- *, [color]) 0 0) fill 0 / /0 9999vw 0 9999vw;
+  background-color: --value(--color-*, [color]);
+  border-image: linear-gradient(--value(--color-*, [color]) 0 0) fill 0 / /0 9999vw 0 9999vw;
 }
 
 @utility custom-scrollbar {

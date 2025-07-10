@@ -29,6 +29,7 @@ export const useSetAddress = () => {
                   ...checkout
                 }
                 userErrors {
+                  __typename
                   message
                   path
                 }
@@ -386,6 +387,7 @@ export const useSetCountryState = () => {
                   ...checkout
                 }
                 userErrors {
+                  __typename
                   message
                   path
                 }

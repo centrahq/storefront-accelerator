@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useTranslation } from '@/features/i18n/useTranslation/client';
+import { UserError } from '@/lib/centra/errors';
+import { checkUnavailableItems, REMOVED_ITEMS_PARAM } from '@/lib/utils/unavailableItems';
 
 import { useSetAddress } from '../../mutations';
 import { checkoutQuery } from '../../queries';
@@ -128,10 +130,18 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
 
     setAddressMutation.mutate(parsedAddress.data, {
       onSuccess: () => {
-        router.push(`/checkout/delivery`);
+        router.push('/checkout/delivery');
       },
-      onError: () => {
-        toast.error(t('checkout:errors.save-address'));
+      onError: (error) => {
+        if (error instanceof UserError && checkUnavailableItems(error.userErrors)) {
+          /*
+            If some items were removed from the cart due to country change,
+            we want to update locale in the URL and show a toast.
+          */
+          router.push(`/checkout?${REMOVED_ITEMS_PARAM}=true`);
+        } else {
+          toast.error(t('checkout:errors.save-address'));
+        }
       },
     });
   };

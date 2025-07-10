@@ -4,17 +4,20 @@ import { useIsMutating, useSuspenseQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
-import { Trans } from '@/features/i18n';
+import { Trans, Translation } from '@/features/i18n';
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
+import { UserError } from '@/lib/centra/errors';
 import { CentraPaymentResponseEvent, mapAddress } from '@/lib/centra/events';
 import { PaymentEvent } from '@/lib/centra/types/events';
+import { checkUnavailableItems } from '@/lib/utils/unavailableItems';
 import { PaymentInstructionsMutation } from '@gql/graphql';
 
 import { usePaymentInstructions } from '../../mutations';
 import { checkoutQuery } from '../../queries';
-import { handlePaymentError } from '../../utils/handlePaymentError';
+import { showItemsRemovedToast } from '../../utils/showItemsRemovedToast';
 import { Widget } from '../Widget';
 import { KlarnaPayments } from './KlarnaPayments';
 import { PaymentMethodField } from './PaymentMethodField';
@@ -81,7 +84,15 @@ export const Payment = () => {
       },
       {
         onSuccess: (data) => handlePaymentAction(data.action),
-        onError: handlePaymentError,
+        onError: (error) => {
+          if (error instanceof UserError && checkUnavailableItems(error.userErrors)) {
+            showItemsRemovedToast();
+          } else {
+            toast.error(<Translation>{(t) => t('checkout:errors.could-not-finalize-payment')}</Translation>, {
+              id: 'payment-error',
+            });
+          }
+        },
       },
     );
   };
@@ -129,7 +140,15 @@ export const Payment = () => {
               handlePaymentAction(paymentAction);
             }
           },
-          onError: handlePaymentError,
+          onError: (error) => {
+            if (error instanceof UserError && checkUnavailableItems(error.userErrors)) {
+              showItemsRemovedToast();
+            } else {
+              toast.error(<Translation>{(t) => t('checkout:errors.could-not-finalize-payment')}</Translation>, {
+                id: 'payment-error',
+              });
+            }
+          },
         },
       );
     };

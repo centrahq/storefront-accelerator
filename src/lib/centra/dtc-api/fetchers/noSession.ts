@@ -8,7 +8,6 @@ import {
   CategoriesQueryVariables,
   LookupCategoryMutationVariables,
   LookupProductMutationVariables,
-  LookupRelatedProductsMutationVariables,
   ProductsQueryVariables,
 } from '@gql/graphql';
 
@@ -155,51 +154,6 @@ export const lookupProduct = async (variables: LookupProductMutationVariables) =
   cacheLife('hours');
 
   return result.data.lookupUri.displayItem;
-};
-
-export const getRelatedProducts = async (variables: LookupRelatedProductsMutationVariables) => {
-  'use cache';
-
-  const result = await centraFetchNoSession(
-    graphql(`
-      mutation lookupRelatedProducts($uri: String!, $language: String!, $market: Int!, $pricelist: Int!) {
-        lookupUri(
-          uri: $uri
-          for: [DISPLAY_ITEM]
-          languageCode: [$language]
-          market: [$market]
-          pricelist: [$pricelist]
-        ) {
-          __typename
-          ... on DisplayItemUriLookupPayload {
-            displayItem {
-              relatedDisplayItems(relationType: "standard") {
-                relation
-                displayItems {
-                  ...listProduct
-                }
-              }
-            }
-          }
-        }
-      }
-    `),
-    {
-      variables,
-    },
-  );
-
-  if (result.data.lookupUri?.__typename !== 'DisplayItemUriLookupPayload') {
-    throw new Error('Product not found');
-  }
-
-  cacheTag(TAGS.products);
-  cacheLife('hours');
-
-  return (
-    result.data.lookupUri.displayItem.relatedDisplayItems.find(({ relation }) => relation === 'standard')
-      ?.displayItems ?? []
-  );
 };
 
 export const filterProducts = async (variables: ProductsQueryVariables) => {

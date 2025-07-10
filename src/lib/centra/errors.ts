@@ -1,6 +1,10 @@
+import { UserError as CentraUserError } from '@gql/graphql';
+
+import { CentraErrorResponse } from './types/api';
+
 export class UserError extends Error {
   constructor(
-    public userErrors: Array<{ message: string }>,
+    public userErrors: CentraUserError[],
     public traceId?: string,
   ) {
     super(JSON.stringify(userErrors, null, 2));
@@ -10,7 +14,7 @@ export class UserError extends Error {
 
 export class CentraError extends Error {
   constructor(
-    public centraErrors: Array<{ message: string }>,
+    public centraErrors: CentraErrorResponse['errors'],
     public traceId?: string,
   ) {
     super(JSON.stringify(centraErrors, null, 2));

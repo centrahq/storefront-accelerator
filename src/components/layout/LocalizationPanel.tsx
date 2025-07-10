@@ -9,8 +9,8 @@ import { toast } from 'sonner';
 
 import { useLocale } from '@/features/i18n/routing/useLocale';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
+import { REMOVED_ITEMS_PARAM } from '@/lib/utils/unavailableItems';
 
-import { REMOVED_ITEMS_PARAM } from '../ItemsRemovedToast';
 import { changeLocale } from './actions';
 
 interface Props {
@@ -63,12 +63,14 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
         return;
       }
 
+      // If there is an alternate, redirect to it. Otherwise replace the locale in the current URL.
       const newUrl = new URL(
         document.querySelector<HTMLLinkElement>(`link[rel="alternate"][hreflang="${result.locale}"]`)?.href ??
           location.pathname.replace(`/${locale}`, `/${result.locale}`),
         window.location.origin,
       );
 
+      // If there are removed items due to country change, add a query parameter to the URL. So we can display a toast after redirect.
       if (result.hasRemovedItems) {
         newUrl.searchParams.set(REMOVED_ITEMS_PARAM, 'true');
       }
