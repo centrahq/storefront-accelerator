@@ -40,7 +40,7 @@ const addressSchema = z.object({
   country: z.string(),
   state: z.string().nullable().optional(),
   city: z.string(),
-  email: z.string().email(),
+  email: z.email(),
   phoneNumber: z.string().optional(),
   zipCode: z.string(),
 });

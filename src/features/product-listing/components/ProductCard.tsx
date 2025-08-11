@@ -10,14 +10,14 @@ const MAX_SWATCHES = 3;
 
 export const ProductCardSkeleton = () => {
   return (
-    <li className="flex flex-col animate-pulse">
+    <li className="flex animate-pulse flex-col">
       <div className="bg-mono-500 aspect-2/3" />
       <div className="px-4 py-3">
         <div className="bg-mono-500 mt-1 mb-2 h-4 w-1/2 rounded-xs" />
-        <div className="bg-mono-500 h-4 mb-2 w-1/3 rounded-xs" />
-        <div className="flex gap-2 flex-wrap">
+        <div className="bg-mono-500 mb-2 h-4 w-1/3 rounded-xs" />
+        <div className="flex flex-wrap gap-2">
           {Array.from({ length: MAX_SWATCHES }).map((_, index) => (
-            <div key={index} className="size-4 bg-mono-500 border border-mono-500" />
+            <div key={index} className="bg-mono-500 border-mono-500 size-4 border" />
           ))}
         </div>
       </div>
@@ -82,12 +82,12 @@ export const ProductCard = async ({
             : product.price?.formattedValue}
         </div>
         {swatches.length > 1 && (
-          <ul className="flex gap-2 flex-wrap mt-1">
+          <ul className="mt-1 flex flex-wrap gap-2">
             {swatches.slice(0, MAX_SWATCHES).map((swatch) => (
               <li key={swatch.uri}>
                 <ShopLink
                   href={`/product/${swatch.uri}`}
-                  className="block size-4 border border-mono-900 relative z-1"
+                  className="border-mono-900 relative z-1 block size-4 border"
                   style={{ backgroundColor: swatch.color }}
                   title={swatch.name}
                   prefetch
@@ -98,7 +98,7 @@ export const ProductCard = async ({
             ))}
             {swatches.length > MAX_SWATCHES && (
               <li>
-                <div className="size-4 flex items-center justify-center text-sm">+{swatches.length - MAX_SWATCHES}</div>
+                <div className="flex size-4 items-center justify-center text-sm">+{swatches.length - MAX_SWATCHES}</div>
               </li>
             )}
           </ul>

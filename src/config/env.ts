@@ -24,10 +24,11 @@ export const validateEnv = () => {
   });
 
   if (!parsedEnv.success) {
-    throw new Error(`The following environment variables are missing or invalid:
-      ${Object.entries(parsedEnv.error.flatten().fieldErrors)
-        .map(([k, v]) => `- ${k}: ${v.toString()}`)
-        .join('\n')}
-      `);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const missingVars = Object.entries(z.treeifyError(parsedEnv.error).properties!);
+
+    throw new Error(
+      `The following environment variables are missing or invalid:\n${missingVars.map(([k, v]) => `- ${k}: ${v.errors.join(', ')}`).join('\n')}`,
+    );
   }
 };

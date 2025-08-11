@@ -58,9 +58,9 @@ export const RelatedProducts = async ({ id }: { id: number }) => {
   const { t } = await getTranslation(['server']);
 
   return (
-    <div className="flex flex-col gap-4 mt-8">
+    <div className="mt-8 flex flex-col gap-4">
       <h2 className="text-2xl font-medium">{t('server:product.related-products')}</h2>
-      <ul className="flex gap-8 overflow-x-auto *:basis-[clamp(16rem,25vw,24rem)] *:shrink-0 *:grow-0 custom-scrollbar">
+      <ul className="custom-scrollbar flex gap-8 overflow-x-auto *:shrink-0 *:grow-0 *:basis-[clamp(16rem,25vw,24rem)]">
         {products.map((product) => (
           <ProductCard key={product.id} imageSizes="384px" product={product} />
         ))}

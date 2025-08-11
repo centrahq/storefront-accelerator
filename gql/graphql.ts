@@ -1056,6 +1056,37 @@ export type DynamicSelectionAttributeUnsetInput = {
   attributeTypeName: Scalars['String']['input'];
 };
 
+export type ExpressCheckoutWidget = {
+  contents: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type ExpressCheckoutWidgetsAdditionalData = {
+  amount: Scalars['Int']['input'];
+  lineItems: Array<ExpressCheckoutWidgetsLineItem>;
+  returnUrl: Scalars['String']['input'];
+};
+
+export type ExpressCheckoutWidgetsLineItem = {
+  name: Scalars['String']['input'];
+  price: Scalars['String']['input'];
+};
+
+export type ExpressCheckoutWidgetsPayload = Payload & {
+  list?: Maybe<Array<ExpressCheckoutWidgetsPluginWidgets>>;
+  userErrors: Array<UserError>;
+};
+
+export type ExpressCheckoutWidgetsPluginItem = {
+  additionalData: ExpressCheckoutWidgetsAdditionalData;
+  uri: Scalars['String']['input'];
+};
+
+export type ExpressCheckoutWidgetsPluginWidgets = {
+  name: Scalars['String']['output'];
+  widgets: Array<ExpressCheckoutWidget>;
+};
+
 export type FilterInput = {
   /** Filter key from `FilterOption.key` */
   key: Scalars['String']['input'];
@@ -1083,6 +1114,7 @@ export type FilterValue = {
 
 export type FormPaymentAction = PaymentAction & {
   action: PaymentActionType;
+  expressHtml?: Maybe<Array<ExpressCheckoutWidget>>;
   formFields?: Maybe<Scalars['Map']['output']>;
   formType: Scalars['String']['output'];
   html: Scalars['String']['output'];
@@ -2162,6 +2194,7 @@ export type PaymentInstructionsInput = {
   comment?: InputMaybe<Scalars['String']['input']>;
   consents?: InputMaybe<Array<ConsentInput>>;
   customerClubSpecificFields?: InputMaybe<CustomerClubSpecificFields>;
+  express?: Scalars['Boolean']['input'];
   integrationSpecificFields?: InputMaybe<Scalars['Map']['input']>;
   internal?: Scalars['Boolean']['input'];
   ipAddress?: InputMaybe<Scalars['String']['input']>;
@@ -2328,6 +2361,7 @@ export type ProductMedia = {
   id: Scalars['Int']['output'];
   metaDataJSON?: Maybe<Scalars['String']['output']>;
   source: MediaSource;
+  translations: Array<TranslatedMedia>;
 };
 
 
@@ -2437,6 +2471,7 @@ export type Query = {
    * In session mode, results are filtered by the session's market and pricelist. Translated values are returned if available for either session or input language.
    */
   displayItems: DisplayItemList;
+  expressCheckoutWidgets: ExpressCheckoutWidgetsPayload;
   /** Check which brick and mortars can fulfill the current selection. */
   fulfillmentCheck: FulfillmentCheckPayload;
   /** Get a list of languages. */
@@ -2579,6 +2614,12 @@ export type QueryDisplayItemsArgs = {
   pricelist?: InputMaybe<Array<Scalars['Int']['input']>>;
   sort?: Array<CustomSortInput>;
   where?: InputMaybe<DisplayItemFilter>;
+};
+
+
+export type QueryExpressCheckoutWidgetsArgs = {
+  configurationOnly?: InputMaybe<Scalars['Boolean']['input']>;
+  plugins: Array<ExpressCheckoutWidgetsPluginItem>;
 };
 
 
@@ -2849,43 +2890,6 @@ export type StoredPaymentResultPayload = Payload & {
   userErrors: Array<UserError>;
 };
 
-export type Subscription = {
-  attentionReasons: Array<AttentionReason>;
-  createdAt: Scalars['DateTimeTz']['output'];
-  discount?: Maybe<Scalars['Float']['output']>;
-  id: Scalars['Int']['output'];
-  interval: DateInterval;
-  lines: Array<Line>;
-  needsAttention: Scalars['Boolean']['output'];
-  /** Next day when the order should be created according to schedule and selected interval. */
-  nextOrderDate?: Maybe<Scalars['Date']['output']>;
-  /** Next day when the order creation will be attempted. Takes last failures and retrial mechanics into account. */
-  nextRetryDate?: Maybe<Scalars['Date']['output']>;
-  plan?: Maybe<SubscriptionPlan>;
-  status: SubscriptionStatus;
-  updatedAt: Scalars['DateTimeTz']['output'];
-};
-
-
-export type SubscriptionCreatedAtArgs = {
-  format?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type SubscriptionNextOrderDateArgs = {
-  format?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type SubscriptionNextRetryDateArgs = {
-  format?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type SubscriptionUpdatedAtArgs = {
-  format?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type SubscriptionContract = {
   createdAt: Scalars['DateTimeTz']['output'];
   id: Scalars['Int']['output'];
@@ -2895,7 +2899,7 @@ export type SubscriptionContract = {
   shippingAddress: Address;
   shippingOption?: Maybe<ShippingMethod>;
   subscriptionPayment: Array<SubscriptionPayment>;
-  subscriptions: Array<Subscription>;
+  subscriptions: Array<SubscriptionInfo>;
   updatedAt: Scalars['DateTimeTz']['output'];
 };
 
@@ -2923,6 +2927,43 @@ export type SubscriptionContractAddressInput = {
 export type SubscriptionContractPayload = Payload & {
   contract?: Maybe<SubscriptionContract>;
   userErrors: Array<UserError>;
+};
+
+export type SubscriptionInfo = {
+  attentionReasons: Array<AttentionReason>;
+  createdAt: Scalars['DateTimeTz']['output'];
+  discount?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['Int']['output'];
+  interval: DateInterval;
+  lines: Array<Line>;
+  needsAttention: Scalars['Boolean']['output'];
+  /** Next day when the order should be created according to schedule and selected interval. */
+  nextOrderDate?: Maybe<Scalars['Date']['output']>;
+  /** Next day when the order creation will be attempted. Takes last failures and retrial mechanics into account. */
+  nextRetryDate?: Maybe<Scalars['Date']['output']>;
+  plan?: Maybe<SubscriptionPlan>;
+  status: SubscriptionStatus;
+  updatedAt: Scalars['DateTimeTz']['output'];
+};
+
+
+export type SubscriptionInfoCreatedAtArgs = {
+  format?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type SubscriptionInfoNextOrderDateArgs = {
+  format?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type SubscriptionInfoNextRetryDateArgs = {
+  format?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type SubscriptionInfoUpdatedAtArgs = {
+  format?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SubscriptionPayment = {
@@ -3015,6 +3056,11 @@ export type TranslatedDisplayItem = {
   name: Scalars['String']['output'];
   shortDescription: FormattedString;
   uri: Scalars['String']['output'];
+};
+
+export type TranslatedMedia = {
+  altText?: Maybe<Scalars['String']['output']>;
+  language: Language;
 };
 
 export type TranslatedProductVariant = {

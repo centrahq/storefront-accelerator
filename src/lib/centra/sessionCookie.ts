@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { decodeJwt, jwtVerify, SignJWT } from 'jose';
+import { jwtVerify, SignJWT } from 'jose';
 import { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { cookies } from 'next/headers';
 import { cache } from 'react';
@@ -17,19 +17,17 @@ const signSessionCookie = async (payload: Session) => {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime(sessionCookie.maxAge)
+    .setExpirationTime(`${sessionCookie.maxAge}s`)
     .sign(encodedKey);
 };
 
-const decodeSessionCookie = cache((jwt: string) => decodeJwt(jwt) as Session);
-
-export const verifySessionCookie = async (session: string | undefined = '') => {
+export const verifySessionCookie = cache(async (session: string | undefined = '') => {
   const { payload } = await jwtVerify(session, encodedKey, {
     algorithms: ['HS256'],
   });
 
   return sessionCookieSchema.parse(payload);
-};
+});
 
 const sessionCookieSchema = z.object({
   country: z.string(),
@@ -50,7 +48,7 @@ export const getSession = async () => {
     throw new Error('Session cookie not found');
   }
 
-  return decodeSessionCookie(cookie.value);
+  return verifySessionCookie(cookie.value);
 };
 
 export const mapSession = (session: SessionFragment): Session => ({

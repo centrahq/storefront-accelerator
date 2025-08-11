@@ -27,7 +27,7 @@ type ProductFilter<T extends Filter['values'][number]['__typename']> = Omit<Filt
 
 export const ProductFiltersSkeleton = () => {
   return (
-    <div className="flex flex-wrap justify-between animate-pulse">
+    <div className="flex animate-pulse flex-wrap justify-between">
       <div className="bg-mono-500 h-10 w-80 rounded-sm" />
       <div className="bg-mono-500 ml-auto h-8 w-56 rounded-sm" />
     </div>

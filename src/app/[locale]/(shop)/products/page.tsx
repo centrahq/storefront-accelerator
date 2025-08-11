@@ -34,8 +34,8 @@ const Listing = async () => {
 
   const [sortKey, sortOrder] = sort.split('-');
   const sortSchema = z.object({
-    key: z.nativeEnum(SortKey),
-    order: z.nativeEnum(SortOrder),
+    key: z.enum(SortKey),
+    order: z.enum(SortOrder),
   });
 
   const { list, filters, pagination } = await filterProducts({

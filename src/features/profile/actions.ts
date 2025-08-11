@@ -241,12 +241,14 @@ export async function resetPassword(_prevState: unknown, formData: FormData) {
 
   const resetPasswordSchema = z
     .object({
-      password: z.string({ message: t('server:user.errors.required-fields') }),
-      confirmPassword: z.string({ message: t('server:user.errors.required-fields') }),
-      i: z.string({ message: t('server:user.reset-password.missing-params') }),
-      id: z.string({ message: t('server:user.reset-password.missing-params') }),
+      password: z.string({ error: t('server:user.errors.required-fields') }),
+      confirmPassword: z.string({ error: t('server:user.errors.required-fields') }),
+      i: z.string({ error: t('server:user.reset-password.missing-params') }),
+      id: z.string({ error: t('server:user.reset-password.missing-params') }),
     })
-    .refine((data) => data.password === data.confirmPassword, t('server:user.reset-password.passwords-match'));
+    .refine((data) => data.password === data.confirmPassword, {
+      error: t('server:user.reset-password.passwords-match'),
+    });
 
   const parsedInput = resetPasswordSchema.safeParse({
     password: formData.get('password'),
@@ -256,7 +258,7 @@ export async function resetPassword(_prevState: unknown, formData: FormData) {
   });
 
   if (!parsedInput.success) {
-    return { error: parsedInput.error.errors[0]?.message };
+    return { error: parsedInput.error.issues[0]?.message ?? t('server:something-went-wrong') };
   }
 
   try {

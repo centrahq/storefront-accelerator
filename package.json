@@ -18,23 +18,23 @@
     "gql-gen:watch": "gql-gen --watch"
   },
   "dependencies": {
-    "@headlessui/react": "^2.2.4",
+    "@headlessui/react": "^2.2.7",
     "@heroicons/react": "^2.2.0",
-    "@tanstack/react-query": "^5.82.0",
+    "@tanstack/react-query": "^5.84.2",
     "async-mutex": "^0.5.0",
     "clsx": "^2.1.1",
-    "i18next": "^25.3.2",
+    "i18next": "^25.3.4",
     "i18next-browser-languagedetector": "^8.2.0",
     "i18next-resources-to-backend": "^1.2.1",
-    "jose": "^6.0.11",
-    "next": "^15.4.0-canary.123",
+    "jose": "^6.0.12",
+    "next": "^15.4.6",
     "nuqs": "^2.4.3",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-i18next": "^15.6.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-i18next": "^15.6.1",
     "server-only": "^0.0.1",
-    "sonner": "^2.0.6",
-    "zod": "^3.25.76"
+    "sonner": "^2.0.7",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.7",
@@ -43,23 +43,18 @@
     "@parcel/watcher": "^2.5.1",
     "@tailwindcss/postcss": "^4.1.11",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "@types/node": "^22.16.2",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
+    "@types/node": "^22.17.1",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
     "concurrently": "^9.2.0",
-    "eslint": "^9.30.1",
-    "eslint-config-next": "^15.4.0-canary.123",
+    "eslint": "^9.33.0",
+    "eslint-config-next": "^15.4.6",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "schema-dts": "^1.1.5",
     "tailwindcss": "^4.0.9",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.36.0"
-  },
-  "overrides": {
-    "nuqs": {
-      "next": "$next"
-    }
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.39.0"
   }
 }

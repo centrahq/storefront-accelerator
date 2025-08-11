@@ -988,6 +988,37 @@ input DynamicSelectionAttributeUnsetInput {
   attributeTypeName: String!
 }
 
+type ExpressCheckoutWidget {
+  contents: String!
+  name: String!
+}
+
+input ExpressCheckoutWidgetsAdditionalData {
+  amount: Int!
+  lineItems: [ExpressCheckoutWidgetsLineItem!]!
+  returnUrl: String!
+}
+
+input ExpressCheckoutWidgetsLineItem {
+  name: String!
+  price: String!
+}
+
+type ExpressCheckoutWidgetsPayload implements Payload {
+  list: [ExpressCheckoutWidgetsPluginWidgets!]
+  userErrors: [UserError!]!
+}
+
+input ExpressCheckoutWidgetsPluginItem {
+  additionalData: ExpressCheckoutWidgetsAdditionalData!
+  uri: String!
+}
+
+type ExpressCheckoutWidgetsPluginWidgets {
+  name: String!
+  widgets: [ExpressCheckoutWidget!]!
+}
+
 input FilterInput {
   """Filter key from `FilterOption.key`"""
   key: String!
@@ -1021,6 +1052,7 @@ interface FilterValue {
 
 type FormPaymentAction implements PaymentAction {
   action: PaymentActionType!
+  expressHtml: [ExpressCheckoutWidget!]
   formFields: Map
   formType: String!
   html: String!
@@ -1895,6 +1927,7 @@ input PaymentInstructionsInput {
   comment: String
   consents: [ConsentInput!]
   customerClubSpecificFields: CustomerClubSpecificFields
+  express: Boolean! = false
   integrationSpecificFields: Map
   internal: Boolean! = false
   ipAddress: String
@@ -2017,6 +2050,7 @@ type ProductMedia {
   id: Int!
   metaDataJSON: String
   source(sizeName: String = "standard"): MediaSource!
+  translations: [TranslatedMedia!]!
 }
 
 type ProductVariant {
@@ -2238,6 +2272,7 @@ type Query {
     sort: [CustomSortInput!]! = []
     where: DisplayItemFilter = null
   ): DisplayItemList!
+  expressCheckoutWidgets(configurationOnly: Boolean, plugins: [ExpressCheckoutWidgetsPluginItem!]!): ExpressCheckoutWidgetsPayload!
 
   """Check which brick and mortars can fulfill the current selection."""
   fulfillmentCheck(brickAndMortarIds: [Int!]!): FulfillmentCheckPayload!
@@ -2545,7 +2580,42 @@ type StoredPaymentResultPayload implements Payload {
   userErrors: [UserError!]!
 }
 
-type Subscription {
+type SubscriptionContract {
+  createdAt(
+    """[ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)"""
+    format: String = "Y-m-dTH:i:sP"
+  ): DateTimeTz!
+  id: Int!
+  market: Market
+  originatingOrder: Order
+  pricelist: Pricelist!
+  shippingAddress: Address!
+  shippingOption: ShippingMethod
+  subscriptionPayment: [SubscriptionPayment!]!
+  subscriptions: [SubscriptionInfo!]!
+  updatedAt(
+    """[ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)"""
+    format: String = "Y-m-dTH:i:sP"
+  ): DateTimeTz!
+}
+
+input SubscriptionContractAddressInput {
+  address1: String
+  address2: String
+  city: String
+  email: String
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  zipCode: String
+}
+
+type SubscriptionContractPayload implements Payload {
+  contract: SubscriptionContract
+  userErrors: [UserError!]!
+}
+
+type SubscriptionInfo {
   attentionReasons: [AttentionReason!]!
   createdAt(
     """[ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)"""
@@ -2572,41 +2642,6 @@ type Subscription {
     """[ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)"""
     format: String = "Y-m-dTH:i:sP"
   ): DateTimeTz!
-}
-
-type SubscriptionContract {
-  createdAt(
-    """[ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)"""
-    format: String = "Y-m-dTH:i:sP"
-  ): DateTimeTz!
-  id: Int!
-  market: Market
-  originatingOrder: Order
-  pricelist: Pricelist!
-  shippingAddress: Address!
-  shippingOption: ShippingMethod
-  subscriptionPayment: [SubscriptionPayment!]!
-  subscriptions: [Subscription!]!
-  updatedAt(
-    """[ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)"""
-    format: String = "Y-m-dTH:i:sP"
-  ): DateTimeTz!
-}
-
-input SubscriptionContractAddressInput {
-  address1: String
-  address2: String
-  city: String
-  email: String
-  firstName: String
-  lastName: String
-  phoneNumber: String
-  zipCode: String
-}
-
-type SubscriptionContractPayload implements Payload {
-  contract: SubscriptionContract
-  userErrors: [UserError!]!
 }
 
 type SubscriptionPayment {
@@ -2700,6 +2735,11 @@ type TranslatedDisplayItem {
   name: String!
   shortDescription: FormattedString!
   uri: String!
+}
+
+type TranslatedMedia {
+  altText: String
+  language: Language!
 }
 
 type TranslatedProductVariant {

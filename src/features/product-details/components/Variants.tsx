@@ -40,13 +40,13 @@ export const Variants = async ({ productUri }: { productUri: string }) => {
   return (
     <div className="flex flex-col gap-2">
       <h2 className="font-bold">{t('server:product.color')}</h2>
-      <span className="text-sm font-medium text-mono-800">{product.productVariant.name}</span>
-      <ul className="flex gap-2 flex-wrap">
+      <span className="text-mono-800 text-sm font-medium">{product.productVariant.name}</span>
+      <ul className="flex flex-wrap gap-2">
         {swatches.map((swatch) => (
           <li key={swatch.uri}>
             <ShopLink
               href={`/product/${swatch.uri}`}
-              className={clsx('block size-5 border border-mono-900', {
+              className={clsx('border-mono-900 block size-5 border', {
                 'ring-2 ring-blue-400': swatch.uri === product.uri,
               })}
               aria-current={swatch.uri === product.uri ? 'page' : undefined}

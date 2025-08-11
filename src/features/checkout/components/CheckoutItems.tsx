@@ -67,7 +67,7 @@ const CheckoutItem = ({ line }: { line: LineFragment }) => {
             <ShopLink className="font-medium" href={`/product/${line.displayItem.uri}`}>
               {line.displayItem.name}
             </ShopLink>
-            <div className="shrink-0 text-sm min-w-24 text-right">
+            <div className="min-w-24 shrink-0 text-right text-sm">
               {updateLineMutation.isPending ? '...' : line.lineValue.formattedValue}
             </div>
           </div>
@@ -95,7 +95,7 @@ const CheckoutItem = ({ line }: { line: LineFragment }) => {
               <span aria-hidden>-</span>
               <span className="sr-only">{t('shop:cart.decrease')}</span>
             </button>
-            <span className="text-sm font-medium font-mono min-w-[2ch] text-center">{quantity}</span>
+            <span className="min-w-[2ch] text-center font-mono text-sm font-medium">{quantity}</span>
             <button type="button" className="font-bold" onClick={() => setQuantity(quantity + 1)}>
               <span aria-hidden>+</span>
               <span className="sr-only">{t('shop:cart.increase')}</span>

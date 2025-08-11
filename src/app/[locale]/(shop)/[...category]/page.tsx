@@ -54,8 +54,8 @@ const CategoryProducts = async ({ id, uri }: { id: number; uri: string }) => {
   const { market, pricelist, language } = await getSession();
   const [sortKey, sortOrder] = sort.split('-');
   const sortSchema = z.object({
-    key: z.nativeEnum(SortKey),
-    order: z.nativeEnum(SortOrder),
+    key: z.enum(SortKey),
+    order: z.enum(SortOrder),
   });
   const { t } = await getTranslation(['server']);
 
