@@ -5,7 +5,7 @@ import { useTranslation } from '@/features/i18n/useTranslation/client';
 
 import { useRemoveVoucher } from '../../mutations';
 
-export const RemoveVoucherButton = ({ code }: { code: string }) => {
+export const RemoveVoucherButton = ({ code, className }: { code: string; className?: string }) => {
   const { t } = useTranslation(['checkout']);
   const removeVoucherMutation = useRemoveVoucher();
 
@@ -22,7 +22,7 @@ export const RemoveVoucherButton = ({ code }: { code: string }) => {
       type="button"
       onClick={removeVoucher}
       disabled={removeVoucherMutation.isPending}
-      className={clsx('text-xs underline', {
+      className={clsx(className, {
         'animate-pulse': removeVoucherMutation.isPending,
       })}
     >

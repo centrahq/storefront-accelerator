@@ -21,6 +21,22 @@
       "title": "Ej tillgängliga artiklar"
     }
   },
+  "gift-card": {
+    "apply": "Tillämpas",
+    "cancel": "Avboka",
+    "card-number": "Kortnummer",
+    "could-not-apply": "Kunde inte tillämpa presentkort",
+    "empty-balance": "Presentkortet har ingen balans.",
+    "have-gift-card": "Jag har ett presentkort",
+    "hint": "Lös in ditt presentkort och njut av din shopping.",
+    "inactive-card": "Presentkortet är inaktivt.",
+    "insufficient-funds": "Presentkortet har inte tillräckligt med medel.",
+    "invalid-currency": "Presentkortvalutan matchar inte beställningsvalutan.",
+    "invalid-input": "Ogiltigt kortnummer eller stift.",
+    "pin": "STIFT",
+    "redeem": "Återlösa",
+    "title": "Presentkort"
+  },
   "information": "Information",
   "no-payment-methods": "Inga betalningsmetoder",
   "pay-with-klarna": "Betala med Klarna",

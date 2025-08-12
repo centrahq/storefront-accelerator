@@ -16,8 +16,10 @@ export const VoucherList = ({ discounts }: { discounts: VoucherFragment[] }) => 
       {codeDiscounts.map((discount) => (
         <li key={discount.code} className="flex justify-between text-sm">
           <div className="flex items-baseline gap-1">
-            <div className="text-mono-500">{discount.name}</div>
-            <RemoveVoucherButton code={discount.code} />
+            <div className="text-mono-500">
+              {discount.giftCard ? `Gift card **** ${discount.giftCard.lastFourDigits}` : discount.name}
+            </div>
+            <RemoveVoucherButton code={discount.code} className="text-xs underline" />
           </div>
           <p>{discount.value.formattedValue}</p>
         </li>

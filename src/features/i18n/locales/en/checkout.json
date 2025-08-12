@@ -21,6 +21,22 @@
       "title": "Unavailable items"
     }
   },
+  "gift-card": {
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "card-number": "Card number",
+    "could-not-apply": "Could not apply gift card",
+    "empty-balance": "The gift card has no balance.",
+    "have-gift-card": "I have a gift card",
+    "hint": "Redeem your gift card and enjoy your shopping.",
+    "inactive-card": "The gift card is inactive.",
+    "insufficient-funds": "The gift card does not have enough funds.",
+    "invalid-currency": "The gift card currency does not match the order currency.",
+    "invalid-input": "Invalid card number or PIN.",
+    "pin": "PIN",
+    "redeem": "Redeem",
+    "title": "Gift card"
+  },
   "information": "Information",
   "no-payment-methods": "No payment methods",
   "pay-with-klarna": "Pay with Klarna",

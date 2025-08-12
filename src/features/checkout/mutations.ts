@@ -6,6 +6,7 @@ import { mutationMutex } from '@/lib/centra/dtc-api/mutationLock';
 import { UserError } from '@/lib/centra/errors';
 import { graphql } from '@gql/gql';
 import {
+  ApplyGiftCardMutationVariables,
   PaymentInstructionsInput,
   SetAddressMutationVariables,
   SetCountryStateMutationVariables,
@@ -463,6 +464,56 @@ export const useUpdateLineCheckout = () => {
       return {
         ...response.data.updateLine.selection,
         checkout: response.data.updateLine.selection.checkout,
+      };
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(checkoutQuery.queryKey, data);
+    },
+  });
+};
+
+export const useApplyGiftCard = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['checkout', 'applyGiftCard'],
+    mutationFn: async (variables: ApplyGiftCardMutationVariables) => {
+      const response = await mutationMutex.runExclusive(() => {
+        window.CentraCheckout?.suspend();
+
+        return centraFetch(
+          graphql(`
+            mutation applyGiftCard($cardNumber: String!, $pin: String) {
+              applyGiftCard(input: { cardNumber: $cardNumber, pin: $pin }) {
+                selection {
+                  ...checkout
+                }
+                userErrors {
+                  message
+                  path
+                }
+              }
+            }
+          `),
+          {
+            variables,
+          },
+        ).finally(() => {
+          window.CentraCheckout?.resume();
+        });
+      });
+
+      if (response.data.applyGiftCard.userErrors.length > 0) {
+        throw new UserError(response.data.applyGiftCard.userErrors, response.extensions.traceId);
+      }
+
+      if (!response.data.applyGiftCard.selection?.checkout) {
+        throw new Error('No selection');
+      }
+
+      return {
+        ...response.data.applyGiftCard.selection,
+        checkout: response.data.applyGiftCard.selection.checkout,
       };
     },
     onSuccess: (data) => {

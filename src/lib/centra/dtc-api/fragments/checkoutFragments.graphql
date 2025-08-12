@@ -12,6 +12,7 @@ fragment checkout on Selection {
   discounts {
     ...voucher
   }
+  externalGiftCardAvailable
   checkout {
     checkoutScript
     separateBillingAddress {
@@ -135,6 +136,9 @@ fragment voucher on Voucher {
   }
   ... on CodeVoucher {
     code
+  }
+  giftCard {
+    lastFourDigits
   }
 }
 
