@@ -989,7 +989,9 @@ input DynamicSelectionAttributeUnsetInput {
 }
 
 type ExpressCheckoutWidget {
-  contents: String!
+  contents: String
+  error: String
+  id: String
   name: String!
 }
 

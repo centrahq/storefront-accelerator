@@ -8,6 +8,7 @@ interface Props {
     id: string;
     isAvailable: boolean;
     name: string;
+    quantity?: number;
   }>;
   value: string | null;
   onChange: (value: string) => void;
@@ -32,7 +33,9 @@ export const ItemsField = ({ items, value, onChange, hiddenLegend = false }: Pro
                 value={item.id}
                 disabled={!item.isAvailable}
               />
-              <Label>{item.name}</Label>
+              <Label>
+                {item.name} {item.quantity != null && `(${item.quantity})`}
+              </Label>
             </Field>
           ))}
         </RadioGroup>

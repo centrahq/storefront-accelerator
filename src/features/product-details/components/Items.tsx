@@ -30,6 +30,7 @@ export const Items = async ({ productUri }: { productUri: string }) => {
     id: item.id,
     isAvailable: item.stock.available,
     name: getItemName(item, country),
+    quantity: item.stock.quantity,
   }));
 
   const bundleItemAvailability =

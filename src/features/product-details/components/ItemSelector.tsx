@@ -9,6 +9,7 @@ interface Props {
     id: string;
     isAvailable: boolean;
     name: string;
+    quantity?: number;
   }>;
 }
 

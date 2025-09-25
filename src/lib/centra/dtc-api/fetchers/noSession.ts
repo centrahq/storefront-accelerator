@@ -111,6 +111,7 @@ export const lookupProduct = async (variables: LookupProductMutationVariables) =
                 ...item
                 stock {
                   available
+                  quantity
                 }
               }
               relatedDisplayItems(relationType: "variant") {
