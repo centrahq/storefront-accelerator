@@ -1,27 +1,28 @@
 {
-  "breadcrumbs": "Ströbröd",
+  "breadcrumbs": "Brödsmulor",
   "checkout": {
     "back-to-checkout": "Tillbaka till kassan",
     "checkout": "Kassa",
     "delivery": "Leverans",
     "failed": "Misslyckades",
-    "generic-failure": "Vi kunde inte behandla din beställning. Försök igen senare eller kontakta supporten.",
-    "hint": "Om du inte hittar informationen du letar efter, se vårt supportcenter.",
+    "generic-failure": "Vi kunde inte behandla din beställning. Försök igen senare eller kontakta support.",
+    "hint": "Om du inte hittar informationen du söker, besök vårt supportcenter.",
     "order-summary": {
       "date": "Beställningsdatum",
       "number": "Beställningsnummer",
-      "status": "Orderstatus"
+      "status": "Beställningsstatus"
     },
     "payment": "Betalning",
-    "success": "Framgång",
-    "summary": "Sammanfattning"
+    "success": "Slutförd",
+    "summary": "Sammanfattning",
+    "subscription-login-required": "Du måste <1>logga in</1> för att kassera med prenumerationsartiklar."
   },
-  "featured-products": "Presenterade produkter",
-  "home": "Hem",
-  "meta-description": "Centra swag butik. Handla för den senaste swag.",
+  "featured-products": "Utvalda produkter",
+  "home": "Start",
+  "meta-description": "Centras merchbutik. Handla den senaste merchandisen.",
   "pagination": {
     "next": "Nästa",
-    "previous": "Tidigare"
+    "previous": "Föregående"
   },
   "product": {
     "color": "Färg",
@@ -32,43 +33,44 @@
     "from-price": "från {{price}}",
     "nav-label": "Produktsidor",
     "no-products-found": "Inga produkter hittades",
-    "title": "Produkt"
+    "title": "Produkter"
   },
   "something-went-wrong": "Något gick fel.",
   "user": {
     "errors": {
-      "invalid-login": "Ogiltig e-postadress eller lösenord",
-      "invalid-register": "Det gick inte att registrera sig",
-      "required-fields": "E-post och lösenord krävs"
+      "invalid-login": "Ogiltig e-post eller lösenord",
+      "invalid-register": "Kunde inte registrera",
+      "required-fields": "Fyll i obligatoriska fält"
     },
-    "logout": "Utloggning",
+    "logout": "Logga ut",
     "my-account": "Mitt konto",
     "my-orders": "Mina beställningar",
+    "my-subscriptions": "Mina prenumerationer",
     "no-orders": "Inga beställningar",
     "order-info": {
-      "action": "Handling",
+      "action": "Åtgärd",
       "address": "Adress",
       "date": "Datum",
-      "nav-label": "Beställ sidor",
-      "order": "Beställa",
+      "nav-label": "Beställningssidor",
+      "order": "Beställning",
       "status": "Status",
       "status_ARCHIVED": "Arkiverad",
       "status_CONFIRMED": "Bekräftad",
       "status_DELETED": "Raderad",
-      "status_PENDING": "I avvaktan på",
-      "status_PROCESSING": "Bearbetning",
-      "status_SHIPPED": "Skickas",
-      "total": "Total",
-      "view": "Se"
+      "status_PENDING": "Väntande",
+      "status_PROCESSING": "Behandlas",
+      "status_SHIPPED": "Skickad",
+      "total": "Totalt",
+      "view": "Visa"
     },
     "reset-password": {
-      "email-sent": "Vi skickade en återställningslänk till dig på {{email}}. Kontrollera din inkorg.",
+      "email-sent": "Vi har skickat en återställningslänk till {{email}}. Kontrollera din inkorg.",
       "forgot-password": "Glömt lösenord",
-      "missing-params": "Saknade parametrar, använd länken i återställningsmeddelandet",
+      "missing-params": "Saknade parametrar, använd länken i återställningsmejlet",
       "password-changed": "Ditt lösenord har ändrats. Du kan nu logga in.",
-      "passwords-match": "Lösenord matchar inte",
-      "reset-password": "Återställa lösenord",
-      "something-went-wrong": "Något gick fel. Återställningslänken kan vara ogiltig eller löpa ut."
+      "passwords-match": "Lösenorden matchar inte",
+      "reset-password": "Återställ lösenord",
+      "something-went-wrong": "Något gick fel. Återställningslänken kan vara ogiltig eller ha löpt ut."
     }
   }
 }

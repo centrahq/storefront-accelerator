@@ -35,7 +35,7 @@ export const PaymentMethodField = () => {
 
   return (
     <Fieldset>
-      <Legend className="sr-only text-xl font-medium">{t('checkout:payment-method')}</Legend>
+      <Legend className="sr-only">{t('checkout:payment-method')}</Legend>
       <div className="flex flex-col gap-5">
         <RadioGroup
           value={selectedMethod}
@@ -45,7 +45,7 @@ export const PaymentMethodField = () => {
           {paymentMethods.map((paymentMethod) => (
             <Field
               key={paymentMethod.id}
-              className="group border-mono-200 has-data-checked:bg-mono-50 relative cursor-pointer p-5 not-last:border-b"
+              className="border-mono-200 has-data-checked:bg-mono-50 relative cursor-pointer p-5 not-last:border-b"
             >
               <div className="flex items-center gap-2">
                 <Radio value={paymentMethod.id} className="group">

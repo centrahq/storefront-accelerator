@@ -20,7 +20,7 @@ export const BundleItemSelector = ({ items, sectionId }: Props) => {
   return (
     <ItemsField
       items={items}
-      value={bundledItems[sectionId] ?? null}
+      value={bundledItems[sectionId]}
       onChange={(val) => {
         void setBundledItems((old) => ({ ...old, [sectionId]: val }));
       }}

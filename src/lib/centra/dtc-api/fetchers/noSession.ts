@@ -90,6 +90,9 @@ export const lookupProduct = async (variables: LookupProductMutationVariables) =
               name
               metaTitle
               metaDescription
+              subscriptionPlans {
+                ...subscriptionPlan
+              }
               description {
                 formatted
               }

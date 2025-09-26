@@ -14,7 +14,8 @@
     },
     "payment": "Payment",
     "success": "Success",
-    "summary": "Summary"
+    "summary": "Summary",
+    "subscription-login-required": "You must <1>login</1> to checkout with subscription items."
   },
   "featured-products": "Featured products",
   "home": "Home",
@@ -44,6 +45,7 @@
     "logout": "Logout",
     "my-account": "My account",
     "my-orders": "My orders",
+    "my-subscriptions": "My subscriptions",
     "no-orders": "No orders",
     "order-info": {
       "action": "Action",

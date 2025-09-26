@@ -98,3 +98,12 @@ fragment listProduct on DisplayItem {
     }
   }
 }
+
+fragment subscriptionPlan on SubscriptionPlan {
+  id
+  discount
+  interval {
+    value
+    type
+  }
+}

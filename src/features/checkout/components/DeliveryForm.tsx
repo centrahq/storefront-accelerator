@@ -55,7 +55,7 @@ export const DeliveryForm = () => {
               {shippingMethods.map((shippingMethod) => (
                 <Field
                   key={shippingMethod.id}
-                  className="group border-mono-200 has-data-checked:bg-mono-50 relative flex cursor-pointer flex-col gap-5 p-5 not-last:border-b"
+                  className="border-mono-200 has-data-checked:bg-mono-50 relative flex cursor-pointer flex-col gap-5 p-5 not-last:border-b"
                 >
                   <div className="flex items-center gap-2">
                     <Radio value={shippingMethod.id} className="group">

@@ -1,0 +1,45 @@
+fragment subscriptionInfo on SubscriptionInfo {
+  id
+  status
+  nextOrderDate
+  lines {
+    ...line
+  }
+  interval {
+    value
+    type
+  }
+  plan {
+    id
+  }
+}
+
+fragment subscriptionContract on SubscriptionContract {
+  id
+  createdAt
+  shippingAddress {
+    firstName
+    lastName
+    address1
+    address2
+    email
+    phoneNumber
+    zipCode
+    city
+    state {
+      name
+    }
+    country {
+      name
+    }
+  }
+  shippingOption {
+    name
+  }
+  subscriptionPayment {
+    paymentMethod
+  }
+  subscriptions {
+    ...subscriptionInfo
+  }
+}

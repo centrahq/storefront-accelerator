@@ -1,3 +1,4 @@
+import { Metadata } from 'next';
 import { SearchParams } from 'nuqs';
 import { Suspense } from 'react';
 
@@ -5,6 +6,14 @@ import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { OrdersSkeleton } from '@/features/order/components/OrdersSkeleton';
 import { OrdersTable } from '@/features/order/components/OrdersTable';
 import { orderFilterParamsCache, serializeOrderFilters } from '@/features/order/orderListSearchParams';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslation(['server']);
+
+  return {
+    title: t('server:user.my-orders'),
+  };
+}
 
 export default async function AccountPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   await orderFilterParamsCache.parse(searchParams);

@@ -24,6 +24,7 @@ export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailabilit
   const { t } = useTranslation(['shop']);
   const [itemId] = useQueryState('item', parseAsString.withDefault(items[0]?.id ?? ''));
   const [bundledItems] = useQueryState('bundledItems', parseAsBundledItems);
+  const [selectedPlan] = useQueryState('plan', parseAsString.withDefault(''));
   const addToCartMutation = useAddToCart();
   const addFlexibleBundleToCartMutation = useAddFlexibleBundleToCart();
   const { setIsCartOpen } = useContext(CartContext);
@@ -44,7 +45,7 @@ export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailabilit
     }
 
     addFlexibleBundleToCartMutation.mutate(
-      { item: itemId, sections },
+      { item: itemId, sections, subscriptionPlan: selectedPlan !== '' ? Number(selectedPlan) : undefined },
       {
         onSuccess: () => {
           setIsCartOpen(true);
@@ -65,7 +66,7 @@ export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailabilit
     }
 
     addToCartMutation.mutate(
-      { item: itemId },
+      { item: itemId, subscriptionPlan: selectedPlan !== '' ? Number(selectedPlan) : undefined },
       {
         onSuccess: () => {
           setIsCartOpen(true);
@@ -89,7 +90,7 @@ export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailabilit
         },
       )}
     >
-      {t('shop:product.add-to-cart')}
+      {selectedPlan === '' ? t('shop:product.add-to-cart') : t('shop:product.subscriptions.subscribe')}
     </button>
   );
 };

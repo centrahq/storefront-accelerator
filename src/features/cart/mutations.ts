@@ -21,8 +21,18 @@ export const useAddFlexibleBundleToCart = () => {
       const response = await mutationMutex.runExclusive(() =>
         centraFetch(
           graphql(`
-            mutation addFlexibleBundleToCart($item: String!, $sections: [BundleSectionInput!]!, $quantity: Int = 1) {
-              addFlexibleBundle(item: $item, quantity: $quantity, sections: $sections) {
+            mutation addFlexibleBundleToCart(
+              $item: String!
+              $sections: [BundleSectionInput!]!
+              $quantity: Int = 1
+              $subscriptionPlan: Int
+            ) {
+              addFlexibleBundle(
+                item: $item
+                quantity: $quantity
+                sections: $sections
+                subscriptionPlan: $subscriptionPlan
+              ) {
                 userErrors {
                   message
                   path
@@ -64,8 +74,8 @@ export const useAddToCart = () => {
       const response = await mutationMutex.runExclusive(() =>
         centraFetch(
           graphql(`
-            mutation addItem($item: String!, $quantity: Int = 1) {
-              addItem(item: $item, quantity: $quantity) {
+            mutation addItem($item: String!, $quantity: Int = 1, $subscriptionPlan: Int) {
+              addItem(item: $item, quantity: $quantity, subscriptionPlan: $subscriptionPlan) {
                 userErrors {
                   message
                   path
@@ -107,8 +117,8 @@ export const useUpdateLine = () => {
       const response = await mutationMutex.runExclusive(() =>
         centraFetch(
           graphql(`
-            mutation updateLine($id: String!, $quantity: Int!) {
-              updateLine(lineId: $id, quantity: $quantity) {
+            mutation updateLine($id: String!, $quantity: Int!, $subscriptionPlanId: Int) {
+              updateLine(lineId: $id, quantity: $quantity, subscriptionPlanId: $subscriptionPlanId) {
                 userErrors {
                   message
                   path

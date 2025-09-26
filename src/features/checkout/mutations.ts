@@ -433,8 +433,8 @@ export const useUpdateLineCheckout = () => {
 
         return centraFetch(
           graphql(`
-            mutation updateLineCheckout($id: String!, $quantity: Int!) {
-              updateLine(lineId: $id, quantity: $quantity) {
+            mutation updateLineCheckout($id: String!, $quantity: Int!, $subscriptionPlanId: Int) {
+              updateLine(lineId: $id, quantity: $quantity, subscriptionPlanId: $subscriptionPlanId) {
                 userErrors {
                   message
                   path

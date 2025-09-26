@@ -10,7 +10,7 @@ interface Props {
     name: string;
     quantity?: number;
   }>;
-  value: string | null;
+  value: string | undefined;
   onChange: (value: string) => void;
   hiddenLegend?: boolean;
 }
@@ -21,7 +21,7 @@ export const ItemsField = ({ items, value, onChange, hiddenLegend = false }: Pro
   return (
     <Fieldset>
       <div className="flex flex-col gap-3">
-        <Legend className={clsx('font-bold', { 'sr-only': hiddenLegend })}>{t('shop:product.size')}</Legend>
+        <Legend className={clsx('text-xl font-medium', { 'sr-only': hiddenLegend })}>{t('shop:product.size')}</Legend>
         <RadioGroup value={value} onChange={onChange} className="flex flex-wrap gap-2 text-sm font-medium">
           {items.map((item) => (
             <Field

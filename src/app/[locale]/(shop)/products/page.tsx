@@ -1,4 +1,3 @@
-import { Metadata } from 'next';
 import { type SearchParams } from 'nuqs/server';
 import { Suspense } from 'react';
 import { z } from 'zod';
@@ -17,14 +16,6 @@ import { getSession } from '@/lib/centra/sessionCookie';
 import { SortKey, SortOrder } from '@gql/graphql';
 
 const ITEMS_PER_PAGE = 24;
-
-export const metadata: Metadata = {
-  robots: {
-    index: false,
-    follow: true,
-    nocache: true,
-  },
-};
 
 const Listing = async () => {
   const { q: query, brands, categories, sizes, page, sort } = productsFilterParamsCache.all();

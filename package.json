@@ -2,7 +2,7 @@
   "name": "centra-commerce",
   "version": "0.1.0",
   "engines": {
-    "node": "^22"
+    "node": ">=22"
   },
   "private": true,
   "scripts": {
@@ -10,7 +10,7 @@
     "dev-ssl": "concurrently -c green,magenta -n gql-gen,next npm:gql-gen:watch \"next dev --turbopack --experimental-https\"",
     "build": "npm run gql-gen && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "prettier": "prettier --write --ignore-unknown .",
     "prettier:check": "prettier --check --ignore-unknown .",
     "tsc": "tsc",
@@ -18,43 +18,43 @@
     "gql-gen:watch": "gql-gen --watch"
   },
   "dependencies": {
-    "@headlessui/react": "^2.2.7",
+    "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",
-    "@tanstack/react-query": "^5.84.2",
+    "@tanstack/react-query": "^5.90.2",
     "async-mutex": "^0.5.0",
     "clsx": "^2.1.1",
-    "i18next": "^25.3.4",
+    "i18next": "^25.5.2",
     "i18next-browser-languagedetector": "^8.2.0",
     "i18next-resources-to-backend": "^1.2.1",
-    "jose": "^6.0.12",
-    "next": "^15.4.6",
-    "nuqs": "^2.4.3",
+    "jose": "^6.1.0",
+    "next": "^15.5.4",
+    "nuqs": "^2.6.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-i18next": "^15.6.1",
+    "react-i18next": "^16.0.0",
     "server-only": "^0.0.1",
     "sonner": "^2.0.7",
-    "zod": "^4.0.17"
+    "zod": "^4.1.11"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^5.0.7",
-    "@graphql-codegen/client-preset": "^4.8.3",
-    "@graphql-codegen/schema-ast": "^4.1.0",
+    "@graphql-codegen/cli": "^6.0.0",
+    "@graphql-codegen/client-preset": "^5.0.1",
+    "@graphql-codegen/schema-ast": "^5.0.0",
     "@parcel/watcher": "^2.5.1",
-    "@tailwindcss/postcss": "^4.1.11",
+    "@tailwindcss/postcss": "^4.1.13",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "@types/node": "^22.17.1",
-    "@types/react": "^19.1.9",
-    "@types/react-dom": "^19.1.7",
-    "concurrently": "^9.2.0",
-    "eslint": "^9.33.0",
-    "eslint-config-next": "^15.4.6",
+    "@types/node": "^22.18.6",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.36.0",
+    "eslint-config-next": "^15.5.4",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "schema-dts": "^1.1.5",
     "tailwindcss": "^4.0.9",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.39.0"
+    "typescript-eslint": "^8.44.1"
   }
 }

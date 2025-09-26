@@ -6,13 +6,18 @@ import { OrderDetails } from '@/features/order/components/OrderDetails';
 import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
 import { graphql } from '@gql/gql';
 
-export const metadata: Metadata = {
-  robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslation(['server']);
+
+  return {
+    title: t('server:checkout.success'),
+    robots: {
+      index: false,
+      follow: false,
+      nocache: true,
+    },
+  };
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -38,7 +43,6 @@ export default async function Confirmation() {
 
   return (
     <div>
-      <title>{t('server:checkout.success')}</title>
       <div className="mx-auto flex max-w-7xl flex-col gap-8">
         <h1 className="text-4xl font-medium">{t('server:checkout.success')}</h1>
         <OrderDetails order={order} />

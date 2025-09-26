@@ -1,8 +1,27 @@
 import { Fragment } from 'react';
 
-import { AddressFragment } from '@gql/graphql';
+interface PlainAddressProps {
+  address: {
+    firstName?: string | null;
+    lastName?: string | null;
+    email?: string | null;
+    phoneNumber?: string | null;
+    companyName?: string | null;
+    vatNumber?: string | null;
+    address1?: string | null;
+    address2?: string | null;
+    zipCode?: string | null;
+    city?: string | null;
+    state?: {
+      name: string;
+    } | null;
+    country?: {
+      name: string;
+    } | null;
+  };
+}
 
-export const PlainAddress = ({ address }: { address: AddressFragment }) => {
+export const PlainAddress = ({ address }: PlainAddressProps) => {
   const lines = [
     [address.firstName, address.lastName].filter(Boolean).join(' '),
     address.email,

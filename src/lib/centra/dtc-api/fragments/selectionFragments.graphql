@@ -21,6 +21,7 @@ fragment line on Line {
     formattedValue
     value
   }
+  subscriptionId
   displayItem {
     name
     uri
@@ -29,6 +30,9 @@ fragment line on Line {
       source(sizeName: "mini") {
         url
       }
+    }
+    subscriptionPlans {
+      ...subscriptionPlan
     }
   }
   ... on BundleLine {

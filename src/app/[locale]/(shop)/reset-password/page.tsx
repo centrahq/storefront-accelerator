@@ -7,16 +7,20 @@ import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { ResetPasswordForm } from '@/features/profile/components/ResetPasswordForm';
 import { getSession } from '@/lib/centra/sessionCookie';
 
-export const metadata: Metadata = {
-  robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslation(['server']);
+
+  return {
+    title: t('server:user.reset-password.reset-password'),
+    robots: {
+      index: false,
+      follow: false,
+      nocache: true,
+    },
+  };
+}
 
 export default async function ResetPasswordPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  const { t } = await getTranslation(['server']);
   const { isLoggedIn } = await getSession();
 
   if (isLoggedIn) {
@@ -35,13 +39,10 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
   }
 
   return (
-    <>
-      <title>{t('server:user.reset-password.reset-password')}</title>
-      <div>
-        <div className="mx-auto max-w-7xl">
-          <ResetPasswordForm i={parsedParams.data.i} id={parsedParams.data.id} />
-        </div>
+    <div>
+      <div className="mx-auto max-w-7xl">
+        <ResetPasswordForm i={parsedParams.data.i} id={parsedParams.data.id} />
       </div>
-    </>
+    </div>
   );
 }

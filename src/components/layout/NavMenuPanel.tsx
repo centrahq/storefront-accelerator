@@ -40,7 +40,7 @@ export const NavMenuPanel = ({ children }: { children: ReactNode }) => {
             <span className="sr-only">{t('shop:common.close')}</span>
           </CloseButton>
           <div className="flex min-h-full flex-col gap-5 p-10">
-            <DialogTitle className="sr-only text-3xl font-medium">{t('shop:menu')}</DialogTitle>
+            <DialogTitle className="sr-only">{t('shop:menu')}</DialogTitle>
             {children}
           </div>
         </DialogPanel>

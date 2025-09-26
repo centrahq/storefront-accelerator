@@ -2,7 +2,7 @@
   "addressForm": {
     "labels": {
       "address1": "Adress",
-      "address2": "Adressen fortsatte",
+      "address2": "Adress forts.",
       "city": "Stad",
       "companyName": "Företag",
       "country": "Land",
@@ -11,96 +11,151 @@
       "lastName": "Efternamn",
       "phoneNumber": "Telefonnummer",
       "sameAsShipping": "Använd samma adress för fakturering",
-      "state": "Ange",
-      "vatNumber": "momsnummer",
+      "state": "Län",
+      "vatNumber": "Momsnummer",
       "zipCode": "Postnummer"
     },
-    "optional": "Frivillig",
+    "optional": "Frivilligt",
     "placeholders": {
       "select-country": "Välj land",
-      "select-state": "Välj tillstånd"
+      "select-state": "Välj län"
+    },
+    "errors": {
+      "fill-in-required-fields": "Vänligen fyll i alla obligatoriska fält"
     }
   },
-  "back-to-home": "Tillbaka till hemmet",
+  "back-to-home": "Till startsidan",
   "cart": {
-    "decrease": "Minska artikelkvantiteten",
+    "decrease": "Minska antal",
     "delete": "Ta bort",
     "empty": "Din varukorg är tom",
     "errors": {
-      "add": "Ett fel uppstod när varan lades till i kundvagnen",
-      "delete": "Ett fel uppstod när varan skulle tas bort från kundvagnen",
-      "update": "Ett fel uppstod när varan i kundvagnen skulle uppdateras"
+      "add": "Ett fel uppstod när varan skulle läggas till i varukorgen",
+      "delete": "Ett fel uppstod när varan skulle tas bort från varukorgen",
+      "update": "Ett fel uppstod när varan skulle uppdateras i varukorgen"
     },
-    "hint": " <0>Totalt antal varor i varukorgen:</0><1>{{totalQuantity}}</1>",
-    "increase": "Öka artikelkvantiteten",
-    "open": "Öppen vagn",
+    "hint": "<0>Totalt antal varor i varukorgen:</0><1>{{totalQuantity}}</1>",
+    "increase": "Öka antal",
+    "open": "Öppna varukorgen",
     "proceed": "Gå till kassan",
-    "quantity": "Kvantitet",
-    "review": "Granska din nuvarande kundvagnsstatus.",
+    "quantity": "Antal",
+    "review": "Granska din nuvarande varukorg.",
     "size": "Storlek",
-    "title": "Vagn",
-    "total": "Total"
+    "subscriptions": {
+      "every_DAY_one": "/ dag",
+      "every_DAY_other": "/ var {{count}} dagar",
+      "every_MONTH_one": "/ månad",
+      "every_MONTH_other": "/ var {{count}} mån",
+      "every_WEEK_one": "/ vecka",
+      "every_WEEK_other": "/ var {{count}} v",
+      "every_YEAR_one": "/ år",
+      "every_YEAR_other": "/ var {{count}} år"
+    },
+    "title": "Varukorg",
+    "total": "Totalt"
   },
   "common": {
-    "close": "Nära"
+    "close": "Stäng"
   },
   "filters": {
-    "brand": "Stämpla",
+    "brand": "Märke",
     "filter-by": "Filtrera efter:",
     "name-a-to-z": "Namn: A till Ö",
-    "name-z-to-a": "Namn: Z till A",
-    "newest": "Nyaste",
+    "name-z-to-a": "Namn: Ö till A",
+    "newest": "Nyast",
     "no-sorting": "Ingen sortering",
     "oldest": "Äldst",
-    "price-high-to-low": "Pris: Högt till Lågt",
-    "price-low-to-high": "Pris: Lågt till Högt",
-    "search": "Söka",
+    "price-high-to-low": "Pris: Hög till låg",
+    "price-low-to-high": "Pris: Låg till hög",
+    "search": "Sök",
     "size": "Storlek",
     "sort-by": "Sortera efter:"
   },
   "items-removed": {
-    "message": "Vissa föremål i din vagn tas bort på grund av otillgänglighet.",
-    "title": "Otillgängliga föremål"
+    "message": "Vissa varor i din varukorg har tagits bort eftersom de inte finns tillgängliga.",
+    "title": "Ej tillgängliga varor"
   },
   "localization": {
     "country": "Land",
-    "hint": "Ändra dina inställningar för land och språk.",
+    "hint": "Ändra dina land- och språkinställningar.",
     "language": "Språk",
     "save": "Spara ändringar",
     "title": "Lokalisering"
   },
   "menu": "Meny",
   "not-found": {
-    "hint": "Om du inte hittar informationen du letar efter, se vårt supportcenter.",
-    "title": "Sidan hittades inte"
+    "hint": "Om du inte hittar informationen du söker, vänligen besök vårt supportcenter.",
+    "title": "Sidan kunde inte hittas"
   },
   "page-not-found": {
-    "hint": "Vi kunde inte hitta sidan du letar efter. Försök igen senare eller kontakta support.",
-    "title": "Sidan hittades inte"
+    "hint": "Vi kunde inte hitta sidan du letade efter. Försök igen senare eller kontakta support.",
+    "title": "Sidan kunde inte hittas"
   },
   "product": {
-    "add-to-cart": "Lägg till i varukorgen",
-    "select-bundle-sizes": "Välj en storlek för varje sektion i bunten",
-    "select-size": "Välj en storlek",
-    "size": "Storlek"
+    "add-to-cart": "Lägg i varukorg",
+    "select-bundle-sizes": "Välj storlek för varje del i paketet",
+    "select-size": "Välj storlek",
+    "size": "Storlek",
+    "subscriptions": {
+      "buy-once": "Köp en gång",
+      "every_DAY_one": "Varje dag",
+      "every_DAY_other": "Var {{count}} dagar",
+      "every_MONTH_one": "Varje månad",
+      "every_MONTH_other": "Var {{count}} månader",
+      "every_WEEK_one": "Varje vecka",
+      "every_WEEK_other": "Var {{count}} veckor",
+      "every_YEAR_one": "Varje år",
+      "every_YEAR_other": "Var {{count}} år",
+      "save-percent": "Spara {{discount}} %",
+      "subscribe": "Prenumerera",
+      "title": "Prenumerationsalternativ"
+    }
   },
   "product-not-found": {
-    "hint": "Vi kunde inte hitta produkten du letade efter. Försök igen senare eller kontakta supporten.",
-    "title": "Produkten hittades inte"
+    "hint": "Vi kunde inte hitta produkten du letade efter. Försök igen senare eller kontakta support.",
+    "title": "Produkten kunde inte hittas"
   },
   "show-menu": "Visa meny",
   "user": {
     "confirm-password": "Bekräfta lösenord",
     "email": "E-post",
-    "forgot-password": "Har du glömt lösenordet?",
-    "login": "Inloggning",
+    "forgot-password": "Glömt lösenord?",
+    "login": "Logga in",
     "password": "Lösenord",
-    "register": "Register",
+    "register": "Registrera",
     "reset-password": {
-      "change-password": "Ändra lösenord",
-      "enter-email": "Ange ditt e -postmeddelande för att återställa lösenord",
+      "change-password": "Byt lösenord",
+      "enter-email": "Ange din e-post för att återställa lösenord",
       "enter-password": "Ange ditt nya lösenord",
-      "reset-password": "Återställa lösenord"
+      "reset-password": "Återställ lösenord"
+    },
+    "subscriptions": {
+      "no-subscriptions": "Inga prenumerationer hittades",
+      "action": "Åtgärd",
+      "address": "Adress",
+      "created": "Skapad",
+      "contract-id": "Kontrakts-ID",
+      "subscriptions": "Prenumerationer",
+      "status": "Status",
+      "status_ACTIVE": "Aktiv",
+      "status_CANCELLED": "Avbruten",
+      "status_PAUSED": "Pausad",
+      "view": "Visa",
+      "interval": "Intervall",
+      "next-order": "Nästa beställning",
+      "items": "Artiklar",
+      "pause": "Pausa",
+      "cancel": "Avbryt",
+      "resume": "Återuppta",
+      "edit-address": "Redigera Adress",
+      "cancel-edit": "Avbryt",
+      "update-address": "Uppdatera Adress",
+      "errors": {
+        "update-status": "Ett fel uppstod när prenumerationsstatusen skulle uppdateras",
+        "update-interval": "Misslyckades att uppdatera prenumerationsintervall",
+        "update-quantity": "Misslyckades att uppdatera prenumerationskvantitet",
+        "address-update": "Misslyckades att uppdatera adress"
+      }
     }
   }
 }

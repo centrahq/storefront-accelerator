@@ -19,6 +19,9 @@
     "placeholders": {
       "select-country": "Select country",
       "select-state": "Select state"
+    },
+    "errors": {
+      "fill-in-required-fields": "Please fill in all required fields"
     }
   },
   "back-to-home": "Back to home",
@@ -38,6 +41,16 @@
     "quantity": "Quantity",
     "review": "Review your current cart status.",
     "size": "Size",
+    "subscriptions": {
+      "every_DAY_one": "/ day",
+      "every_DAY_other": "/ every {{count}} days",
+      "every_MONTH_one": "/ month",
+      "every_MONTH_other": "/ every {{count}} mo.",
+      "every_WEEK_one": "/ week",
+      "every_WEEK_other": "/ every {{count}} wk.",
+      "every_YEAR_one": "/ year",
+      "every_YEAR_other": "/ every {{count}} yr."
+    },
     "title": "Cart",
     "total": "Total"
   },
@@ -82,7 +95,21 @@
     "add-to-cart": "Add to cart",
     "select-bundle-sizes": "Please select a size for each section in the bundle",
     "select-size": "Please select a size",
-    "size": "Size"
+    "size": "Sizes",
+    "subscriptions": {
+      "buy-once": "Buy once",
+      "every_DAY_one": "Every day",
+      "every_DAY_other": "Every {{count}} days",
+      "every_MONTH_one": "Every month",
+      "every_MONTH_other": "Every {{count}} months",
+      "every_WEEK_one": "Every week",
+      "every_WEEK_other": "Every {{count}} weeks",
+      "every_YEAR_one": "Every year",
+      "every_YEAR_other": "Every {{count}} years",
+      "save-percent": "Save {{discount}}%",
+      "subscribe": "Subscribe",
+      "title": "Subscription options"
+    }
   },
   "product-not-found": {
     "hint": "We could not find the product you're looking for. Please try again later or contact support.",
@@ -101,6 +128,34 @@
       "enter-email": "Enter your email to reset password",
       "enter-password": "Enter your new password",
       "reset-password": "Reset password"
+    },
+    "subscriptions": {
+      "no-subscriptions": "No subscriptions found",
+      "action": "Action",
+      "address": "Address",
+      "created": "Created",
+      "contract-id": "Contract ID",
+      "subscriptions": "Subscriptions",
+      "status": "Status",
+      "status_ACTIVE": "Active",
+      "status_CANCELLED": "Cancelled",
+      "status_PAUSED": "Paused",
+      "view": "View",
+      "interval": "Interval",
+      "next-order": "Next order",
+      "items": "Items",
+      "pause": "Pause",
+      "cancel": "Cancel",
+      "resume": "Resume",
+      "edit-address": "Edit address",
+      "cancel-edit": "Cancel",
+      "update-address": "Update address",
+      "errors": {
+        "update-status": "An error occurred while updating the subscription status",
+        "update-interval": "Failed to update subscription interval",
+        "update-quantity": "Failed to update subscription quantity",
+        "address-update": "Failed to update address"
+      }
     }
   }
 }

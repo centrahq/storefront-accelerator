@@ -1,12 +1,21 @@
+import { Metadata } from 'next';
+
 import { AddressForm } from '@/features/checkout/components/AddressForm/AddressForm';
 import { InitiateOnlyPayments } from '@/features/checkout/components/Payment/InitiateOnlyPayments';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { getCountries } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
 
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslation(['server']);
+
+  return {
+    title: t('server:checkout.checkout'),
+  };
+}
+
 export default async function ShippingPage() {
   const { language } = await getSession();
-  const { t } = await getTranslation(['server']);
   const countries = (await getCountries())
     .map((country) => ({
       code: country.code,
@@ -17,7 +26,6 @@ export default async function ShippingPage() {
 
   return (
     <>
-      <title>{t('server:checkout.checkout')}</title>
       <InitiateOnlyPayments />
       <div className="bg-mono-0 p-10">
         <AddressForm countries={countries} />

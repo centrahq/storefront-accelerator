@@ -2,14 +2,17 @@ import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ReactNode } from 'react';
+import { Trans } from 'react-i18next/TransWithoutContext';
 
 import { Logo } from '@/components/layout/Logo';
 import { CheckoutItems } from '@/features/checkout/components/CheckoutItems';
 import { CheckoutScript } from '@/features/checkout/components/CheckoutScript';
 import { Totals } from '@/features/checkout/components/Totals/Totals';
 import { checkoutQuery } from '@/features/checkout/queries';
+import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { getQueryClient } from '@/lib/centra/dtc-api/queryClient';
+import { getSession } from '@/lib/centra/sessionCookie';
 
 export const metadata: Metadata = {
   robots: {
@@ -23,7 +26,10 @@ export const dynamic = 'force-dynamic';
 
 export default async function CheckoutLayout({ children }: { children: ReactNode }) {
   const queryClient = getQueryClient();
-  await queryClient.prefetchQuery(checkoutQuery);
+  const { isLoggedIn } = await getSession();
+  const { lines } = await queryClient.fetchQuery(checkoutQuery);
+
+  const hasSubscriptionItems = lines.some((line) => line?.subscriptionId != null);
 
   const { t } = await getTranslation(['server', 'checkout']);
 
@@ -40,7 +46,19 @@ export default async function CheckoutLayout({ children }: { children: ReactNode
               </div>
               <h1 className="text-4xl font-medium">{t('server:checkout.checkout')}</h1>
               <p className="text-mono-500 mb-10">{t('server:checkout.hint')}</p>
-              <div className="flex flex-col gap-5">{children}</div>
+              {!isLoggedIn && hasSubscriptionItems ? (
+                <p className="rounded border border-red-600 bg-red-50 p-4 text-sm text-red-800">
+                  <Trans t={t} i18nKey="server:checkout.subscription-login-required">
+                    You must
+                    <ShopLink href="/login" className="underline underline-offset-2">
+                      login
+                    </ShopLink>
+                    to checkout with subscription items.
+                  </Trans>
+                </p>
+              ) : (
+                <div className="flex flex-col gap-5">{children}</div>
+              )}
             </div>
           </div>
         </div>
@@ -54,7 +72,7 @@ export default async function CheckoutLayout({ children }: { children: ReactNode
             <Totals />
           </div>
         </div>
-        <CheckoutScript />
+        {(isLoggedIn || !hasSubscriptionItems) && <CheckoutScript />}
       </div>
     </HydrationBoundary>
   );

@@ -5,16 +5,20 @@ import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { ForgotPasswordForm } from '@/features/profile/components/ForgotPasswordForm';
 import { getSession } from '@/lib/centra/sessionCookie';
 
-export const metadata: Metadata = {
-  robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslation(['server']);
+
+  return {
+    title: t('server:user.reset-password.forgot-password'),
+    robots: {
+      index: false,
+      follow: false,
+      nocache: true,
+    },
+  };
+}
 
 export default async function ForgotPasswordPage() {
-  const { t } = await getTranslation(['server']);
   const { isLoggedIn } = await getSession();
 
   if (isLoggedIn) {
@@ -22,13 +26,10 @@ export default async function ForgotPasswordPage() {
   }
 
   return (
-    <>
-      <title>{t('server:user.reset-password.forgot-password')}</title>
-      <div>
-        <div className="mx-auto max-w-7xl">
-          <ForgotPasswordForm />
-        </div>
+    <div>
+      <div className="mx-auto max-w-7xl">
+        <ForgotPasswordForm />
       </div>
-    </>
+    </div>
   );
 }

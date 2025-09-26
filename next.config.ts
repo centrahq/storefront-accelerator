@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
   experimental: {
     useCache: true,
     inlineCss: true,
+    clientSegmentCache: true,
   },
   images: {
     formats: ['image/avif', 'image/webp'],

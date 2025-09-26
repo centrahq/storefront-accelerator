@@ -6,6 +6,7 @@ import { getItemName } from '@/lib/utils/product';
 import { BundleType } from '@gql/graphql';
 
 import { ItemSelector } from './ItemSelector';
+import { SubscriptionSelector } from './SubscriptionSelector';
 
 export const Items = async ({ productUri }: { productUri: string }) => {
   const { market, pricelist, country, language } = await getSession();
@@ -51,6 +52,7 @@ export const Items = async ({ productUri }: { productUri: string }) => {
   return (
     <>
       {itemsData.length > 1 && <ItemSelector items={itemsData} />}
+      {product.subscriptionPlans.length > 0 && <SubscriptionSelector plans={product.subscriptionPlans} />}
       <AddToCartButton
         items={itemsData}
         isFlexibleBundle={product.bundle?.type === BundleType.Flexible}

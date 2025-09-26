@@ -56,6 +56,8 @@ export const OrderDetails = async ({ order }: { order: OrderFragment }) => {
         {order.lines
           .filter((line) => !!line)
           .map((line) => {
+            const subscription = line.displayItem.subscriptionPlans.find((plan) => plan.id === line.subscriptionId);
+
             return (
               <li key={line.id} className="bg-mono-50 flex gap-5 py-3">
                 {line.displayItem.media[0] ? (
@@ -72,36 +74,49 @@ export const OrderDetails = async ({ order }: { order: OrderFragment }) => {
                   <div className="size-20" />
                 )}
                 <div className="flex grow flex-col gap-2">
-                  <div>
-                    <div className="flex items-baseline justify-between gap-1">
+                  <div className="flex items-baseline justify-between gap-1">
+                    <div className="flex flex-col">
                       <ShopLink className="font-medium" href={`/product/${line.displayItem.uri}`}>
                         {line.displayItem.name}
                       </ShopLink>
-                      <div className="shrink-0 text-sm">{line.lineValue.formattedValue}</div>
-                    </div>
-                    <dl>
-                      {(line.__typename === 'ProductLine' || line.bundle?.type === BundleType.Fixed) && (
-                        <div className="flex gap-2 text-sm">
-                          <dt className="text-mono-500">{t('shop:cart.size')}:</dt>
-                          <dd>{getItemName(line.item, country)}</dd>
-                        </div>
-                      )}
-                      <div className="flex gap-2 text-sm">
-                        <dt className="text-mono-500">{t('shop:cart.quantity')}:</dt>
-                        <dd>{line.quantity}</dd>
-                      </div>
-                    </dl>
-                    {line.__typename === 'BundleLine' && line.bundle?.type === BundleType.Flexible && (
-                      <ul className="list-inside list-disc text-sm">
-                        {line.bundle.sections.flatMap((section) =>
-                          section.lines.map((sectionLine) => (
-                            <li key={sectionLine.id}>
-                              {section.quantity}x {sectionLine.name} ({getItemName(sectionLine.item, country)})
-                            </li>
-                          )),
+                      <dl>
+                        {(line.__typename === 'ProductLine' || line.bundle?.type === BundleType.Fixed) && (
+                          <div className="flex gap-2 text-sm">
+                            <dt className="text-mono-500">{t('shop:cart.size')}:</dt>
+                            <dd>{getItemName(line.item, country)}</dd>
+                          </div>
                         )}
-                      </ul>
-                    )}
+                        <div className="flex gap-2 text-sm">
+                          <dt className="text-mono-500">{t('shop:cart.quantity')}:</dt>
+                          <dd>{line.quantity}</dd>
+                        </div>
+                      </dl>
+                      {line.__typename === 'BundleLine' && line.bundle?.type === BundleType.Flexible && (
+                        <ul className="list-inside list-disc text-sm">
+                          {line.bundle.sections.flatMap((section) =>
+                            section.lines.map((sectionLine) => (
+                              <li key={sectionLine.id}>
+                                {section.quantity}x {sectionLine.name} ({getItemName(sectionLine.item, country)})
+                              </li>
+                            )),
+                          )}
+                        </ul>
+                      )}
+                    </div>
+                    <div className="min-w-24 shrink-0 text-right text-sm">
+                      <span>
+                        {line.lineValue.formattedValue}
+                        {subscription && (
+                          <span className="text-xs">
+                            <br />
+                            {t('shop:cart.subscriptions.every', {
+                              count: subscription.interval.value,
+                              context: subscription.interval.type,
+                            })}
+                          </span>
+                        )}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </li>
