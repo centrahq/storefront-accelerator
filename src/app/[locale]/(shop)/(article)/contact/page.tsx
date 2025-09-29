@@ -15,13 +15,11 @@ export default function ContactPage() {
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <h1 className="text-4xl font-medium">Contact Us</h1>
         <p>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Libero voluptates sint mollitia hic corrupti autem
-          enim, omnis qui provident officia dolorem deserunt itaque iste temporibus ratione nesciunt doloremque dolorum
-          molestiae vero, ullam, assumenda fugit dolore veniam? Similique, aliquam. Molestiae dicta exercitationem
-          veritatis error nulla eum atque, fugit impedit sint ut libero vitae perspiciatis quibusdam aliquid aspernatur
-          fugiat repudiandae eligendi enim magni blanditiis iusto ab illum modi a. Enim architecto eligendi dignissimos
-          quos excepturi. Dolores eius odio molestias voluptatibus alias autem dolorum? Autem non sed earum eveniet vero
-          ducimus, placeat veniam ipsum ipsa dignissimos illo est excepturi cupiditate deserunt totam quidem?
+          If you're a partner looking for documentation, start on [centra.dev - our portal for developers](https://centra.dev)!
+
+          If you're new, why not [sign up for a demo](https://centra.com/demo)?
+
+          If you're looking to contact Centra in general, please see [our contact page](https://centra.com/contact).
         </p>
       </div>
     </div>
