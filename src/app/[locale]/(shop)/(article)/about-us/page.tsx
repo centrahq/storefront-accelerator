@@ -19,7 +19,8 @@ export default function AboutUsPage() {
 
           Centra's fashion-focused features come out-of-the-box, so your energy goes toward growing global sales. Win new markets easily with a single store localized to every country, language, currency and more!
 
-          [Read success stories of fashion brands that switched to Centra!](https://centra.com/case-studies)
+          <a href="https://centra.com/case-studies" target="_blank">Here you can read success stories of fashion brands that switched to Centra!</a>
+          []()
         </p>
       </div>
     </div>
