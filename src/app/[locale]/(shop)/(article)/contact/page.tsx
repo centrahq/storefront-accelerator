@@ -15,11 +15,19 @@ export default function ContactPage() {
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <h1 className="text-4xl font-medium">Contact Us</h1>
         <p>
-          If you're a partner looking for documentation, start on <a href="https://centra.dev" target="_blank">centra.dev - our portal for developers</a>!
-
-          If you're new, why not <a href="https://centra.com/demo" target="_blank">sign up for a demo</a>?
-
-          If you're looking to contact Centra in general, please see <a href="https://centra.com/contact" target="_blank">our contact page</a>.
+          If you&apos;re a partner looking for documentation, start on{' '}
+          <a href="https://centra.dev" target="_blank" className="underline underline-offset-2">
+            centra.dev - our portal for developers
+          </a>
+          ! If you&apos;re new, why not{' '}
+          <a href="https://centra.com/demo" target="_blank" className="underline underline-offset-2">
+            sign up for a demo
+          </a>
+          ? If you&apos;re looking to contact Centra in general, please see{' '}
+          <a href="https://centra.com/contact" target="_blank" className="underline underline-offset-2">
+            our contact page
+          </a>
+          .
         </p>
       </div>
     </div>
