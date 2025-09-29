@@ -1,8 +1,8 @@
 export const Logo = () => {
   return (
     <>
-      <span className="font-bold">Socks</span>
-      <span>Paradise</span>
+      <span className="font-bold">Centra Demo</span>
+      <span>Store</span>
     </>
   );
 };
