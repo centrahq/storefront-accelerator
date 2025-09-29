@@ -32,7 +32,7 @@ export const Header = async () => {
     <header>
       <div className="border-mono-300 text-mono-600 flex items-center justify-between border-b py-3 text-sm">
         <span className="hidden lg:block">
-          Now you can order our socks in subscriptions to enjoy them all the time!
+          Welcome to Centra! Feel free to browse around this webshop, powered by our Storefront API!
         </span>
         <div className="flex w-full justify-between gap-5 lg:w-auto">
           <ShopLink href="/contact">Contact us</ShopLink>
