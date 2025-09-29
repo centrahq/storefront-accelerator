@@ -15,13 +15,7 @@ export default function CookiesPage() {
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <h1 className="text-4xl font-medium">Cookie Policy</h1>
         <p>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Libero voluptates sint mollitia hic corrupti autem
-          enim, omnis qui provident officia dolorem deserunt itaque iste temporibus ratione nesciunt doloremque dolorum
-          molestiae vero, ullam, assumenda fugit dolore veniam? Similique, aliquam. Molestiae dicta exercitationem
-          veritatis error nulla eum atque, fugit impedit sint ut libero vitae perspiciatis quibusdam aliquid aspernatur
-          fugiat repudiandae eligendi enim magni blanditiis iusto ab illum modi a. Enim architecto eligendi dignissimos
-          quos excepturi. Dolores eius odio molestias voluptatibus alias autem dolorum? Autem non sed earum eveniet vero
-          ducimus, placeat veniam ipsum ipsa dignissimos illo est excepturi cupiditate deserunt totam quidem?
+          Our website uses cookies and similar technologies to enhance your browsing experience, analyze site traffic, and support essential site functions such as remembering your preferences and enabling secure logins. By continuing to use our site, you consent to the use of cookies in accordance with this policy. You can manage or disable cookies at any time through your browser settings, but please note that certain features of the site may not function properly if cookies are disabled. For more information on how we use cookies and how your data is handled, please refer to our Privacy Policy.
         </p>
       </div>
     </div>
