@@ -9,7 +9,7 @@ export const Footer = () => {
         <p>Our Client Advisors are available Monday through Friday from 8:30am to 5pm EST.</p>
         <div>
           <h3 className="text-mono-0 font-medium">Email us</h3>
-          <a href="mailto:help@socksparadise.centra">contact@store.centra</a>
+          <a href="mailto:contact@store.centra">contact@store.centra</a>
         </div>
       </div>
       <div className="flex flex-col gap-5">
