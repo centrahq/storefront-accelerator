@@ -58,7 +58,7 @@ export const Header = async () => {
                 <SearchButton withLabel />
               </div>
               <ShopLink href={isLoggedIn ? '/account' : '/login'} className="flex items-center gap-2">
-                <UserIcon className="size-6" />
+                <UserIcon className="size-6" aria-hidden="true" />
                 <span className="py-2">{isLoggedIn ? t('server:user.my-account') : t('shop:user.login')}</span>
               </ShopLink>
             </div>
@@ -74,11 +74,11 @@ export const Header = async () => {
           </div>
           <div className="hidden md:block">
             <ShopLink href={isLoggedIn ? '/account' : '/login'} className="flex items-center gap-2">
-              <UserIcon className="size-6" />
+              <UserIcon className="size-6" aria-hidden="true" />
               <span className="sr-only">{isLoggedIn ? t('server:user.my-account') : t('shop:user.login')}</span>
             </ShopLink>
           </div>
-          <Suspense fallback={<ShoppingBagIcon className="size-6" />}>
+          <Suspense fallback={<ShoppingBagIcon className="size-6" aria-hidden="true" />}>
             <Cart />
           </Suspense>
         </div>

@@ -1,6 +1,8 @@
 'use client';
 
 import { Checkbox, Field, Fieldset, Input, Label, Legend, Select } from '@headlessui/react';
+import { CheckIcon } from '@heroicons/react/16/solid';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
@@ -154,37 +156,43 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
           <div className="grid grid-cols-2 gap-5">
             <Field className="flex flex-col gap-1">
               <Label>{t('shop:addressForm.labels.country')}</Label>
-              <Select
-                name="shipping.country"
-                className="border-mono-300 border px-6 py-3 text-sm"
-                value={shippingCountry}
-                onChange={(evt) => setShippingCountry(evt.target.value)}
-                required
-              >
-                <option value="">{t('shop:addressForm.placeholders.select-country')}</option>
-                {countries.map((country) => (
-                  <option key={country.code} value={country.code}>
-                    {country.name}
-                  </option>
-                ))}
-              </Select>
+              <div className="relative flex items-center">
+                <Select
+                  name="shipping.country"
+                  className="border-mono-300 bg-mono-0 block w-full appearance-none border px-6 py-3 text-sm"
+                  value={shippingCountry}
+                  onChange={(evt) => setShippingCountry(evt.target.value)}
+                  required
+                >
+                  <option value="">{t('shop:addressForm.placeholders.select-country')}</option>
+                  {countries.map((country) => (
+                    <option key={country.code} value={country.code}>
+                      {country.name}
+                    </option>
+                  ))}
+                </Select>
+                <ChevronDownIcon className="pointer-events-none absolute right-6 size-4" aria-hidden="true" />
+              </div>
             </Field>
             {shippingStates.length > 0 && (
               <Field className="flex flex-col gap-1">
                 <Label>{t('shop:addressForm.labels.state')}</Label>
-                <Select
-                  name="shipping.state"
-                  className="border-mono-300 border px-6 py-3 text-sm"
-                  defaultValue={shippingAddress.state?.code}
-                  required
-                >
-                  <option value="">{t('shop:addressForm.placeholders.select-state')}</option>
-                  {shippingStates.map((state) => (
-                    <option key={state.code} value={state.code}>
-                      {state.name}
-                    </option>
-                  ))}
-                </Select>
+                <div className="relative flex items-center">
+                  <Select
+                    name="shipping.state"
+                    className="border-mono-300 bg-mono-0 block w-full appearance-none border px-6 py-3 text-sm"
+                    defaultValue={shippingAddress.state?.code}
+                    required
+                  >
+                    <option value="">{t('shop:addressForm.placeholders.select-state')}</option>
+                    {shippingStates.map((state) => (
+                      <option key={state.code} value={state.code}>
+                        {state.name}
+                      </option>
+                    ))}
+                  </Select>
+                  <ChevronDownIcon className="pointer-events-none absolute right-6 size-4" aria-hidden="true" />
+                </div>
               </Field>
             )}
           </div>
@@ -277,11 +285,9 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
           name="sameAsShipping"
           checked={billingSameAsShipping}
           onChange={setBillingSameAsShipping}
-          className="group block size-4 rounded-sm border"
+          className="group border-mono-500 flex size-5 items-center justify-center rounded-sm border"
         >
-          <svg className="stroke-mono-900 opacity-0 group-data-checked:opacity-100" viewBox="0 0 14 14" fill="none">
-            <path d="M3 8L6 11L11 3.5" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <CheckIcon className="hidden size-4 fill-black group-data-checked:block" aria-hidden="true" />
         </Checkbox>
         <Label>{t('shop:addressForm.labels.sameAsShipping')}</Label>
       </Field>
@@ -293,37 +299,43 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
             <div className="grid grid-cols-2 gap-5">
               <Field className="flex flex-col gap-1">
                 <Label>{t('shop:addressForm.labels.country')}</Label>
-                <Select
-                  className="border-mono-300 border px-6 py-3 text-sm"
-                  name="billing.country"
-                  value={billingCountry}
-                  onChange={(evt) => setBillingCountry(evt.target.value)}
-                  required
-                >
-                  <option value="">{t('shop:addressForm.placeholders.select-country')}</option>
-                  {countries.map((country) => (
-                    <option key={country.code} value={country.code}>
-                      {country.name}
-                    </option>
-                  ))}
-                </Select>
+                <div className="relative flex items-center">
+                  <Select
+                    className="border-mono-300 bg-mono-0 block w-full appearance-none border px-6 py-3 text-sm"
+                    name="billing.country"
+                    value={billingCountry}
+                    onChange={(evt) => setBillingCountry(evt.target.value)}
+                    required
+                  >
+                    <option value="">{t('shop:addressForm.placeholders.select-country')}</option>
+                    {countries.map((country) => (
+                      <option key={country.code} value={country.code}>
+                        {country.name}
+                      </option>
+                    ))}
+                  </Select>
+                  <ChevronDownIcon className="pointer-events-none absolute right-6 size-4" aria-hidden="true" />
+                </div>
               </Field>
               {billingStates.length > 0 && (
                 <Field className="flex flex-col gap-1">
                   <Label>{t('shop:addressForm.labels.state')}</Label>
-                  <Select
-                    className="border-mono-300 border px-6 py-3 text-sm"
-                    name="billing.state"
-                    defaultValue={billingAddress?.state?.code}
-                    required
-                  >
-                    <option value="">{t('shop:addressForm.placeholders.select-state')}</option>
-                    {billingStates.map((state) => (
-                      <option key={state.code} value={state.code}>
-                        {state.name}
-                      </option>
-                    ))}
-                  </Select>
+                  <div className="relative flex items-center">
+                    <Select
+                      className="border-mono-300 bg-mono-0 block w-full appearance-none border px-6 py-3 text-sm"
+                      name="billing.state"
+                      defaultValue={billingAddress?.state?.code}
+                      required
+                    >
+                      <option value="">{t('shop:addressForm.placeholders.select-state')}</option>
+                      {billingStates.map((state) => (
+                        <option key={state.code} value={state.code}>
+                          {state.name}
+                        </option>
+                      ))}
+                    </Select>
+                    <ChevronDownIcon className="pointer-events-none absolute right-6 size-4" aria-hidden="true" />
+                  </div>
                 </Field>
               )}
             </div>

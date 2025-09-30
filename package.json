@@ -34,6 +34,7 @@
     "react-i18next": "^16.0.0",
     "server-only": "^0.0.1",
     "sonner": "^2.0.7",
+    "yet-another-react-lightbox": "^3.25.0",
     "zod": "^4.1.11"
   },
   "devDependencies": {

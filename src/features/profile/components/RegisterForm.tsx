@@ -1,6 +1,7 @@
 'use client';
 
 import { Field, Input, Label, Select } from '@headlessui/react';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { useActionState, useState } from 'react';
 
@@ -66,37 +67,43 @@ export const RegisterForm = ({ defaultCountry, defaultState, countries }: Regist
         </Field>
         <Field className="flex flex-col gap-1">
           <Label>{t('shop:addressForm.labels.country')}</Label>
-          <Select
-            className="border-mono-300 border px-6 py-3 text-sm"
-            name="country"
-            value={country}
-            onChange={(evt) => setCountry(evt.target.value)}
-            required
-          >
-            <option value="">{t('shop:addressForm.placeholders.select-country')}</option>
-            {countries.map((country) => (
-              <option key={country.code} value={country.code}>
-                {country.name}
-              </option>
-            ))}
-          </Select>
+          <div className="relative flex items-center">
+            <Select
+              className="border-mono-300 bg-mono-0 block w-full appearance-none border px-6 py-3 text-sm"
+              name="country"
+              value={country}
+              onChange={(evt) => setCountry(evt.target.value)}
+              required
+            >
+              <option value="">{t('shop:addressForm.placeholders.select-country')}</option>
+              {countries.map((country) => (
+                <option key={country.code} value={country.code}>
+                  {country.name}
+                </option>
+              ))}
+            </Select>
+            <ChevronDownIcon className="pointer-events-none absolute right-6 size-4" aria-hidden="true" />
+          </div>
         </Field>
         {states.length > 0 && (
           <Field className="flex flex-col gap-1">
             <Label>{t('shop:addressForm.labels.state')}</Label>
-            <Select
-              className="border-mono-300 border px-6 py-3 text-sm"
-              name="state"
-              defaultValue={defaultState ?? ''}
-              required
-            >
-              <option value="">{t('shop:addressForm.placeholders.select-state')}</option>
-              {states.map((state) => (
-                <option key={state.code} value={state.code}>
-                  {state.name}
-                </option>
-              ))}
-            </Select>
+            <div className="relative flex items-center">
+              <Select
+                className="border-mono-300 bg-mono-0 block w-full appearance-none border px-6 py-3 text-sm"
+                name="state"
+                defaultValue={defaultState ?? ''}
+                required
+              >
+                <option value="">{t('shop:addressForm.placeholders.select-state')}</option>
+                {states.map((state) => (
+                  <option key={state.code} value={state.code}>
+                    {state.name}
+                  </option>
+                ))}
+              </Select>
+              <ChevronDownIcon className="pointer-events-none absolute right-6 size-4" aria-hidden="true" />
+            </div>
           </Field>
         )}
       </div>

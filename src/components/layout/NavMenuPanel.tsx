@@ -23,7 +23,7 @@ export const NavMenuPanel = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <button type="button" onClick={() => setIsOpen(true)}>
-        <Bars3Icon className="size-8" />
+        <Bars3Icon className="size-8" aria-hidden="true" />
         <span className="sr-only">{t('shop:show-menu')}</span>
       </button>
       <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
@@ -36,7 +36,7 @@ export const NavMenuPanel = ({ children }: { children: ReactNode }) => {
           className="bg-mono-0 fixed inset-y-0 left-0 size-full translate-x-0 overflow-auto duration-300 ease-out data-closed:-translate-x-full md:w-[30rem]"
         >
           <CloseButton className="absolute top-4 right-4">
-            <XMarkIcon className="size-6" />
+            <XMarkIcon className="size-6" aria-hidden="true" />
             <span className="sr-only">{t('shop:common.close')}</span>
           </CloseButton>
           <div className="flex min-h-full flex-col gap-5 p-10">

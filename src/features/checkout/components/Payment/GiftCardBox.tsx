@@ -48,7 +48,7 @@ export const GiftCardBox = () => {
               <div key={voucher.name} className="flex flex-col gap-3">
                 <div className="bg-mono-50 flex items-center justify-between p-3">
                   <div className="flex items-center gap-2">
-                    <TagIcon className="text-mono-500 size-5" />
+                    <TagIcon className="text-mono-500 size-5" aria-hidden="true" />
                     <span className="font-medium">**** {voucher.giftCard?.lastFourDigits ?? ''}</span>
                   </div>
                   <div className="flex items-center gap-2">

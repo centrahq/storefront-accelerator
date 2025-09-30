@@ -1,7 +1,7 @@
 'use client';
 
 import { CloseButton, Dialog, DialogBackdrop, DialogPanel, DialogTitle, Field, Label, Select } from '@headlessui/react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
@@ -92,7 +92,7 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
           className="bg-mono-0 fixed inset-y-0 right-0 size-full translate-x-0 overflow-auto duration-300 ease-out data-closed:translate-x-full md:w-[30rem]"
         >
           <CloseButton className="absolute top-4 right-4">
-            <XMarkIcon className="size-6" />
+            <XMarkIcon className="size-6" aria-hidden="true" />
             <span className="sr-only">{t('shop:common.close')}</span>
           </CloseButton>
           <form onSubmit={handleSave} className="flex flex-col gap-5 p-10">
@@ -102,31 +102,37 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
             </div>
             <Field className="flex flex-col gap-1">
               <Label>{t('shop:localization.language')}</Label>
-              <Select
-                value={selectedLanguage}
-                onChange={(event) => setSelectedLanguage(event.currentTarget.value)}
-                className="border-mono-300 bg-mono-0 text-mono-500 border px-6 py-4 text-sm"
-              >
-                {languageOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
+              <div className="relative flex items-center">
+                <Select
+                  value={selectedLanguage}
+                  onChange={(event) => setSelectedLanguage(event.currentTarget.value)}
+                  className="border-mono-300 bg-mono-0 text-mono-500 block w-full appearance-none border px-6 py-4 text-sm"
+                >
+                  {languageOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Select>
+                <ChevronDownIcon className="pointer-events-none absolute right-6 size-4" aria-hidden="true" />
+              </div>
             </Field>
             <Field className="flex flex-col gap-1">
               <Label>{t('shop:localization.country')}</Label>
-              <Select
-                value={selectedCountry}
-                onChange={(event) => setSelectedCountry(event.currentTarget.value)}
-                className="border-mono-300 bg-mono-0 text-mono-500 border px-6 py-4 text-sm"
-              >
-                {countryOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
+              <div className="relative flex items-center">
+                <Select
+                  value={selectedCountry}
+                  onChange={(event) => setSelectedCountry(event.currentTarget.value)}
+                  className="border-mono-300 bg-mono-0 text-mono-500 block w-full appearance-none border px-6 py-4 text-sm"
+                >
+                  {countryOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Select>
+                <ChevronDownIcon className="pointer-events-none absolute right-6 size-4" aria-hidden="true" />
+              </div>
             </Field>
             <button
               type="submit"

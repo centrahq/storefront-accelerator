@@ -85,7 +85,7 @@ export default async function ProductPage({ params }: PageProps) {
         }}
       />
       <div className="grid grid-cols-1 justify-between gap-3 md:grid-cols-[minmax(13rem,53rem)_minmax(22rem,43rem)] md:gap-10 lg:gap-20">
-        <ProductMedia productUri={uri} />
+        <ProductMedia media={product.media} />
         <div className="flex flex-col gap-3 md:gap-5 md:only:col-span-2">
           <h1 className="text-4xl font-medium">{product.name}</h1>
           <div className="text-3xl font-medium">

@@ -32,7 +32,7 @@ export const AccountSideNavigation = async () => {
             type="submit"
             className="text-mono-900 hover:bg-mono-100 flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium lg:text-base"
           >
-            <ArrowRightEndOnRectangleIcon className="size-5" />
+            <ArrowRightEndOnRectangleIcon className="size-5" aria-hidden="true" />
             <span>{t('server:user.logout')}</span>
           </button>
         </form>

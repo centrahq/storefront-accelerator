@@ -43,7 +43,7 @@ export const CartPanel = () => {
     <>
       <div className="relative">
         <button type="button" onClick={() => setIsCartOpen(true)} className="flex items-center justify-center">
-          <ShoppingBagIcon className="size-6" />
+          <ShoppingBagIcon className="size-6" aria-hidden="true" />
           <span className="sr-only">{t('shop:cart.open')}</span>
         </button>
         {totalQuantity > 0 && (
@@ -65,7 +65,7 @@ export const CartPanel = () => {
           className="bg-mono-0 fixed inset-y-0 right-0 size-full translate-x-0 overflow-auto duration-300 ease-out data-closed:translate-x-full md:w-[30rem]"
         >
           <CloseButton className="absolute top-4 right-4">
-            <XMarkIcon className="size-6" />
+            <XMarkIcon className="size-6" aria-hidden="true" />
             <span className="sr-only">{t('shop:common.close')}</span>
           </CloseButton>
           <div className="flex flex-col gap-5 p-10 pb-0">

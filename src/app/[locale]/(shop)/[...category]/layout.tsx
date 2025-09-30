@@ -55,25 +55,25 @@ export default async function CategoryLayout({
       <nav className="flex items-center gap-2 text-xs" aria-label={t('server:breadcrumbs')}>
         <ol>
           <li className="inline">
-            <ShopLink href="/" className="text-mono-500 hover:text-mono-800">
+            <ShopLink href="/" className="text-mono-900 hover:underline">
               {t('server:home')}
             </ShopLink>
-            <span className="mx-1" aria-hidden="true">
+            <span className="mx-3" aria-hidden="true">
               /
             </span>
           </li>
           {uris.slice(0, -1).map((uri, index) => (
             <li key={uri} className="inline">
-              <ShopLink href={`/${uris.slice(0, index + 1).join('/')}`} className="text-mono-500 hover:text-mono-800">
+              <ShopLink href={`/${uris.slice(0, index + 1).join('/')}`} className="text-mono-900 hover:underline">
                 {category.name?.[index]}
               </ShopLink>
-              <span className="mx-1" aria-hidden="true">
+              <span className="mx-3" aria-hidden="true">
                 /
               </span>
             </li>
           ))}
           <li className="inline">
-            <ShopLink href={`/${category.uri}`} className="text-mono-800" aria-current="page">
+            <ShopLink href={`/${category.uri}`} className="text-mono-500" aria-current="page">
               {category.name?.at(-1)}
             </ShopLink>
           </li>

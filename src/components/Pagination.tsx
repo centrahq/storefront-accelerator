@@ -40,7 +40,7 @@ export const Pagination = async ({ page, lastPage, getPageHref, label }: Props) 
               href={getPageHref(page - 1)}
               prefetch={false}
             >
-              <ChevronLeftIcon className="size-4" />
+              <ChevronLeftIcon className="size-4" aria-hidden="true" />
               <span>{t('server:pagination.previous')}</span>
             </ShopLink>
           </li>
@@ -48,7 +48,7 @@ export const Pagination = async ({ page, lastPage, getPageHref, label }: Props) 
         {from > 1 && (
           <li aria-hidden>
             <div className="border-mono-300 flex h-full items-center justify-center border px-6 py-2">
-              <EllipsisHorizontalIcon className="size-6" />
+              <EllipsisHorizontalIcon className="size-6" aria-hidden="true" />
             </div>
           </li>
         )}
@@ -69,7 +69,7 @@ export const Pagination = async ({ page, lastPage, getPageHref, label }: Props) 
         {from + PAGE_GROUPING - 1 < lastPage && (
           <li aria-hidden>
             <div className="border-mono-300 flex h-full items-center justify-center border px-6 py-2">
-              <EllipsisHorizontalIcon className="size-6" />
+              <EllipsisHorizontalIcon className="size-6" aria-hidden="true" />
             </div>
           </li>
         )}
@@ -81,7 +81,7 @@ export const Pagination = async ({ page, lastPage, getPageHref, label }: Props) 
               prefetch={false}
             >
               <span>{t('server:pagination.next')}</span>
-              <ChevronRightIcon className="size-4" />
+              <ChevronRightIcon className="size-4" aria-hidden="true" />
             </ShopLink>
           </li>
         )}

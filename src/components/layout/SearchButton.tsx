@@ -31,7 +31,7 @@ export const SearchButton = ({ withLabel = false, withBackground = false }: Sear
   if (!isOpen) {
     return (
       <button type="button" onClick={openSearch} className="flex items-center gap-2">
-        <MagnifyingGlassIcon className="size-6" />
+        <MagnifyingGlassIcon className="size-6" aria-hidden="true" />
         <span className={clsx('py-2', { 'sr-only': !withLabel })}>{t('shop:filters.search')}</span>
       </button>
     );
@@ -50,7 +50,7 @@ export const SearchButton = ({ withLabel = false, withBackground = false }: Sear
       )}
     >
       <button type="submit">
-        <MagnifyingGlassIcon className="size-6" />
+        <MagnifyingGlassIcon className="size-6" aria-hidden="true" />
         <span className="sr-only">{t('shop:filters.search')}</span>
       </button>
       <input ref={inputRef} name="q" onBlur={() => setIsOpen(false)} className="w-full bg-transparent outline-hidden" />
