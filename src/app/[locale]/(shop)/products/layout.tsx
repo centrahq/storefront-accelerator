@@ -16,13 +16,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function ProductsLayout({ children }: { children: ReactNode }) {
-  const { t } = await getTranslation(['server']);
-
-  return (
-    <div className="flex flex-col gap-6 sm:gap-10">
-      <h1 className="text-4xl font-medium">{t('server:products.title')}</h1>
-      {children}
-    </div>
-  );
+export default function ProductsLayout({ children }: { children: ReactNode }) {
+  return <div className="flex flex-col gap-6 sm:gap-10">{children}</div>;
 }

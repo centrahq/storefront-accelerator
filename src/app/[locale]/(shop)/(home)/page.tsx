@@ -45,7 +45,7 @@ const getNewestProducts = async ({
     market,
     pricelist,
     language,
-    filters: { key: 'collections', values: ['2'] },
+    where: { filters: [{ key: 'collections', values: ['2'] }] },
     sort: {
       key: SortKey.ModifiedAt,
       order: SortOrder.Desc,
@@ -74,7 +74,7 @@ const getSpecialOffers = async ({
     market,
     pricelist,
     language,
-    filters: { key: 'collections', values: ['11'] },
+    where: { filters: [{ key: 'collections', values: ['11'] }] },
     sort: {
       key: SortKey.ModifiedAt,
       order: SortOrder.Desc,

@@ -116,9 +116,8 @@ export const filterProducts = async (variables: ProductsQueryVariables) => {
     graphql(`
       query products(
         $page: Int!
-        $search: String
+        $where: DisplayItemFilter
         $sort: [CustomSortInput!] = []
-        $filters: [FilterInput!] = []
         $limit: Int = 40
         $market: Int!
         $pricelist: Int!
@@ -128,7 +127,7 @@ export const filterProducts = async (variables: ProductsQueryVariables) => {
         displayItems(
           limit: $limit
           page: $page
-          where: { search: $search, filters: $filters }
+          where: $where
           sort: $sort
           market: [$market]
           pricelist: [$pricelist]
@@ -143,13 +142,14 @@ export const filterProducts = async (variables: ProductsQueryVariables) => {
           }
           filters @include(if: $withFilters) {
             key
-            anyAvailable
-            selectedValues
             values {
               __typename
               value
               filterCount
               ... on BrandFilterValue {
+                name
+              }
+              ... on CollectionFilterValue {
                 name
               }
             }

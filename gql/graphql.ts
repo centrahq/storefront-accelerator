@@ -14,10 +14,10 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  Date: { input: any; output: any; }
-  DateTimeTz: { input: any; output: any; }
+  Date: { input: string; output: string; }
+  DateTimeTz: { input: string; output: string; }
   JSON: { input: any; output: any; }
-  Map: { input: any; output: any; }
+  Map: { input: Record<string, unknown>; output: Record<string, unknown>; }
 };
 
 export type AddItemPayload = Payload & SelectionMutationPayload & {
@@ -3231,6 +3231,11 @@ export type WishlistItemsArgs = {
   page?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type CustomerQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CustomerQuery = { customer?: { firstName?: string | null } | null };
+
 export type ReceiptQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3380,7 +3385,7 @@ export type SetAddressMutation = { setAddress:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
@@ -3398,7 +3403,7 @@ export type SetAddressMutation = { setAddress:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
@@ -3416,7 +3421,7 @@ export type SetAddressMutation = { setAddress:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
@@ -3434,7 +3439,7 @@ export type SetAddressMutation = { setAddress:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
@@ -3460,7 +3465,7 @@ export type SetShippingMethodMutation = { setShippingMethod:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3478,7 +3483,7 @@ export type SetShippingMethodMutation = { setShippingMethod:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3496,7 +3501,7 @@ export type SetShippingMethodMutation = { setShippingMethod:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3514,7 +3519,7 @@ export type SetShippingMethodMutation = { setShippingMethod:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3540,7 +3545,7 @@ export type SetPaymentMethodMutation = { setPaymentMethod:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3558,7 +3563,7 @@ export type SetPaymentMethodMutation = { setPaymentMethod:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3576,7 +3581,7 @@ export type SetPaymentMethodMutation = { setPaymentMethod:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3594,7 +3599,7 @@ export type SetPaymentMethodMutation = { setPaymentMethod:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3607,8 +3612,8 @@ export type PaymentInstructionsMutationVariables = Exact<{
 
 
 export type PaymentInstructionsMutation = { paymentInstructions: { action?:
-      | { __typename: 'FormPaymentAction', html: string, formFields?: any | null, formType: string }
-      | { __typename: 'JavascriptPaymentAction', script: string, formFields?: any | null }
+      | { __typename: 'FormPaymentAction', html: string, formFields?: Record<string, unknown> | null, formType: string }
+      | { __typename: 'JavascriptPaymentAction', script: string, formFields?: Record<string, unknown> | null }
       | { __typename: 'RedirectPaymentAction', url: string }
       | { __typename: 'SuccessPaymentAction', order: { id: string } }
       | { __typename: 'SuccessStoredPaymentAction' }
@@ -3625,7 +3630,7 @@ export type PaymentInstructionsMutation = { paymentInstructions: { action?:
         >, widgets?: Array<
           | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
           | { __typename: 'KlarnaCheckoutWidget' }
-          | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+          | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
         > | null } | null }, userErrors: Array<
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
@@ -3650,7 +3655,7 @@ export type WidgetEventMutation = { handleWidgetEvent:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3668,7 +3673,7 @@ export type WidgetEventMutation = { handleWidgetEvent:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3686,7 +3691,7 @@ export type WidgetEventMutation = { handleWidgetEvent:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3704,7 +3709,7 @@ export type WidgetEventMutation = { handleWidgetEvent:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3730,7 +3735,7 @@ export type AddVoucherMutation = { addVoucher:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3748,7 +3753,7 @@ export type AddVoucherMutation = { addVoucher:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3766,7 +3771,7 @@ export type AddVoucherMutation = { addVoucher:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3784,7 +3789,7 @@ export type AddVoucherMutation = { addVoucher:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3810,7 +3815,7 @@ export type RemoveVoucherMutation = { removeVoucher:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3828,7 +3833,7 @@ export type RemoveVoucherMutation = { removeVoucher:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3846,7 +3851,7 @@ export type RemoveVoucherMutation = { removeVoucher:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3864,7 +3869,7 @@ export type RemoveVoucherMutation = { removeVoucher:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -3891,7 +3896,7 @@ export type SetCountryStateMutation = { setCountryState:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
@@ -3909,7 +3914,7 @@ export type SetCountryStateMutation = { setCountryState:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
@@ -3927,7 +3932,7 @@ export type SetCountryStateMutation = { setCountryState:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
@@ -3945,7 +3950,7 @@ export type SetCountryStateMutation = { setCountryState:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
@@ -3976,7 +3981,7 @@ export type UpdateLineCheckoutMutation = { updateLine:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null }
     | { userErrors: Array<
         | { message: string, path?: Array<string> | null }
@@ -3994,7 +3999,7 @@ export type UpdateLineCheckoutMutation = { updateLine:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null }
     | { userErrors: Array<
         | { message: string, path?: Array<string> | null }
@@ -4012,7 +4017,7 @@ export type UpdateLineCheckoutMutation = { updateLine:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null }
     | { userErrors: Array<
         | { message: string, path?: Array<string> | null }
@@ -4030,7 +4035,7 @@ export type UpdateLineCheckoutMutation = { updateLine:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null }
    };
 
@@ -4054,7 +4059,7 @@ export type ApplyGiftCardMutation = { applyGiftCard:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -4072,7 +4077,7 @@ export type ApplyGiftCardMutation = { applyGiftCard:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -4090,7 +4095,7 @@ export type ApplyGiftCardMutation = { applyGiftCard:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -4108,7 +4113,7 @@ export type ApplyGiftCardMutation = { applyGiftCard:
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
@@ -4131,7 +4136,7 @@ export type CheckoutQuery = { selection: { externalGiftCardAvailable: boolean, l
       >, widgets?: Array<
         | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
         | { __typename: 'KlarnaCheckoutWidget' }
-        | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+        | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
       > | null } | null } };
 
 export type SessionQueryVariables = Exact<{ [key: string]: never; }>;
@@ -4261,7 +4266,7 @@ export type ChangeSubscriptionContractAddressMutationVariables = Exact<{
 }>;
 
 
-export type ChangeSubscriptionContractAddressMutation = { changeSubscriptionContractAddress: { contract?: { id: number, createdAt: any, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: any | null, lines: Array<
+export type ChangeSubscriptionContractAddressMutation = { changeSubscriptionContractAddress: { contract?: { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
@@ -4275,7 +4280,7 @@ export type UpdateSubscriptionIntervalMutationVariables = Exact<{
 }>;
 
 
-export type UpdateSubscriptionIntervalMutation = { updateSubscriptionInterval: { contract?: { id: number, createdAt: any, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: any | null, lines: Array<
+export type UpdateSubscriptionIntervalMutation = { updateSubscriptionInterval: { contract?: { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
@@ -4289,7 +4294,7 @@ export type UpdateSubscriptionQuantityMutationVariables = Exact<{
 }>;
 
 
-export type UpdateSubscriptionQuantityMutation = { updateSubscriptionQuantity: { contract?: { id: number, createdAt: any, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: any | null, lines: Array<
+export type UpdateSubscriptionQuantityMutation = { updateSubscriptionQuantity: { contract?: { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
@@ -4303,7 +4308,7 @@ export type UpdateSubscriptionStatusMutationVariables = Exact<{
 }>;
 
 
-export type UpdateSubscriptionStatusMutation = { updateSubscriptionStatus: { contract?: { id: number, createdAt: any, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: any | null, lines: Array<
+export type UpdateSubscriptionStatusMutation = { updateSubscriptionStatus: { contract?: { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
@@ -4314,7 +4319,7 @@ export type UpdateSubscriptionStatusMutation = { updateSubscriptionStatus: { con
 export type SubscriptionContractsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SubscriptionContractsQuery = { customer?: { subscriptionContracts: Array<{ id: number, createdAt: any, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: any | null, lines: Array<
+export type SubscriptionContractsQuery = { customer?: { subscriptionContracts: Array<{ id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> }> } | null };
@@ -4370,9 +4375,8 @@ export type LookupProductMutation = { lookupUri?:
 
 export type ProductsQueryVariables = Exact<{
   page: Scalars['Int']['input'];
-  search?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<DisplayItemFilter>;
   sort?: InputMaybe<Array<CustomSortInput> | CustomSortInput>;
-  filters?: InputMaybe<Array<FilterInput> | FilterInput>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   market: Scalars['Int']['input'];
   pricelist: Scalars['Int']['input'];
@@ -4397,10 +4401,10 @@ export type ProductsQuery = { displayItems: { list?: Array<{ id: number, uri: st
             | { __typename: 'AttributeStringElement', value: string, key: string }
           > }
         | { __typename: 'MappedAttribute' }
-      > }> | null, pagination: { currentPage: number, lastPage: number }, filters?: Array<{ key: string, anyAvailable: boolean, selectedValues: Array<string>, values: Array<
+      > }> | null, pagination: { currentPage: number, lastPage: number }, filters?: Array<{ key: string, values: Array<
         | { __typename: 'BrandFilterValue', name?: string | null, value: string, filterCount: number }
         | { __typename: 'CategoryFilterValue', value: string, filterCount: number }
-        | { __typename: 'CollectionFilterValue', value: string, filterCount: number }
+        | { __typename: 'CollectionFilterValue', name?: string | null, value: string, filterCount: number }
         | { __typename: 'MappedAttributeFilterValue', value: string, filterCount: number }
         | { __typename: 'SizeNameFilterValue', value: string, filterCount: number }
         | { __typename: 'TextFilterValue', value: string, filterCount: number }
@@ -4454,7 +4458,7 @@ export type CheckoutFragment = { externalGiftCardAvailable: boolean, lines: Arra
     >, widgets?: Array<
       | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
       | { __typename: 'KlarnaCheckoutWidget' }
-      | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: any | null }
+      | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
     > | null } | null };
 
 export type AddressFragment = { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null };
@@ -4479,9 +4483,9 @@ export type VoucherFragment =
   | Voucher_UrlVoucher_Fragment
 ;
 
-type PaymentAction_FormPaymentAction_Fragment = { __typename: 'FormPaymentAction', html: string, formFields?: any | null, formType: string };
+type PaymentAction_FormPaymentAction_Fragment = { __typename: 'FormPaymentAction', html: string, formFields?: Record<string, unknown> | null, formType: string };
 
-type PaymentAction_JavascriptPaymentAction_Fragment = { __typename: 'JavascriptPaymentAction', script: string, formFields?: any | null };
+type PaymentAction_JavascriptPaymentAction_Fragment = { __typename: 'JavascriptPaymentAction', script: string, formFields?: Record<string, unknown> | null };
 
 type PaymentAction_RedirectPaymentAction_Fragment = { __typename: 'RedirectPaymentAction', url: string };
 
@@ -4599,12 +4603,12 @@ export type LineFragment =
 
 export type SessionFragment = { country: { code: string }, countryState?: { code: string } | null, language?: { code: string } | null, market: { id: number }, pricelist: { id: number }, loggedIn?: { id: number } | null };
 
-export type SubscriptionInfoFragment = { id: number, status: SubscriptionStatus, nextOrderDate?: any | null, lines: Array<
+export type SubscriptionInfoFragment = { id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
     | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
     | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
   >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null };
 
-export type SubscriptionContractFragment = { id: number, createdAt: any, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: any | null, lines: Array<
+export type SubscriptionContractFragment = { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
       | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
       | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
     >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> };
@@ -5651,6 +5655,13 @@ fragment subscriptionInfo on SubscriptionInfo {
     id
   }
 }`, {"fragmentName":"subscriptionContract"}) as unknown as TypedDocumentString<SubscriptionContractFragment, unknown>;
+export const CustomerDocument = new TypedDocumentString(`
+    query customer {
+  customer {
+    firstName
+  }
+}
+    `) as unknown as TypedDocumentString<CustomerQuery, CustomerQueryVariables>;
 export const ReceiptDocument = new TypedDocumentString(`
     query receipt {
   order {
@@ -9326,11 +9337,11 @@ fragment productDetails on DisplayItem {
   }
 }`) as unknown as TypedDocumentString<LookupProductMutation, LookupProductMutationVariables>;
 export const ProductsDocument = new TypedDocumentString(`
-    query products($page: Int!, $search: String, $sort: [CustomSortInput!] = [], $filters: [FilterInput!] = [], $limit: Int = 40, $market: Int!, $pricelist: Int!, $language: String!, $withFilters: Boolean = true) {
+    query products($page: Int!, $where: DisplayItemFilter, $sort: [CustomSortInput!] = [], $limit: Int = 40, $market: Int!, $pricelist: Int!, $language: String!, $withFilters: Boolean = true) {
   displayItems(
     limit: $limit
     page: $page
-    where: {search: $search, filters: $filters}
+    where: $where
     sort: $sort
     market: [$market]
     pricelist: [$pricelist]
@@ -9345,13 +9356,14 @@ export const ProductsDocument = new TypedDocumentString(`
     }
     filters @include(if: $withFilters) {
       key
-      anyAvailable
-      selectedValues
       values {
         __typename
         value
         filterCount
         ... on BrandFilterValue {
+          name
+        }
+        ... on CollectionFilterValue {
           name
         }
       }

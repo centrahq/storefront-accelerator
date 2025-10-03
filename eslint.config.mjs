@@ -23,6 +23,7 @@ const eslintConfig = [
   {
     rules: {
       '@typescript-eslint/no-namespace': 'off',
+      '@typescript-eslint/no-unsafe-enum-comparison': 'off',
       '@typescript-eslint/no-empty-object-type': ['error', { allowInterfaces: 'with-single-extends' }],
       '@typescript-eslint/no-unused-vars': [
         'error',
@@ -35,7 +36,6 @@ const eslintConfig = [
         },
       ],
       '@typescript-eslint/no-confusing-void-expression': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/restrict-template-expressions': [
         'error',
         {

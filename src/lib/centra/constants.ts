@@ -7,3 +7,10 @@ export const TAGS = {
   categories: 'categories',
   category: (id: string | number) => `category-${id}`,
 };
+
+export const enum FilterKey {
+  Brands = 'brands',
+  Sizes = 'itemName',
+  Collections = 'collections',
+  Categories = 'categories',
+}

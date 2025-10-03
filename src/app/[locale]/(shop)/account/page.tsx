@@ -1,34 +1,47 @@
 import { Metadata } from 'next';
-import { SearchParams } from 'nuqs';
-import { Suspense } from 'react';
+import { redirect } from 'next/navigation';
 
 import { getTranslation } from '@/features/i18n/useTranslation/server';
-import { OrdersSkeleton } from '@/features/order/components/OrdersSkeleton';
-import { OrdersTable } from '@/features/order/components/OrdersTable';
-import { orderFilterParamsCache, serializeOrderFilters } from '@/features/order/orderListSearchParams';
+import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
+import { graphql } from '@gql/gql';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getTranslation(['server']);
 
   return {
-    title: t('server:user.my-orders'),
+    title: t('server:user.my-account'),
   };
 }
 
-export default async function AccountPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  await orderFilterParamsCache.parse(searchParams);
+const getCustomer = async () => {
+  const customerResponse = await centraFetch(
+    graphql(`
+      query customer {
+        customer {
+          firstName
+        }
+      }
+    `),
+  );
+
+  return customerResponse.data.customer;
+};
+
+export default async function AccountPage() {
   const { t } = await getTranslation(['server']);
+  const customer = await getCustomer();
+
+  if (!customer) {
+    redirect('/login');
+  }
 
   return (
     <div className="flex flex-col gap-8">
-      <h2 className="text-3xl font-medium">{t('server:user.my-orders')}</h2>
-      <Suspense
-        // Use the serialized filters as a key to ensure the fallback is shown when filters change.
-        key={serializeOrderFilters(orderFilterParamsCache.all())}
-        fallback={<OrdersSkeleton />}
-      >
-        <OrdersTable />
-      </Suspense>
+      <h2 className="text-5xl">
+        {t('server:user.welcome', {
+          firstName: customer.firstName,
+        })}
+      </h2>
     </div>
   );
 }

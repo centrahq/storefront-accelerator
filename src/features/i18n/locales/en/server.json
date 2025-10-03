@@ -13,9 +13,9 @@
       "status": "Order status"
     },
     "payment": "Payment",
+    "subscription-login-required": "You must <1>login</1> to checkout with subscription items.",
     "success": "Success",
-    "summary": "Summary",
-    "subscription-login-required": "You must <1>login</1> to checkout with subscription items."
+    "summary": "Summary"
   },
   "home": "Home",
   "meta-description": "Centra swag store. Shop for the latest swag.",
@@ -25,22 +25,24 @@
   },
   "product": {
     "accordion": {
+      "brand": "Brand",
+      "collection": "Collection",
+      "delivery-and-returns": "Delivery and returns",
+      "delivery-returns-text": "See <1>delivery</1> and <3>returns</3> for more information.",
       "product-description": "Product description",
       "product-details": "Product details",
-      "delivery-and-returns": "Delivery and returns",
-      "collection": "Collection",
-      "brand": "Brand",
-      "variant": "Variant",
-      "delivery-returns-text": "See <1>delivery</1> and <3>returns</3> for more information."
+      "variant": "Variant"
     },
     "color": "Color",
     "out-of-stock": "Out of stock",
-    "related-products": "Related products"
+    "related-products": "Related products",
+    "stock": "Stock"
   },
   "products": {
     "from-price": "from {{price}}",
     "nav-label": "Products pages",
     "no-products-found": "No products found",
+    "search-results": "Search results for \"{{query}}\"",
     "title": "Products"
   },
   "something-went-wrong": "Something went wrong.",
@@ -79,6 +81,7 @@
       "passwords-match": "Passwords do not match",
       "reset-password": "Reset password",
       "something-went-wrong": "Something went wrong. Recovery link may be invalid or expired."
-    }
+    },
+    "welcome": "Welcome {{firstName}}!"
   }
 }

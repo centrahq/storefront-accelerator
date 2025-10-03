@@ -13,18 +13,20 @@ export const ProductAccordion = async ({ product }: { product: ProductDetailsFra
 
   return (
     <div className="flex flex-col gap-3">
-      <Disclosure defaultOpen>
-        <div className="flex flex-col">
-          <DisclosureButton className="group border-b-mono-300 flex items-center gap-2.5 border-b py-3 text-xl">
-            <span>{t('server:product.accordion.product-description')}</span>
-            <PlusIcon className="size-4 group-data-open:hidden" aria-hidden="true" />
-            <MinusIcon className="hidden size-4 group-data-open:block" aria-hidden="true" />
-          </DisclosureButton>
-          <DisclosurePanel className="py-3">
-            <ProductDescription description={product.description.formatted} />
-          </DisclosurePanel>
-        </div>
-      </Disclosure>
+      {product.description.formatted && (
+        <Disclosure defaultOpen>
+          <div className="flex flex-col">
+            <DisclosureButton className="group border-b-mono-300 flex items-center gap-2.5 border-b py-3 text-xl">
+              <span>{t('server:product.accordion.product-description')}</span>
+              <PlusIcon className="size-4 group-data-open:hidden" aria-hidden="true" />
+              <MinusIcon className="hidden size-4 group-data-open:block" aria-hidden="true" />
+            </DisclosureButton>
+            <DisclosurePanel className="py-3">
+              <ProductDescription description={product.description.formatted} />
+            </DisclosurePanel>
+          </div>
+        </Disclosure>
+      )}
       <Disclosure>
         <div className="flex flex-col">
           <DisclosureButton className="group border-b-mono-300 flex items-center gap-2.5 border-b py-3 text-xl">

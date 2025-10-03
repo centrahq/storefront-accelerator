@@ -11,6 +11,7 @@ import {
   productsFilterParamsCache,
   serializeProductsFilters,
 } from '@/features/product-listing/productListSearchParams';
+import { FilterKey } from '@/lib/centra/constants';
 import { filterProducts } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
 import { SortKey, SortOrder } from '@gql/graphql';
@@ -18,7 +19,16 @@ import { SortKey, SortOrder } from '@gql/graphql';
 const ITEMS_PER_PAGE = 24;
 
 const Listing = async () => {
-  const { q: query, brands, categories, sizes, page, sort } = productsFilterParamsCache.all();
+  const {
+    q: query,
+    brands,
+    categories,
+    sizes,
+    page,
+    sort,
+    onlyAvailable,
+    collections,
+  } = productsFilterParamsCache.all();
   const allFilters = productsFilterParamsCache.all();
   const { market, pricelist, language } = await getSession();
   const { t } = await getTranslation(['server']);
@@ -35,13 +45,18 @@ const Listing = async () => {
     market,
     pricelist,
     language,
-    search: query,
     sort: sortSchema.safeParse({ key: sortKey, order: sortOrder }).data,
-    filters: [
-      ...(brands.length > 0 ? [{ key: 'brands', values: brands }] : []),
-      ...(categories.length > 0 ? [{ key: 'categories', values: categories }] : []),
-      ...(sizes.length > 0 ? [{ key: 'itemName', values: sizes }] : []),
-    ],
+
+    where: {
+      search: query,
+      onlyAvailable,
+      filters: [
+        ...(brands.length > 0 ? [{ key: FilterKey.Brands, values: brands }] : []),
+        ...(categories.length > 0 ? [{ key: FilterKey.Categories, values: categories }] : []),
+        ...(sizes.length > 0 ? [{ key: FilterKey.Sizes, values: sizes }] : []),
+        ...(collections.length > 0 ? [{ key: FilterKey.Collections, values: collections }] : []),
+      ],
+    },
   });
 
   return (
@@ -75,24 +90,30 @@ const Listing = async () => {
 };
 
 export default async function ProductsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  await productsFilterParamsCache.parse(searchParams);
+  const { q: query } = await productsFilterParamsCache.parse(searchParams);
+  const { t } = await getTranslation(['server']);
 
   return (
-    <Suspense
-      // Use the serialized filters as a key to ensure the fallback is shown when filters change.
-      key={serializeProductsFilters(productsFilterParamsCache.all())}
-      fallback={
-        <>
-          <ProductFiltersSkeleton />
-          <ProductGrid>
-            {Array.from(Array(ITEMS_PER_PAGE), (_, index) => (
-              <ProductCardSkeleton key={index} />
-            ))}
-          </ProductGrid>
-        </>
-      }
-    >
-      <Listing />
-    </Suspense>
+    <>
+      <h1 className="text-4xl font-medium">
+        {query ? t('server:products.search-results', { query }) : t('server:products.title')}
+      </h1>
+      <Suspense
+        // Use the serialized filters as a key to ensure the fallback is shown when filters change.
+        key={serializeProductsFilters(productsFilterParamsCache.all())}
+        fallback={
+          <>
+            <ProductFiltersSkeleton />
+            <ProductGrid>
+              {Array.from(Array(ITEMS_PER_PAGE), (_, index) => (
+                <ProductCardSkeleton key={index} />
+              ))}
+            </ProductGrid>
+          </>
+        }
+      >
+        <Listing />
+      </Suspense>
+    </>
   );
 }

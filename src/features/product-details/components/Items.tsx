@@ -46,6 +46,11 @@ export const Items = async ({ product }: { product: ProductDetailsFragment }) =>
   return (
     <>
       {itemsData.length > 1 && <ItemSelector items={itemsData} sizeGuideTable={sizeGuideTable} />}
+      {product.bundle?.type !== BundleType.Flexible && itemsData.length === 1 && itemsData[0] && (
+        <span className="text-mono-800 font-medium">
+          <span>{t('server:product.stock')}:</span> <span>{itemsData[0].quantity}</span>
+        </span>
+      )}
       {product.subscriptionPlans.length > 0 && <SubscriptionSelector plans={product.subscriptionPlans} />}
       <AddToCartButton
         items={itemsData}

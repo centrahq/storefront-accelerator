@@ -101,7 +101,7 @@ export const OrdersTable = async () => {
             page={page}
             lastPage={Math.ceil(totalOrders / ORDER_LIMIT)}
             label={t('server:user.order-info.nav-label')}
-            getPageHref={(page) => `/account${serializeOrderFilters({ ordersPage: page })}`}
+            getPageHref={(page) => `/account/orders${serializeOrderFilters({ ordersPage: page })}`}
           />
         </div>
       )}

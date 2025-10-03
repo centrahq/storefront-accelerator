@@ -13,9 +13,9 @@
       "status": "Beställningsstatus"
     },
     "payment": "Betalning",
+    "subscription-login-required": "Du måste <1>logga in</1> för att kassera med prenumerationsartiklar.",
     "success": "Slutförd",
-    "summary": "Sammanfattning",
-    "subscription-login-required": "Du måste <1>logga in</1> för att kassera med prenumerationsartiklar."
+    "summary": "Sammanfattning"
   },
   "home": "Start",
   "meta-description": "Centras merchbutik. Handla den senaste merchandisen.",
@@ -25,22 +25,24 @@
   },
   "product": {
     "accordion": {
+      "brand": "Märke",
+      "collection": "Kollektion",
+      "delivery-and-returns": "Leverans och returer",
+      "delivery-returns-text": "Se <1>leverans</1> och <3>returer</3> för mer information.",
       "product-description": "Produktbeskrivning",
       "product-details": "Produktdetaljer",
-      "delivery-and-returns": "Leverans och returer",
-      "collection": "Kollektion",
-      "brand": "Märke",
-      "variant": "Variant",
-      "delivery-returns-text": "Se <1>leverans</1> och <3>returer</3> för mer information."
+      "variant": "Variant"
     },
     "color": "Färg",
     "out-of-stock": "Slut i lager",
-    "related-products": "Relaterade produkter"
+    "related-products": "Relaterade produkter",
+    "stock": "Lager"
   },
   "products": {
     "from-price": "från {{price}}",
     "nav-label": "Produktsidor",
     "no-products-found": "Inga produkter hittades",
+    "search-results": "Sökresultat för \"{{query}}\"",
     "title": "Produkter"
   },
   "something-went-wrong": "Något gick fel.",
@@ -79,6 +81,7 @@
       "passwords-match": "Lösenorden matchar inte",
       "reset-password": "Återställ lösenord",
       "something-went-wrong": "Något gick fel. Återställningslänken kan vara ogiltig eller ha löpt ut."
-    }
+    },
+    "welcome": "Välkommen {{firstName}}!"
   }
 }

@@ -13,16 +13,16 @@ import {
   productsFilterParamsCache,
   serializeProductsFilters,
 } from '@/features/product-listing/productListSearchParams';
-import { TAGS } from '@/lib/centra/constants';
+import { FilterKey, TAGS } from '@/lib/centra/constants';
 import { filterProducts, lookupCategory } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
-import { FilterInput, ProductsQueryVariables, SortKey, SortOrder } from '@gql/graphql';
+import { ProductsQueryVariables, SortKey, SortOrder } from '@gql/graphql';
 
 const ITEMS_PER_PAGE = 24;
 
-type FetchProductsVariables = Omit<ProductsQueryVariables, 'filters'> & {
+type FetchProductsVariables = Omit<ProductsQueryVariables, 'where'> & {
   category: number;
-  filters: FilterInput[];
+  where: ProductsQueryVariables['where'];
 };
 
 const fetchCategoryProductsCached = async (variables: FetchProductsVariables) => {
@@ -34,22 +34,25 @@ const fetchCategoryProductsCached = async (variables: FetchProductsVariables) =>
   return fetchCategoryProductsUncached(variables);
 };
 
-const fetchCategoryProductsUncached = ({ category, filters, ...variables }: FetchProductsVariables) => {
+const fetchCategoryProductsUncached = ({ category, where, ...variables }: FetchProductsVariables) => {
   return filterProducts({
     ...variables,
-    filters: [{ key: 'categories', values: [String(category)] }, ...filters],
+    where: {
+      ...where,
+      filters: [{ key: FilterKey.Categories, values: [String(category)] }, ...(where?.filters ?? [])],
+    },
   });
 };
 
-// Cache the results if we are fetching the first page with no filters.
+// Cache the results if we are fetching with no filters.
 const fetchCategoryProducts = async (variables: FetchProductsVariables) => {
-  return variables.filters.length === 0 && variables.page === 1
+  return (variables.where?.filters?.length ?? 0) === 0
     ? fetchCategoryProductsCached(variables)
     : fetchCategoryProductsUncached(variables);
 };
 
 const CategoryProducts = async ({ id, uri }: { id: number; uri: string }) => {
-  const { brands, sizes, page, sort } = productsFilterParamsCache.all();
+  const { brands, sizes, page, sort, onlyAvailable, collections } = productsFilterParamsCache.all();
 
   const { market, pricelist, language } = await getSession();
   const [sortKey, sortOrder] = sort.split('-');
@@ -67,10 +70,14 @@ const CategoryProducts = async ({ id, uri }: { id: number; uri: string }) => {
     pricelist,
     language,
     sort: sortSchema.safeParse({ key: sortKey, order: sortOrder }).data,
-    filters: [
-      ...(brands.length > 0 ? [{ key: 'brands', values: brands }] : []),
-      ...(sizes.length > 0 ? [{ key: 'itemName', values: sizes }] : []),
-    ],
+    where: {
+      onlyAvailable,
+      filters: [
+        ...(brands.length > 0 ? [{ key: FilterKey.Brands, values: brands }] : []),
+        ...(sizes.length > 0 ? [{ key: FilterKey.Sizes, values: sizes }] : []),
+        ...(collections.length > 0 ? [{ key: FilterKey.Collections, values: collections }] : []),
+      ],
+    },
   });
 
   const allFilters = productsFilterParamsCache.all();

@@ -33,6 +33,11 @@ module.exports = {
               config: {
                 documentMode: 'string',
                 skipTypename: true,
+                scalars: {
+                  DateTimeTz: 'string',
+                  Date: 'string',
+                  Map: 'Record<string, unknown>',
+                },
               },
             },
             'gql/dtc_schema.graphql': {
