@@ -68,6 +68,12 @@ export async function centraFetchNoSession<T>(
   return body;
 }
 
+/*
+ * Retrieves product details based on URI.
+ * Note: When multiple variants are activated for the same display,
+ *       multiple displays with the same URI may be returned.
+ *       In such cases, use the `displayItem` query with the item ID instead.
+ */
 export const lookupProduct = async (variables: LookupProductMutationVariables) => {
   'use cache';
 
@@ -84,62 +90,7 @@ export const lookupProduct = async (variables: LookupProductMutationVariables) =
           __typename
           ... on DisplayItemUriLookupPayload {
             displayItem {
-              id
-              available
-              uri
-              name
-              metaTitle
-              metaDescription
-              subscriptionPlans {
-                ...subscriptionPlan
-              }
-              description {
-                formatted
-              }
-              media {
-                id
-                altText
-                source(sizeName: "1350x0") {
-                  url
-                }
-              }
-              price {
-                formattedValue
-                value
-                currency {
-                  code
-                }
-              }
-              items {
-                ...item
-                stock {
-                  available
-                  quantity
-                }
-              }
-              relatedDisplayItems(relationType: "variant") {
-                relation
-                displayItems {
-                  uri
-                  productVariant {
-                    name
-                  }
-                  ...variantSwatch
-                }
-              }
-              productVariant {
-                name
-              }
-              ...variantSwatch
-              translations {
-                language {
-                  code
-                }
-                uri
-              }
-              bundle {
-                ...bundle
-              }
+              ...productDetails
             }
           }
         }

@@ -58,7 +58,7 @@ export const RelatedProducts = async ({ id }: { id: number }) => {
   const { t } = await getTranslation(['server']);
 
   return (
-    <div className="mt-8 flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <h2 className="text-2xl font-medium">{t('server:product.related-products')}</h2>
       <ul className="custom-scrollbar flex gap-8 overflow-x-auto *:shrink-0 *:grow-0 *:basis-[clamp(16rem,25vw,24rem)]">
         {products.map((product) => (

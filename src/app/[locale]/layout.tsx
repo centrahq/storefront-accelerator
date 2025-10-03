@@ -47,7 +47,7 @@ export default async function RootLayout(props: { children: React.ReactNode; par
 
   return (
     <html lang={languageCode} dir={i18next.dir(languageCode)}>
-      <body className={clsx(inter.className, 'text-mono-900')}>
+      <body className={clsx(inter.className, 'text-mono-900 bg-mono-100')}>
         <Providers>{props.children}</Providers>
         <Toaster />
         <Suspense fallback={null}>

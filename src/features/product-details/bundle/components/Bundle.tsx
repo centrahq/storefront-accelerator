@@ -2,29 +2,20 @@ import Image from 'next/image';
 
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
-import { lookupProduct } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
-import { getItemName } from '@/lib/utils/product';
-import { BundleType } from '@gql/graphql';
+import { getItemName, getSizeGuideTable } from '@/lib/utils/product';
+import { BundleType, ProductDetailsFragment } from '@gql/graphql';
 
 import { BundleItemSelector } from './BundleItemSelector';
 
-export const Bundle = async ({ productUri }: { productUri: string }) => {
-  const { market, pricelist, language, country } = await getSession();
-
-  const product = await lookupProduct({
-    uri: productUri,
-    language,
-    market,
-    pricelist,
-  });
-
+export const Bundle = async ({ product }: { product: ProductDetailsFragment }) => {
   const sections = product.bundle?.sections.filter((section) => section.items.length > 0);
 
   if (!sections || sections.length === 0) {
     return null;
   }
 
+  const { country } = await getSession();
   const { t } = await getTranslation(['shop']);
 
   return (
@@ -68,6 +59,7 @@ export const Bundle = async ({ productUri }: { productUri: string }) => {
                           isAvailable: item.stock.available,
                           name: getItemName(item, country),
                         }))}
+                        sizeGuideTable={getSizeGuideTable(sectionItem.sizeGuide)}
                       />
                     )}
                   </div>

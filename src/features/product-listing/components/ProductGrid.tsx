@@ -1,3 +1,5 @@
 export const ProductGrid = ({ children }: { children: React.ReactNode }) => {
-  return <ul className="grid grid-cols-1 gap-8 sm:grid-cols-[repeat(auto-fill,minmax(25rem,1fr))]">{children}</ul>;
+  return (
+    <ul className="grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] gap-4 2xl:grid-cols-4 2xl:gap-8">{children}</ul>
+  );
 };

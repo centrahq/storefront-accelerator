@@ -1,5 +1,8 @@
 {
   "addressForm": {
+    "errors": {
+      "fill-in-required-fields": "Vänligen fyll i alla obligatoriska fält"
+    },
     "labels": {
       "address1": "Adress",
       "address2": "Adress forts.",
@@ -19,9 +22,6 @@
     "placeholders": {
       "select-country": "Välj land",
       "select-state": "Välj län"
-    },
-    "errors": {
-      "fill-in-required-fields": "Vänligen fyll i alla obligatoriska fält"
     }
   },
   "back-to-home": "Till startsidan",
@@ -71,6 +71,7 @@
     "size": "Storlek",
     "sort-by": "Sortera efter:"
   },
+  "go-to-slide": "Gå till bild {{index}}",
   "items-removed": {
     "message": "Vissa varor i din varukorg har tagits bort eftersom de inte finns tillgängliga.",
     "title": "Ej tillgängliga varor"
@@ -130,32 +131,32 @@
       "reset-password": "Återställ lösenord"
     },
     "subscriptions": {
-      "no-subscriptions": "Inga prenumerationer hittades",
       "action": "Åtgärd",
       "address": "Adress",
-      "created": "Skapad",
+      "cancel": "Avbryt",
+      "cancel-edit": "Avbryt",
       "contract-id": "Kontrakts-ID",
-      "subscriptions": "Prenumerationer",
+      "created": "Skapad",
+      "edit-address": "Redigera Adress",
+      "errors": {
+        "address-update": "Misslyckades att uppdatera adress",
+        "update-interval": "Misslyckades att uppdatera prenumerationsintervall",
+        "update-quantity": "Misslyckades att uppdatera prenumerationskvantitet",
+        "update-status": "Ett fel uppstod när prenumerationsstatusen skulle uppdateras"
+      },
+      "interval": "Intervall",
+      "items": "Artiklar",
+      "next-order": "Nästa beställning",
+      "no-subscriptions": "Inga prenumerationer hittades",
+      "pause": "Pausa",
+      "resume": "Återuppta",
       "status": "Status",
       "status_ACTIVE": "Aktiv",
       "status_CANCELLED": "Avbruten",
       "status_PAUSED": "Pausad",
-      "view": "Visa",
-      "interval": "Intervall",
-      "next-order": "Nästa beställning",
-      "items": "Artiklar",
-      "pause": "Pausa",
-      "cancel": "Avbryt",
-      "resume": "Återuppta",
-      "edit-address": "Redigera Adress",
-      "cancel-edit": "Avbryt",
+      "subscriptions": "Prenumerationer",
       "update-address": "Uppdatera Adress",
-      "errors": {
-        "update-status": "Ett fel uppstod när prenumerationsstatusen skulle uppdateras",
-        "update-interval": "Misslyckades att uppdatera prenumerationsintervall",
-        "update-quantity": "Misslyckades att uppdatera prenumerationskvantitet",
-        "address-update": "Misslyckades att uppdatera adress"
-      }
+      "view": "Visa"
     }
   }
 }

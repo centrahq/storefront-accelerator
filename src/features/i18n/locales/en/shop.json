@@ -1,5 +1,8 @@
 {
   "addressForm": {
+    "errors": {
+      "fill-in-required-fields": "Please fill in all required fields"
+    },
     "labels": {
       "address1": "Address",
       "address2": "Address continued",
@@ -19,9 +22,6 @@
     "placeholders": {
       "select-country": "Select country",
       "select-state": "Select state"
-    },
-    "errors": {
-      "fill-in-required-fields": "Please fill in all required fields"
     }
   },
   "back-to-home": "Back to home",
@@ -71,6 +71,7 @@
     "size": "Size",
     "sort-by": "Sort by:"
   },
+  "go-to-slide": "Go to slide {{index}}",
   "items-removed": {
     "message": "Some items in your cart are removed due to unavailability.",
     "title": "Unavailable items"
@@ -130,32 +131,32 @@
       "reset-password": "Reset password"
     },
     "subscriptions": {
-      "no-subscriptions": "No subscriptions found",
       "action": "Action",
       "address": "Address",
-      "created": "Created",
+      "cancel": "Cancel",
+      "cancel-edit": "Cancel",
       "contract-id": "Contract ID",
-      "subscriptions": "Subscriptions",
+      "created": "Created",
+      "edit-address": "Edit address",
+      "errors": {
+        "address-update": "Failed to update address",
+        "update-interval": "Failed to update subscription interval",
+        "update-quantity": "Failed to update subscription quantity",
+        "update-status": "An error occurred while updating the subscription status"
+      },
+      "interval": "Interval",
+      "items": "Items",
+      "next-order": "Next order",
+      "no-subscriptions": "No subscriptions found",
+      "pause": "Pause",
+      "resume": "Resume",
       "status": "Status",
       "status_ACTIVE": "Active",
       "status_CANCELLED": "Cancelled",
       "status_PAUSED": "Paused",
-      "view": "View",
-      "interval": "Interval",
-      "next-order": "Next order",
-      "items": "Items",
-      "pause": "Pause",
-      "cancel": "Cancel",
-      "resume": "Resume",
-      "edit-address": "Edit address",
-      "cancel-edit": "Cancel",
+      "subscriptions": "Subscriptions",
       "update-address": "Update address",
-      "errors": {
-        "update-status": "An error occurred while updating the subscription status",
-        "update-interval": "Failed to update subscription interval",
-        "update-quantity": "Failed to update subscription quantity",
-        "address-update": "Failed to update address"
-      }
+      "view": "View"
     }
   }
 }

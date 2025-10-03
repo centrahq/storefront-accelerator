@@ -17,7 +17,6 @@
     "summary": "Sammanfattning",
     "subscription-login-required": "Du måste <1>logga in</1> för att kassera med prenumerationsartiklar."
   },
-  "featured-products": "Utvalda produkter",
   "home": "Start",
   "meta-description": "Centras merchbutik. Handla den senaste merchandisen.",
   "pagination": {
@@ -25,6 +24,15 @@
     "previous": "Föregående"
   },
   "product": {
+    "accordion": {
+      "product-description": "Produktbeskrivning",
+      "product-details": "Produktdetaljer",
+      "delivery-and-returns": "Leverans och returer",
+      "collection": "Kollektion",
+      "brand": "Märke",
+      "variant": "Variant",
+      "delivery-returns-text": "Se <1>leverans</1> och <3>returer</3> för mer information."
+    },
     "color": "Färg",
     "out-of-stock": "Slut i lager",
     "related-products": "Relaterade produkter"

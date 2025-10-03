@@ -30,11 +30,13 @@ export const ProductCard = async ({
   prefetch,
   priority,
   imageSizes,
+  categoryUri,
 }: {
   product: ListProductFragment;
   prefetch?: LinkProps['prefetch'];
   priority?: boolean;
   imageSizes: string;
+  categoryUri?: string;
 }) => {
   const variants = product.relatedDisplayItems.find(({ relation }) => relation === 'variant')?.displayItems ?? [];
   const { t } = await getTranslation(['server']);
@@ -53,7 +55,7 @@ export const ProductCard = async ({
   ].filter((variant) => Boolean(variant.color));
 
   return (
-    <li key={product.id} className="relative flex flex-col">
+    <li key={product.id} className="relative flex flex-col bg-white">
       <div className="relative aspect-2/3">
         {product.media[0] && (
           <Image
@@ -68,7 +70,7 @@ export const ProductCard = async ({
       </div>
       <div className="px-4 py-3">
         <ShopLink
-          href={`/product/${product.uri}`}
+          href={`/product/${categoryUri ? `${categoryUri}/` : ''}${product.uri}`}
           className="font-medium after:absolute after:inset-0 after:content-['']"
           prefetch={prefetch}
         >

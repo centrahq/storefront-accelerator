@@ -1,4 +1,4 @@
-import { ItemFragment, VariantSwatchFragment } from '@gql/graphql';
+import { ItemFragment, SizeGuideFragment, VariantSwatchFragment } from '@gql/graphql';
 
 /**
  * Returns the localized name of a size based on the provided country code.
@@ -38,9 +38,39 @@ export const getSwatchColorCode = (attribute: VariantSwatchFragment['swatch']) =
 
   const colorCodeElement = swatch.elements.find((element) => element.key === 'color_code');
 
-  if (colorCodeElement?.__typename !== 'AttributeStringElement') {
+  if (colorCodeElement?.__typename === 'AttributeStringElement') {
+    return colorCodeElement.value;
+  }
+};
+
+/**
+ * Extracts the size guide from a product.
+ * Assumes a size guide custom attribute is set with `pd_size_guide` name. Example:
+ * ```json
+ * {
+ *   "desc": "Size guide",
+ *   "group": "product",
+ *   "readonly": false,
+ *   "elements": {
+ *     "table": {
+ *       "desc": "Size guide table",
+ *       "type": "textarea"
+ *     }
+ *   }
+ * }
+ * ```
+ * Attribute must be enabled in "Display item attributes" field under DTC API plugin settings.
+ */
+export const getSizeGuideTable = (attribute: SizeGuideFragment['sizeGuide']) => {
+  const sizeGuide = attribute[0];
+
+  if (sizeGuide?.__typename !== 'DynamicAttribute') {
     return undefined;
   }
 
-  return colorCodeElement.value;
+  const tableElement = sizeGuide.elements.find((element) => element.key === 'table');
+
+  if (tableElement?.__typename === 'AttributeStringElement') {
+    return tableElement.value;
+  }
 };

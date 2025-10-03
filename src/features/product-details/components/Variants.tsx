@@ -2,18 +2,10 @@ import clsx from 'clsx';
 
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
-import { lookupProduct } from '@/lib/centra/dtc-api/fetchers/noSession';
-import { getSession } from '@/lib/centra/sessionCookie';
 import { getSwatchColorCode } from '@/lib/utils/product';
+import { ProductDetailsFragment } from '@gql/graphql';
 
-export const Variants = async ({ productUri }: { productUri: string }) => {
-  const { market, pricelist, language } = await getSession();
-  const product = await lookupProduct({
-    uri: productUri,
-    language,
-    market,
-    pricelist,
-  });
+export const Variants = async ({ product }: { product: ProductDetailsFragment }) => {
   const { t } = await getTranslation(['server']);
 
   const variants = product.relatedDisplayItems.find(({ relation }) => relation === 'variant')?.displayItems ?? [];
@@ -31,7 +23,7 @@ export const Variants = async ({ productUri }: { productUri: string }) => {
     })),
   ]
     .filter((variant) => Boolean(variant.color))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => a.uri.localeCompare(b.uri));
 
   if (swatches.length < 2) {
     return null;

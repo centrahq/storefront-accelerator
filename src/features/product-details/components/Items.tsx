@@ -1,23 +1,15 @@
 import { AddToCartButton } from '@/features/cart/components/AddToCartButton';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
-import { lookupProduct } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
-import { getItemName } from '@/lib/utils/product';
-import { BundleType } from '@gql/graphql';
+import { getItemName, getSizeGuideTable } from '@/lib/utils/product';
+import { BundleType, ProductDetailsFragment } from '@gql/graphql';
 
 import { ItemSelector } from './ItemSelector';
 import { SubscriptionSelector } from './SubscriptionSelector';
 
-export const Items = async ({ productUri }: { productUri: string }) => {
-  const { market, pricelist, country, language } = await getSession();
+export const Items = async ({ product }: { product: ProductDetailsFragment }) => {
+  const { country } = await getSession();
   const { t } = await getTranslation(['server']);
-
-  const product = await lookupProduct({
-    uri: productUri,
-    language,
-    market,
-    pricelist,
-  });
 
   if (!product.available) {
     return (
@@ -49,9 +41,11 @@ export const Items = async ({ productUri }: { productUri: string }) => {
       return acc;
     }, {}) ?? {};
 
+  const sizeGuideTable = getSizeGuideTable(product.sizeGuide);
+
   return (
     <>
-      {itemsData.length > 1 && <ItemSelector items={itemsData} />}
+      {itemsData.length > 1 && <ItemSelector items={itemsData} sizeGuideTable={sizeGuideTable} />}
       {product.subscriptionPlans.length > 0 && <SubscriptionSelector plans={product.subscriptionPlans} />}
       <AddToCartButton
         items={itemsData}

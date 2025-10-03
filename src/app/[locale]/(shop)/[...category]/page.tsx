@@ -86,6 +86,7 @@ const CategoryProducts = async ({ id, uri }: { id: number; uri: string }) => {
               product={product}
               imageSizes="(min-width: 1920px) 420px, (min-width: 1440px) 33vw, (min-width: 1024px) 50vw, 100vw"
               priority={index === 0}
+              categoryUri={uri}
               prefetch
             />
           ))}

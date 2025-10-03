@@ -11,10 +11,18 @@ interface Props {
     name: string;
     quantity?: number;
   }>;
+  sizeGuideTable?: string;
 }
 
-export const ItemSelector = ({ items }: Props) => {
+export const ItemSelector = ({ items, sizeGuideTable }: Props) => {
   const [selectedItem, setSelectedItem] = useQueryState('item', parseAsString.withDefault(items[0]?.id ?? ''));
 
-  return <ItemsField items={items} value={selectedItem} onChange={(val) => void setSelectedItem(val)} />;
+  return (
+    <ItemsField
+      items={items}
+      value={selectedItem}
+      onChange={(val) => void setSelectedItem(val)}
+      sizeGuideTable={sizeGuideTable}
+    />
+  );
 };

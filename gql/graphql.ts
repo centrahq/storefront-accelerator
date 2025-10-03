@@ -4331,7 +4331,7 @@ export type LookupProductMutation = { lookupUri?:
     | { __typename: 'AffiliateUriLookupPayload' }
     | { __typename: 'CampaignSiteUriLookupPayload' }
     | { __typename: 'CategoryUriLookupPayload' }
-    | { __typename: 'DisplayItemUriLookupPayload', displayItem: { id: number, available: boolean, uri: string, name: string, metaTitle: string, metaDescription: string, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }>, description: { formatted: string }, media: Array<{ id: number, altText?: string | null, source: { url: string } }>, price?: { formattedValue: string, value: number, currency: { code: string } } | null, items: Array<{ id: string, name: string, stock: { available: boolean, quantity: number }, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }>, relatedDisplayItems: Array<{ relation: string, displayItems?: Array<{ uri: string, productVariant: { name?: string | null }, swatch: Array<
+    | { __typename: 'DisplayItemUriLookupPayload', displayItem: { id: number, available: boolean, uri: string, name: string, metaTitle: string, metaDescription: string, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }>, shortDescription: { formatted: string }, description: { formatted: string }, collection?: { name: string } | null, productVariant: { name?: string | null }, brand?: { name: string } | null, media: Array<{ id: number, altText?: string | null, source: { url: string } }>, price?: { formattedValue: string, value: number, currency: { code: string } } | null, category?: { uri: string, name?: Array<string> | null } | null, items: Array<{ id: string, name: string, stock: { available: boolean, quantity: number }, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }>, relatedDisplayItems: Array<{ relation: string, displayItems?: Array<{ uri: string, productVariant: { name?: string | null }, swatch: Array<
               | { __typename: 'DynamicAttribute', elements: Array<
                   | { __typename: 'AttributeChoiceElement', key: string }
                   | { __typename: 'AttributeFileElement', key: string }
@@ -4339,7 +4339,23 @@ export type LookupProductMutation = { lookupUri?:
                   | { __typename: 'AttributeStringElement', value: string, key: string }
                 > }
               | { __typename: 'MappedAttribute' }
-            > }> | null }>, productVariant: { name?: string | null }, translations: Array<{ uri: string, language: { code: string } }>, bundle?: { type: BundleType, priceType: BundlePriceType, minPrice?: { formattedValue: string } | null, maxPrice?: { formattedValue: string } | null, sections: Array<{ id: number, quantity: number, items: Array<{ id: number, name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, price?: { formattedValue: string, value: number, currency: { code: string } } | null, items: Array<{ id: string, name: string, stock: { available: boolean }, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }> }> }> } | null, swatch: Array<
+            > }> | null }>, translations: Array<{ uri: string, language: { code: string } }>, bundle?: { type: BundleType, priceType: BundlePriceType, minPrice?: { formattedValue: string } | null, maxPrice?: { formattedValue: string } | null, sections: Array<{ id: number, quantity: number, items: Array<{ id: number, name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, price?: { formattedValue: string, value: number, currency: { code: string } } | null, items: Array<{ id: string, name: string, stock: { available: boolean }, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }>, sizeGuide: Array<
+                | { __typename: 'DynamicAttribute', elements: Array<
+                    | { __typename: 'AttributeChoiceElement', key: string }
+                    | { __typename: 'AttributeFileElement', key: string }
+                    | { __typename: 'AttributeImageElement', key: string }
+                    | { __typename: 'AttributeStringElement', value: string, key: string }
+                  > }
+                | { __typename: 'MappedAttribute' }
+              > }> }> } | null, swatch: Array<
+          | { __typename: 'DynamicAttribute', elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+          | { __typename: 'MappedAttribute' }
+        >, sizeGuide: Array<
           | { __typename: 'DynamicAttribute', elements: Array<
               | { __typename: 'AttributeChoiceElement', key: string }
               | { __typename: 'AttributeFileElement', key: string }
@@ -4483,9 +4499,27 @@ export type PaymentActionFragment =
 
 export type ItemFragment = { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> };
 
-export type BundleFragment = { type: BundleType, priceType: BundlePriceType, minPrice?: { formattedValue: string } | null, maxPrice?: { formattedValue: string } | null, sections: Array<{ id: number, quantity: number, items: Array<{ id: number, name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, price?: { formattedValue: string, value: number, currency: { code: string } } | null, items: Array<{ id: string, name: string, stock: { available: boolean }, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }> }> }> };
+export type BundleFragment = { type: BundleType, priceType: BundlePriceType, minPrice?: { formattedValue: string } | null, maxPrice?: { formattedValue: string } | null, sections: Array<{ id: number, quantity: number, items: Array<{ id: number, name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, price?: { formattedValue: string, value: number, currency: { code: string } } | null, items: Array<{ id: string, name: string, stock: { available: boolean }, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }>, sizeGuide: Array<
+        | { __typename: 'DynamicAttribute', elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+        | { __typename: 'MappedAttribute' }
+      > }> }> };
 
 export type VariantSwatchFragment = { swatch: Array<
+    | { __typename: 'DynamicAttribute', elements: Array<
+        | { __typename: 'AttributeChoiceElement', key: string }
+        | { __typename: 'AttributeFileElement', key: string }
+        | { __typename: 'AttributeImageElement', key: string }
+        | { __typename: 'AttributeStringElement', value: string, key: string }
+      > }
+    | { __typename: 'MappedAttribute' }
+  > };
+
+export type SizeGuideFragment = { sizeGuide: Array<
     | { __typename: 'DynamicAttribute', elements: Array<
         | { __typename: 'AttributeChoiceElement', key: string }
         | { __typename: 'AttributeFileElement', key: string }
@@ -4514,6 +4548,40 @@ export type ListProductFragment = { id: number, uri: string, name: string, media
   > };
 
 export type SubscriptionPlanFragment = { id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } };
+
+export type ProductDetailsFragment = { id: number, available: boolean, uri: string, name: string, metaTitle: string, metaDescription: string, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }>, shortDescription: { formatted: string }, description: { formatted: string }, collection?: { name: string } | null, productVariant: { name?: string | null }, brand?: { name: string } | null, media: Array<{ id: number, altText?: string | null, source: { url: string } }>, price?: { formattedValue: string, value: number, currency: { code: string } } | null, category?: { uri: string, name?: Array<string> | null } | null, items: Array<{ id: string, name: string, stock: { available: boolean, quantity: number }, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }>, relatedDisplayItems: Array<{ relation: string, displayItems?: Array<{ uri: string, productVariant: { name?: string | null }, swatch: Array<
+        | { __typename: 'DynamicAttribute', elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+        | { __typename: 'MappedAttribute' }
+      > }> | null }>, translations: Array<{ uri: string, language: { code: string } }>, bundle?: { type: BundleType, priceType: BundlePriceType, minPrice?: { formattedValue: string } | null, maxPrice?: { formattedValue: string } | null, sections: Array<{ id: number, quantity: number, items: Array<{ id: number, name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, price?: { formattedValue: string, value: number, currency: { code: string } } | null, items: Array<{ id: string, name: string, stock: { available: boolean }, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }>, sizeGuide: Array<
+          | { __typename: 'DynamicAttribute', elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+          | { __typename: 'MappedAttribute' }
+        > }> }> } | null, swatch: Array<
+    | { __typename: 'DynamicAttribute', elements: Array<
+        | { __typename: 'AttributeChoiceElement', key: string }
+        | { __typename: 'AttributeFileElement', key: string }
+        | { __typename: 'AttributeImageElement', key: string }
+        | { __typename: 'AttributeStringElement', value: string, key: string }
+      > }
+    | { __typename: 'MappedAttribute' }
+  >, sizeGuide: Array<
+    | { __typename: 'DynamicAttribute', elements: Array<
+        | { __typename: 'AttributeChoiceElement', key: string }
+        | { __typename: 'AttributeFileElement', key: string }
+        | { __typename: 'AttributeImageElement', key: string }
+        | { __typename: 'AttributeStringElement', value: string, key: string }
+      > }
+    | { __typename: 'MappedAttribute' }
+  > };
 
 export type CartFragment = { lines: Array<
     | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
@@ -4992,55 +5060,6 @@ export const PaymentActionFragmentDoc = new TypedDocumentString(`
   }
 }
     `, {"fragmentName":"paymentAction"}) as unknown as TypedDocumentString<PaymentActionFragment, unknown>;
-export const BundleFragmentDoc = new TypedDocumentString(`
-    fragment bundle on Bundle {
-  type
-  priceType
-  minPrice {
-    formattedValue
-  }
-  maxPrice {
-    formattedValue
-  }
-  sections {
-    id
-    quantity
-    items {
-      id
-      name
-      uri
-      media {
-        altText
-        source {
-          url
-        }
-      }
-      price {
-        formattedValue
-        value
-        currency {
-          code
-        }
-      }
-      items {
-        ...item
-        stock {
-          available
-        }
-      }
-    }
-  }
-}
-    fragment item on Item {
-  id
-  name
-  sizeLocalization {
-    name
-    countries {
-      code
-    }
-  }
-}`, {"fragmentName":"bundle"}) as unknown as TypedDocumentString<BundleFragment, unknown>;
 export const VariantSwatchFragmentDoc = new TypedDocumentString(`
     fragment variantSwatch on DisplayItem {
   swatch: attributes(keys: ["variant_swatch"]) {
@@ -5107,6 +5126,247 @@ export const ListProductFragmentDoc = new TypedDocumentString(`
     }
   }
 }`, {"fragmentName":"listProduct"}) as unknown as TypedDocumentString<ListProductFragment, unknown>;
+export const SizeGuideFragmentDoc = new TypedDocumentString(`
+    fragment sizeGuide on DisplayItem {
+  sizeGuide: attributes(keys: ["pd_size_guide"]) {
+    __typename
+    ... on DynamicAttribute {
+      elements {
+        __typename
+        key
+        ... on AttributeStringElement {
+          value
+        }
+      }
+    }
+  }
+}
+    `, {"fragmentName":"sizeGuide"}) as unknown as TypedDocumentString<SizeGuideFragment, unknown>;
+export const BundleFragmentDoc = new TypedDocumentString(`
+    fragment bundle on Bundle {
+  type
+  priceType
+  minPrice {
+    formattedValue
+  }
+  maxPrice {
+    formattedValue
+  }
+  sections {
+    id
+    quantity
+    items {
+      id
+      name
+      uri
+      media {
+        altText
+        source {
+          url
+        }
+      }
+      price {
+        formattedValue
+        value
+        currency {
+          code
+        }
+      }
+      items {
+        ...item
+        stock {
+          available
+        }
+      }
+      ...sizeGuide
+    }
+  }
+}
+    fragment item on Item {
+  id
+  name
+  sizeLocalization {
+    name
+    countries {
+      code
+    }
+  }
+}
+fragment sizeGuide on DisplayItem {
+  sizeGuide: attributes(keys: ["pd_size_guide"]) {
+    __typename
+    ... on DynamicAttribute {
+      elements {
+        __typename
+        key
+        ... on AttributeStringElement {
+          value
+        }
+      }
+    }
+  }
+}`, {"fragmentName":"bundle"}) as unknown as TypedDocumentString<BundleFragment, unknown>;
+export const ProductDetailsFragmentDoc = new TypedDocumentString(`
+    fragment productDetails on DisplayItem {
+  id
+  available
+  uri
+  name
+  metaTitle
+  metaDescription
+  subscriptionPlans {
+    ...subscriptionPlan
+  }
+  shortDescription {
+    formatted
+  }
+  description {
+    formatted
+  }
+  collection {
+    name
+  }
+  productVariant {
+    name
+  }
+  brand {
+    name
+  }
+  media {
+    id
+    altText
+    source(sizeName: "1350x0") {
+      url
+    }
+  }
+  price {
+    formattedValue
+    value
+    currency {
+      code
+    }
+  }
+  category {
+    uri
+    name
+  }
+  items {
+    ...item
+    stock {
+      available
+      quantity
+    }
+  }
+  relatedDisplayItems(relationType: "variant") {
+    relation
+    displayItems {
+      uri
+      productVariant {
+        name
+      }
+      ...variantSwatch
+    }
+  }
+  productVariant {
+    name
+  }
+  ...variantSwatch
+  ...sizeGuide
+  translations {
+    language {
+      code
+    }
+    uri
+  }
+  bundle {
+    ...bundle
+  }
+}
+    fragment item on Item {
+  id
+  name
+  sizeLocalization {
+    name
+    countries {
+      code
+    }
+  }
+}
+fragment bundle on Bundle {
+  type
+  priceType
+  minPrice {
+    formattedValue
+  }
+  maxPrice {
+    formattedValue
+  }
+  sections {
+    id
+    quantity
+    items {
+      id
+      name
+      uri
+      media {
+        altText
+        source {
+          url
+        }
+      }
+      price {
+        formattedValue
+        value
+        currency {
+          code
+        }
+      }
+      items {
+        ...item
+        stock {
+          available
+        }
+      }
+      ...sizeGuide
+    }
+  }
+}
+fragment variantSwatch on DisplayItem {
+  swatch: attributes(keys: ["variant_swatch"]) {
+    __typename
+    ... on DynamicAttribute {
+      elements {
+        __typename
+        key
+        ... on AttributeStringElement {
+          value
+        }
+      }
+    }
+  }
+}
+fragment sizeGuide on DisplayItem {
+  sizeGuide: attributes(keys: ["pd_size_guide"]) {
+    __typename
+    ... on DynamicAttribute {
+      elements {
+        __typename
+        key
+        ... on AttributeStringElement {
+          value
+        }
+      }
+    }
+  }
+}
+fragment subscriptionPlan on SubscriptionPlan {
+  id
+  discount
+  interval {
+    value
+    type
+  }
+}`, {"fragmentName":"productDetails"}) as unknown as TypedDocumentString<ProductDetailsFragment, unknown>;
 export const CartFragmentDoc = new TypedDocumentString(`
     fragment cart on Selection {
   lines {
@@ -8900,62 +9160,7 @@ export const LookupProductDocument = new TypedDocumentString(`
     __typename
     ... on DisplayItemUriLookupPayload {
       displayItem {
-        id
-        available
-        uri
-        name
-        metaTitle
-        metaDescription
-        subscriptionPlans {
-          ...subscriptionPlan
-        }
-        description {
-          formatted
-        }
-        media {
-          id
-          altText
-          source(sizeName: "1350x0") {
-            url
-          }
-        }
-        price {
-          formattedValue
-          value
-          currency {
-            code
-          }
-        }
-        items {
-          ...item
-          stock {
-            available
-            quantity
-          }
-        }
-        relatedDisplayItems(relationType: "variant") {
-          relation
-          displayItems {
-            uri
-            productVariant {
-              name
-            }
-            ...variantSwatch
-          }
-        }
-        productVariant {
-          name
-        }
-        ...variantSwatch
-        translations {
-          language {
-            code
-          }
-          uri
-        }
-        bundle {
-          ...bundle
-        }
+        ...productDetails
       }
     }
   }
@@ -9005,11 +9210,26 @@ fragment bundle on Bundle {
           available
         }
       }
+      ...sizeGuide
     }
   }
 }
 fragment variantSwatch on DisplayItem {
   swatch: attributes(keys: ["variant_swatch"]) {
+    __typename
+    ... on DynamicAttribute {
+      elements {
+        __typename
+        key
+        ... on AttributeStringElement {
+          value
+        }
+      }
+    }
+  }
+}
+fragment sizeGuide on DisplayItem {
+  sizeGuide: attributes(keys: ["pd_size_guide"]) {
     __typename
     ... on DynamicAttribute {
       elements {
@@ -9028,6 +9248,81 @@ fragment subscriptionPlan on SubscriptionPlan {
   interval {
     value
     type
+  }
+}
+fragment productDetails on DisplayItem {
+  id
+  available
+  uri
+  name
+  metaTitle
+  metaDescription
+  subscriptionPlans {
+    ...subscriptionPlan
+  }
+  shortDescription {
+    formatted
+  }
+  description {
+    formatted
+  }
+  collection {
+    name
+  }
+  productVariant {
+    name
+  }
+  brand {
+    name
+  }
+  media {
+    id
+    altText
+    source(sizeName: "1350x0") {
+      url
+    }
+  }
+  price {
+    formattedValue
+    value
+    currency {
+      code
+    }
+  }
+  category {
+    uri
+    name
+  }
+  items {
+    ...item
+    stock {
+      available
+      quantity
+    }
+  }
+  relatedDisplayItems(relationType: "variant") {
+    relation
+    displayItems {
+      uri
+      productVariant {
+        name
+      }
+      ...variantSwatch
+    }
+  }
+  productVariant {
+    name
+  }
+  ...variantSwatch
+  ...sizeGuide
+  translations {
+    language {
+      code
+    }
+    uri
+  }
+  bundle {
+    ...bundle
   }
 }`) as unknown as TypedDocumentString<LookupProductMutation, LookupProductMutationVariables>;
 export const ProductsDocument = new TypedDocumentString(`

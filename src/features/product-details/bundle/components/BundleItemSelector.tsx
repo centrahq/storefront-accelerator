@@ -12,9 +12,10 @@ interface Props {
     name: string;
   }>;
   sectionId: number;
+  sizeGuideTable?: string;
 }
 
-export const BundleItemSelector = ({ items, sectionId }: Props) => {
+export const BundleItemSelector = ({ items, sectionId, sizeGuideTable }: Props) => {
   const [bundledItems, setBundledItems] = useQueryState('bundledItems', parseAsBundledItems);
 
   return (
@@ -25,6 +26,7 @@ export const BundleItemSelector = ({ items, sectionId }: Props) => {
         void setBundledItems((old) => ({ ...old, [sectionId]: val }));
       }}
       hiddenLegend
+      sizeGuideTable={sizeGuideTable}
     />
   );
 };

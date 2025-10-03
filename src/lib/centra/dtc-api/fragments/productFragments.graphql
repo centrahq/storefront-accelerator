@@ -44,12 +44,28 @@ fragment bundle on Bundle {
           available
         }
       }
+      ...sizeGuide
     }
   }
 }
 
 fragment variantSwatch on DisplayItem {
   swatch: attributes(keys: ["variant_swatch"]) {
+    __typename
+    ... on DynamicAttribute {
+      elements {
+        __typename
+        key
+        ... on AttributeStringElement {
+          value
+        }
+      }
+    }
+  }
+}
+
+fragment sizeGuide on DisplayItem {
+  sizeGuide: attributes(keys: ["pd_size_guide"]) {
     __typename
     ... on DynamicAttribute {
       elements {
@@ -105,5 +121,81 @@ fragment subscriptionPlan on SubscriptionPlan {
   interval {
     value
     type
+  }
+}
+
+fragment productDetails on DisplayItem {
+  id
+  available
+  uri
+  name
+  metaTitle
+  metaDescription
+  subscriptionPlans {
+    ...subscriptionPlan
+  }
+  shortDescription {
+    formatted
+  }
+  description {
+    formatted
+  }
+  collection {
+    name
+  }
+  productVariant {
+    name
+  }
+  brand {
+    name
+  }
+  media {
+    id
+    altText
+    source(sizeName: "1350x0") {
+      url
+    }
+  }
+  price {
+    formattedValue
+    value
+    currency {
+      code
+    }
+  }
+  category {
+    uri
+    name
+  }
+  items {
+    ...item
+    stock {
+      available
+      quantity
+    }
+  }
+  relatedDisplayItems(relationType: "variant") {
+    relation
+    displayItems {
+      uri
+      productVariant {
+        name
+      }
+      ...variantSwatch
+    }
+  }
+  productVariant {
+    name
+  }
+  ...variantSwatch
+  ...sizeGuide
+  translations {
+    language {
+      code
+    }
+    uri
+  }
+  bundle {
+    ...bundle
   }
 }

@@ -2,6 +2,7 @@ import { Field, Fieldset, Label, Legend, Radio, RadioGroup } from '@headlessui/r
 import clsx from 'clsx';
 
 import { useTranslation } from '@/features/i18n/useTranslation/client';
+import { SizeGuide } from '@/features/product-listing/components/SizeGuide';
 
 interface Props {
   items: Array<{
@@ -13,15 +14,19 @@ interface Props {
   value: string | undefined;
   onChange: (value: string) => void;
   hiddenLegend?: boolean;
+  sizeGuideTable?: string;
 }
 
-export const ItemsField = ({ items, value, onChange, hiddenLegend = false }: Props) => {
+export const ItemsField = ({ items, value, onChange, hiddenLegend = false, sizeGuideTable }: Props) => {
   const { t } = useTranslation(['shop']);
 
   return (
     <Fieldset>
       <div className="flex flex-col gap-3">
-        <Legend className={clsx('text-xl font-medium', { 'sr-only': hiddenLegend })}>{t('shop:product.size')}</Legend>
+        <div className="flex justify-between gap-2">
+          <Legend className={clsx('text-xl font-medium', { 'sr-only': hiddenLegend })}>{t('shop:product.size')}</Legend>
+          {sizeGuideTable && <SizeGuide sizeGuideTableJson={sizeGuideTable} />}
+        </div>
         <RadioGroup value={value} onChange={onChange} className="flex flex-wrap gap-2 text-sm font-medium">
           {items.map((item) => (
             <Field
