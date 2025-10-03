@@ -19,11 +19,15 @@ export default function ContactPage() {
           <a href="https://centra.dev" target="_blank" className="underline underline-offset-2">
             centra.dev - our portal for developers
           </a>
-          ! If you&apos;re new, why not{' '}
+          ! 
+          <br /><br /> 
+          If you&apos;re new, why not{' '}
           <a href="https://centra.com/demo" target="_blank" className="underline underline-offset-2">
             sign up for a demo
           </a>
-          ? If you&apos;re looking to contact Centra in general, please see{' '}
+          ?
+          <br /><br />  
+          If you&apos;re looking to contact Centra in general, please see{' '}
           <a href="https://centra.com/contact" target="_blank" className="underline underline-offset-2">
             our contact page
           </a>
