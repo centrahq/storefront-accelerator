@@ -3,7 +3,7 @@
 import { CloseButton, Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { usePathname } from 'next/navigation';
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 import { useTranslation } from '@/features/i18n/useTranslation/client';
 
@@ -11,13 +11,10 @@ export const NavMenuPanel = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation(['shop']);
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const prevPathname = useRef(pathname);
 
   useEffect(() => {
-    if (pathname !== prevPathname.current) {
-      prevPathname.current = pathname;
-      setIsOpen(false);
-    }
+    // Close the menu when navigating to a different page
+    setIsOpen(false);
   }, [pathname]);
 
   return (

@@ -15,7 +15,9 @@ import {
 import { CheckIcon } from '@heroicons/react/16/solid';
 import { ChevronDownIcon, FunnelIcon } from '@heroicons/react/24/outline';
 import { useQueryStates } from 'nuqs';
+import { useTransition } from 'react';
 
+import { Spinner } from '@/components/Spinner';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
 import { FilterKey } from '@/lib/centra/constants';
 import { ProductsQuery, SortKey, SortOrder } from '@gql/graphql';
@@ -38,10 +40,12 @@ export const ProductFiltersSkeleton = () => {
 };
 
 export const ProductFilters = ({ filters }: { filters: Filter[] }) => {
+  const [isLoading, startTransition] = useTransition();
   const [{ sort, brands, sizes, onlyAvailable: availableOnly, collections }, setFilters] = useQueryStates(
     productsFilterParsers,
     {
       shallow: false,
+      startTransition,
     },
   );
   const { t } = useTranslation(['shop']);
@@ -60,13 +64,16 @@ export const ProductFilters = ({ filters }: { filters: Filter[] }) => {
   const sizeOptions = sizeFilter?.values.filter((filter) => Boolean(filter.value) && filter.filterCount > 0) ?? [];
   const collectionOptions = collectionFilter?.values.filter((filter) => Boolean(filter.name)) ?? [];
 
+  const hasActiveFilters =
+    brands.length > 0 || sizes.length > 0 || collections.length > 0 || availableOnly || sort !== '';
+
   return (
     <div className="flex flex-wrap justify-between">
       {brandOptions.length > 0 && sizeOptions.length > 0 ? (
         <Fieldset>
           <div className="flex flex-wrap gap-4">
             <Legend className="text-mono-500 flex items-center gap-2 font-medium">
-              <FunnelIcon className="size-5" aria-hidden="true" />
+              {isLoading ? <Spinner className="size-5" /> : <FunnelIcon className="size-5" aria-hidden="true" />}
               <span>{t('shop:filters.filter-by')}</span>
             </Legend>
             {brandOptions.length > 1 && (
@@ -204,6 +211,24 @@ export const ProductFilters = ({ filters }: { filters: Filter[] }) => {
               </Checkbox>
               <Label>{t('shop:filters.only-available')}</Label>
             </Field>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={() => {
+                  void setFilters({
+                    brands: [],
+                    sizes: [],
+                    collections: [],
+                    onlyAvailable: false,
+                    sort: '',
+                    page: 1,
+                  });
+                }}
+                className="text-mono-600 hover:text-mono-900 text-sm underline underline-offset-2"
+              >
+                {t('shop:filters.clear-filters')}
+              </button>
+            )}
           </div>
         </Fieldset>
       ) : (

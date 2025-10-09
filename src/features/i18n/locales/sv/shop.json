@@ -59,6 +59,7 @@
   },
   "filters": {
     "brand": "Märke",
+    "clear-filters": "Rensa filter",
     "collection": "Kollektion",
     "filter-by": "Filtrera efter:",
     "name-a-to-z": "Namn: A till Ö",
@@ -78,6 +79,7 @@
     "message": "Vissa varor i din varukorg har tagits bort eftersom de inte finns tillgängliga.",
     "title": "Ej tillgängliga varor"
   },
+  "loading": "Laddar...",
   "localization": {
     "country": "Land",
     "hint": "Ändra dina land- och språkinställningar.",

@@ -7,6 +7,8 @@ directive @defer(if: Boolean = true, label: String) on FRAGMENT_SPREAD | INLINE_
 
 directive @maxLimit(limit: Int!, scope: SCOPE!) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INTERFACE | OBJECT
 
+directive @nolock on FIELD_DEFINITION
+
 directive @notEmpty on FIELD_DEFINITION | SCALAR
 
 directive @operationCategory(category: OPERATION_CATEGORY) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INTERFACE | OBJECT

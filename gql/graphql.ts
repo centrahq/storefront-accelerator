@@ -4184,32 +4184,6 @@ export type OrdersQuery = { customer?: { totalOrders: number, orders: Array<{ id
         | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
        | null> }> } | null };
 
-export type RelatedProductsQueryVariables = Exact<{
-  id: Scalars['Int']['input'];
-  language: Scalars['String']['input'];
-  market: Scalars['Int']['input'];
-  pricelist: Scalars['Int']['input'];
-}>;
-
-
-export type RelatedProductsQuery = { displayItem?: { relatedDisplayItems: Array<{ relation: string, displayItems?: Array<{ id: number, uri: string, name: string, media: Array<{ altText?: string | null, source: { url: string } }>, productVariant: { name?: string | null }, relatedDisplayItems: Array<{ relation: string, displayItems?: Array<{ uri: string, productVariant: { name?: string | null }, swatch: Array<
-              | { __typename: 'DynamicAttribute', elements: Array<
-                  | { __typename: 'AttributeChoiceElement', key: string }
-                  | { __typename: 'AttributeFileElement', key: string }
-                  | { __typename: 'AttributeImageElement', key: string }
-                  | { __typename: 'AttributeStringElement', value: string, key: string }
-                > }
-              | { __typename: 'MappedAttribute' }
-            > }> | null }>, price?: { formattedValue: string } | null, bundle?: { type: BundleType, priceType: BundlePriceType, minPrice?: { formattedValue: string } | null } | null, swatch: Array<
-          | { __typename: 'DynamicAttribute', elements: Array<
-              | { __typename: 'AttributeChoiceElement', key: string }
-              | { __typename: 'AttributeFileElement', key: string }
-              | { __typename: 'AttributeImageElement', key: string }
-              | { __typename: 'AttributeStringElement', value: string, key: string }
-            > }
-          | { __typename: 'MappedAttribute' }
-        > }> | null }> } | null };
-
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -4372,6 +4346,32 @@ export type LookupProductMutation = { lookupUri?:
     | { __typename: 'NotFoundUriLookupPayload' }
     | { __typename: 'UrlVoucherUriLookupPayload' }
    | null };
+
+export type RelatedProductsQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+  language: Scalars['String']['input'];
+  market: Scalars['Int']['input'];
+  pricelist: Scalars['Int']['input'];
+}>;
+
+
+export type RelatedProductsQuery = { displayItem?: { relatedDisplayItems: Array<{ relation: string, displayItems?: Array<{ id: number, uri: string, name: string, media: Array<{ altText?: string | null, source: { url: string } }>, productVariant: { name?: string | null }, relatedDisplayItems: Array<{ relation: string, displayItems?: Array<{ uri: string, productVariant: { name?: string | null }, swatch: Array<
+              | { __typename: 'DynamicAttribute', elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute' }
+            > }> | null }>, price?: { formattedValue: string } | null, bundle?: { type: BundleType, priceType: BundlePriceType, minPrice?: { formattedValue: string } | null } | null, swatch: Array<
+          | { __typename: 'DynamicAttribute', elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+          | { __typename: 'MappedAttribute' }
+        > }> | null }> } | null };
 
 export type ProductsQueryVariables = Exact<{
   page: Scalars['Int']['input'];
@@ -8401,71 +8401,6 @@ fragment line on Line {
     }
   }
 }`) as unknown as TypedDocumentString<OrdersQuery, OrdersQueryVariables>;
-export const RelatedProductsDocument = new TypedDocumentString(`
-    query relatedProducts($id: Int!, $language: String!, $market: Int!, $pricelist: Int!) {
-  displayItem(
-    id: $id
-    languageCode: [$language]
-    market: [$market]
-    pricelist: [$pricelist]
-  ) {
-    relatedDisplayItems(relationType: "standard") {
-      relation
-      displayItems {
-        ...listProduct
-      }
-    }
-  }
-}
-    fragment variantSwatch on DisplayItem {
-  swatch: attributes(keys: ["variant_swatch"]) {
-    __typename
-    ... on DynamicAttribute {
-      elements {
-        __typename
-        key
-        ... on AttributeStringElement {
-          value
-        }
-      }
-    }
-  }
-}
-fragment listProduct on DisplayItem {
-  id
-  uri
-  name
-  media {
-    altText
-    source(sizeName: "1350x0") {
-      url
-    }
-  }
-  productVariant {
-    name
-  }
-  ...variantSwatch
-  relatedDisplayItems(relationType: "variant") {
-    relation
-    displayItems {
-      uri
-      productVariant {
-        name
-      }
-      ...variantSwatch
-    }
-  }
-  price {
-    formattedValue
-  }
-  bundle {
-    type
-    priceType
-    minPrice {
-      formattedValue
-    }
-  }
-}`) as unknown as TypedDocumentString<RelatedProductsQuery, RelatedProductsQueryVariables>;
 export const LoginDocument = new TypedDocumentString(`
     mutation login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -9336,6 +9271,71 @@ fragment productDetails on DisplayItem {
     ...bundle
   }
 }`) as unknown as TypedDocumentString<LookupProductMutation, LookupProductMutationVariables>;
+export const RelatedProductsDocument = new TypedDocumentString(`
+    query relatedProducts($id: Int!, $language: String!, $market: Int!, $pricelist: Int!) {
+  displayItem(
+    id: $id
+    languageCode: [$language]
+    market: [$market]
+    pricelist: [$pricelist]
+  ) {
+    relatedDisplayItems(relationType: "standard") {
+      relation
+      displayItems {
+        ...listProduct
+      }
+    }
+  }
+}
+    fragment variantSwatch on DisplayItem {
+  swatch: attributes(keys: ["variant_swatch"]) {
+    __typename
+    ... on DynamicAttribute {
+      elements {
+        __typename
+        key
+        ... on AttributeStringElement {
+          value
+        }
+      }
+    }
+  }
+}
+fragment listProduct on DisplayItem {
+  id
+  uri
+  name
+  media {
+    altText
+    source(sizeName: "1350x0") {
+      url
+    }
+  }
+  productVariant {
+    name
+  }
+  ...variantSwatch
+  relatedDisplayItems(relationType: "variant") {
+    relation
+    displayItems {
+      uri
+      productVariant {
+        name
+      }
+      ...variantSwatch
+    }
+  }
+  price {
+    formattedValue
+  }
+  bundle {
+    type
+    priceType
+    minPrice {
+      formattedValue
+    }
+  }
+}`) as unknown as TypedDocumentString<RelatedProductsQuery, RelatedProductsQueryVariables>;
 export const ProductsDocument = new TypedDocumentString(`
     query products($page: Int!, $where: DisplayItemFilter, $sort: [CustomSortInput!] = [], $limit: Int = 40, $market: Int!, $pricelist: Int!, $language: String!, $withFilters: Boolean = true) {
   displayItems(

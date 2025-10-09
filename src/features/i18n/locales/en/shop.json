@@ -59,6 +59,7 @@
   },
   "filters": {
     "brand": "Brand",
+    "clear-filters": "Clear filters",
     "collection": "Collection",
     "filter-by": "Filter by:",
     "name-a-to-z": "Name: A to Z",
@@ -78,6 +79,7 @@
     "message": "Some items in your cart are removed due to unavailability.",
     "title": "Unavailable items"
   },
+  "loading": "Loading...",
   "localization": {
     "country": "Country",
     "hint": "Change your country and language settings.",

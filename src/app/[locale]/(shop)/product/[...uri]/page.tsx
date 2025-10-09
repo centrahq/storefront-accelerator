@@ -8,7 +8,7 @@ import { generateAlternates } from '@/features/i18n/metadata';
 import { Bundle } from '@/features/product-details/bundle/components/Bundle';
 import { Items } from '@/features/product-details/components/Items';
 import { ProductMedia } from '@/features/product-details/components/ProductMedia';
-import { RelatedProducts } from '@/features/product-details/components/RelatedProducts';
+import { RelatedProducts, RelatedProductsSkeleton } from '@/features/product-details/components/RelatedProducts';
 import { Variants } from '@/features/product-details/components/Variants';
 import { ProductAccordion } from '@/features/product-listing/components/ProductAccordion';
 import { ProductBreadcrumbs } from '@/features/product-listing/components/ProductBreadcrumbs';
@@ -119,7 +119,7 @@ export default async function ProductPage({ params }: PageProps) {
           </div>
         </div>
         <SocialProof />
-        <Suspense fallback={null}>
+        <Suspense fallback={<RelatedProductsSkeleton />}>
           <RelatedProducts id={product.id} />
         </Suspense>
       </div>

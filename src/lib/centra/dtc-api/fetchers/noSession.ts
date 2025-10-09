@@ -9,6 +9,7 @@ import {
   LookupCategoryMutationVariables,
   LookupProductMutationVariables,
   ProductsQueryVariables,
+  RelatedProductsQueryVariables,
 } from '@gql/graphql';
 
 import { TAGS } from '../../constants';
@@ -109,6 +110,39 @@ export const lookupProduct = async (variables: LookupProductMutationVariables) =
   cacheLife('hours');
 
   return result.data.lookupUri.displayItem;
+};
+
+export const getRelatedProducts = async (variables: RelatedProductsQueryVariables) => {
+  'use cache';
+
+  const result = await centraFetchNoSession(
+    graphql(`
+      query relatedProducts($id: Int!, $language: String!, $market: Int!, $pricelist: Int!) {
+        displayItem(id: $id, languageCode: [$language], market: [$market], pricelist: [$pricelist]) {
+          relatedDisplayItems(relationType: "standard") {
+            relation
+            displayItems {
+              ...listProduct
+            }
+          }
+        }
+      }
+    `),
+    {
+      variables,
+    },
+  );
+
+  const relatedProducts =
+    result.data.displayItem?.relatedDisplayItems.find(({ relation }) => relation === 'standard')?.displayItems ?? [];
+
+  cacheTag(TAGS.product(variables.id));
+  relatedProducts.forEach((product) => {
+    cacheTag(TAGS.product(product.id));
+  });
+  cacheLife('hours');
+
+  return relatedProducts;
 };
 
 export const filterProducts = async (variables: ProductsQueryVariables) => {

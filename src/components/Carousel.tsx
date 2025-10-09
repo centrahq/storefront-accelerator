@@ -14,21 +14,15 @@ export const Carousel = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation(['shop']);
 
   useEffect(() => {
-    if (!carouselApi) {
-      return;
-    }
-
-    setScrollSnaps(carouselApi.scrollSnapList());
-    setSelectedIndex(carouselApi.selectedScrollSnap());
-
     carouselApi
-      .on('reInit', () => {
-        setScrollSnaps(carouselApi.scrollSnapList());
-        setSelectedIndex(carouselApi.selectedScrollSnap());
+      ?.on('reInit', (api) => {
+        setScrollSnaps(api.scrollSnapList());
+        setSelectedIndex(api.selectedScrollSnap());
       })
-      .on('select', () => {
-        setSelectedIndex(carouselApi.selectedScrollSnap());
-      });
+      .on('select', (api) => {
+        setSelectedIndex(api.selectedScrollSnap());
+      })
+      .emit('reInit');
   }, [carouselApi]);
 
   return (
