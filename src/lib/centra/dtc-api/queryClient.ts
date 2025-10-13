@@ -5,7 +5,7 @@ import { CentraError, UserError } from '../errors';
 const makeQueryClient = () => {
   const mutationCache = new MutationCache({
     onError: (error) => {
-      // Use you client side error tracking solution here
+      // Use your client side error tracking solution here
       if (process.env.NODE_ENV === 'development') {
         if (error instanceof UserError) {
           console.error(error.name, JSON.stringify(error.userErrors, null, 2), `Trace ID: ${error.traceId ?? 'N/A'}`);

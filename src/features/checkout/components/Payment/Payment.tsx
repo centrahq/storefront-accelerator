@@ -1,196 +1,64 @@
 'use client';
 
-import { useIsMutating, useSuspenseQuery } from '@tanstack/react-query';
-import clsx from 'clsx';
-import { useRouter } from 'next/navigation';
-import { ReactNode, useCallback, useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 
-import { Trans, Translation } from '@/features/i18n';
+import { Trans } from '@/features/i18n';
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
-import { UserError } from '@/lib/centra/errors';
-import { CentraPaymentResponseEvent, mapAddress } from '@/lib/centra/events';
-import { PaymentEvent } from '@/lib/centra/types/events';
-import { checkUnavailableItems } from '@/lib/utils/unavailableItems';
-import { PaymentInstructionsMutation } from '@gql/graphql';
+import { PaymentMethodKind } from '@gql/graphql';
 
-import { usePaymentInstructions } from '../../mutations';
 import { checkoutQuery } from '../../queries';
-import { showItemsRemovedToast } from '../../utils/showItemsRemovedToast';
-import { Widget } from '../Widget';
-import { KlarnaPayments } from './KlarnaPayments';
-import { PaymentMethodField } from './PaymentMethodField';
+import { PaymentWidget } from './PaymentWidget';
+
+const PAYMENT_METHODS = [PaymentMethodKind.AdyenDropin, PaymentMethodKind.KlarnaPayments];
 
 export const Payment = () => {
-  const [paymentWidget, setPaymentWidget] = useState<ReactNode>(null);
-  const router = useRouter();
   const { t } = useTranslation(['checkout']);
   const { data } = useSuspenseQuery(checkoutQuery);
-  const paymentInstructionsMutation = usePaymentInstructions();
-  const isMutatingCheckout = useIsMutating({ mutationKey: ['checkout'] }) > 0;
 
-  const { shippingAddress, separateBillingAddress: billingAddress, paymentMethod } = data.checkout;
+  const paymentMethods = PAYMENT_METHODS.map((method) =>
+    data.checkout.paymentMethods.find((m) => m.kind === method),
+  ).filter((method) => !!method);
 
-  const handlePaymentAction = useCallback(
-    (paymentAction: PaymentInstructionsMutation['paymentInstructions']['action']) => {
-      if (!paymentAction) {
-        throw new Error('No payment action');
-      }
-
-      if (paymentAction.__typename === 'SuccessPaymentAction') {
-        // Payment is successful, redirect to confirmation page
-        router.push(`/confirmation`);
-      } else if (paymentAction.__typename === 'RedirectPaymentAction') {
-        // Redirect to payment provider
-        location.href = paymentAction.url;
-      } else if (paymentAction.__typename === 'JavascriptPaymentAction') {
-        // Execute payment action script
-        eval(paymentAction.script);
-      } else if (paymentAction.__typename === 'FormPaymentAction') {
-        // Display payment widget
-        if (paymentAction.formType === 'klarna-payments') {
-          const formFields = paymentAction.formFields as { authorizePayload: string; client_token: string };
-          setPaymentWidget(
-            <KlarnaPayments authorizePayload={formFields.authorizePayload} clientToken={formFields.client_token} />,
-          );
-        } else {
-          setPaymentWidget(<Widget html={paymentAction.html} />);
-        }
-      } else {
-        throw new Error('Unknown payment action');
-      }
-    },
-    [router],
-  );
-
-  const startPayment = () => {
-    paymentInstructionsMutation.mutate(
-      {
-        paymentFailedPage: `${window.location.origin}/failed`,
-        paymentReturnPage: `${window.location.origin}/success`,
-        shippingAddress: {
-          ...shippingAddress,
-          country: shippingAddress.country?.code ?? '',
-          state: shippingAddress.state?.code ?? '',
-        },
-        separateBillingAddress: billingAddress
-          ? {
-              ...billingAddress,
-              country: billingAddress.country?.code ?? '',
-              state: billingAddress.state?.code ?? '',
-            }
-          : null,
-      },
-      {
-        onSuccess: (data) => handlePaymentAction(data.action),
-        onError: (error) => {
-          if (error instanceof UserError && checkUnavailableItems(error.userErrors)) {
-            showItemsRemovedToast();
-          } else {
-            toast.error(<Translation>{(t) => t('checkout:errors.could-not-finalize-payment')}</Translation>, {
-              id: 'payment-error',
-            });
-          }
-        },
-      },
-    );
-  };
-
-  useEffect(() => {
-    // Get payment instructions when a payment widget needs to
-    const handlePaymentCallback = ({ detail }: PaymentEvent) => {
-      const shipping = detail.addressIncluded
-        ? mapAddress(detail.shippingAddress)
-        : {
-            ...shippingAddress,
-            country: shippingAddress.country?.code ?? '',
-            state: shippingAddress.state?.code,
-          };
-
-      const billing = detail.addressIncluded
-        ? mapAddress(detail.billingAddress)
-        : {
-            ...billingAddress,
-            country: billingAddress?.country?.code ?? '',
-            state: billingAddress?.state?.code,
-          };
-
-      paymentInstructionsMutation.mutate(
-        {
-          paymentFailedPage: `${window.location.origin}/failed`,
-          paymentReturnPage: `${window.location.origin}/success`,
-          paymentMethod: paymentMethod?.id,
-          shippingAddress: shipping,
-          separateBillingAddress: billing,
-          paymentMethodSpecificFields: detail.paymentMethodSpecificFields,
-        },
-        {
-          onSuccess: (data) => {
-            const paymentAction = data.action;
-
-            if (
-              detail.responseEventRequired &&
-              paymentAction?.__typename === 'JavascriptPaymentAction' &&
-              paymentAction.formFields
-            ) {
-              // Let CentraCheckout handle it, if `responseEventRequired` is true.
-              document.dispatchEvent(new CentraPaymentResponseEvent(paymentAction.formFields));
-            } else {
-              handlePaymentAction(paymentAction);
-            }
-          },
-          onError: (error) => {
-            if (error instanceof UserError && checkUnavailableItems(error.userErrors)) {
-              showItemsRemovedToast();
-            } else {
-              toast.error(<Translation>{(t) => t('checkout:errors.could-not-finalize-payment')}</Translation>, {
-                id: 'payment-error',
-              });
-            }
-          },
-        },
-      );
-    };
-
-    document.addEventListener('centra_checkout_payment_callback', handlePaymentCallback);
-
-    return () => {
-      document.removeEventListener('centra_checkout_payment_callback', handlePaymentCallback);
-    };
-  }, [billingAddress, handlePaymentAction, paymentMethod?.id, shippingAddress, paymentInstructionsMutation]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number | null>(paymentMethods[0]?.id ?? null);
 
   return (
     <div className="flex flex-col gap-5">
       <div>
         <h2 className="text-xl font-medium">{t('checkout:payment')}</h2>
         <p className="text-mono-500 text-sm">{t('checkout:secure-transactions')}</p>
+        <p className="text-mono-500 text-sm">
+          <Trans t={t} i18nKey="checkout:terms">
+            By placing your order, you agree to our
+            <ShopLink href="/terms" target="_blank" className="underline underline-offset-2">
+              Terms and Conditions
+            </ShopLink>
+          </Trans>
+        </p>
       </div>
-      {paymentWidget}
-      {!paymentWidget && (
-        <form action={startPayment} className="flex flex-col gap-5">
-          <PaymentMethodField />
-          <p className="text-mono-500 text-sm">
-            <Trans t={t} i18nKey="checkout:terms">
-              By clicking Proceed you agree to our
-              <ShopLink href="/terms" target="_blank">
-                terms and conditions
-              </ShopLink>
-            </Trans>
-          </p>
-          <button
-            type="submit"
-            className={clsx(
-              'bg-mono-900 text-mono-0 flex w-full items-center justify-center px-6 py-4 text-xs font-bold uppercase',
-              {
-                'animate-pulse': isMutatingCheckout,
-              },
-            )}
-            disabled={isMutatingCheckout}
-          >
-            {t('checkout:proceed')}
-          </button>
-        </form>
+      {paymentMethods.length === 1 && paymentMethods[0] && <PaymentWidget id={paymentMethods[0].id} />}
+      {paymentMethods.length > 1 && (
+        <div className="flex flex-col gap-4">
+          {paymentMethods.map((method, index) => (
+            <div key={method.id} className="border-mono-500 flex flex-col gap-4 rounded-md border p-4">
+              <button
+                type="button"
+                className="flex items-center justify-between"
+                onClick={() => setSelectedPaymentMethod(method.id)}
+              >
+                {index === 0 ? t('checkout:payment-options') : method.name}
+                {selectedPaymentMethod === method.id ? (
+                  <ChevronUpIcon className="text-mono-800 size-4" aria-hidden="true" />
+                ) : (
+                  <ChevronDownIcon className="text-mono-800 size-4" aria-hidden="true" />
+                )}
+              </button>
+              {selectedPaymentMethod === method.id && <PaymentWidget id={method.id} />}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

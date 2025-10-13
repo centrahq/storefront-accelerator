@@ -59,7 +59,7 @@ export const OrderDetails = async ({ order }: { order: OrderFragment }) => {
             const subscription = line.displayItem.subscriptionPlans.find((plan) => plan.id === line.subscriptionId);
 
             return (
-              <li key={line.id} className="bg-mono-50 flex gap-5 py-3">
+              <li key={line.id} className="bg-mono-50 flex gap-5 p-3">
                 {line.displayItem.media[0] ? (
                   <ShopLink href={`/product/${line.displayItem.uri}`} className="shrink-0">
                     <Image

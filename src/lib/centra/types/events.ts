@@ -9,7 +9,7 @@ export interface EventAddress {
   city?: string;
   zipCode?: string;
   phoneNumber?: string;
-  company?: string;
+  companyName?: string;
   vatNumber?: string;
 }
 

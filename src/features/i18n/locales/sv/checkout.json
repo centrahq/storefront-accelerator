@@ -38,12 +38,11 @@
     "title": "Presentkort"
   },
   "information": "Information",
-  "no-payment-methods": "Inga betalningsmetoder",
   "pay-with-klarna": "Betala med Klarna",
   "payment": "Betalning",
   "payment-failed": "Betalningen misslyckades",
   "payment-method": "Betalningsmetod",
-  "proceed": "Fortsätt",
+  "payment-options": "Betalningsmetoder",
   "receipt": {
     "credit": "Kredit",
     "discount": "Rabatt",
@@ -54,7 +53,8 @@
   },
   "secure-transactions": "Alla transaktioner är säkra och krypterade.",
   "shipping-address": "Leveransadress",
-  "terms": "Genom att klicka på \"$t(proceed)\" godkänner du våra <1>villkor</1>",
+  "something-went-wrong": "Något gick fel. Vänligen försök igen.",
+  "terms": "Genom att lägga din beställning godkänner du våra <1>villkor</1>",
   "totals": "Summa",
   "voucher": {
     "apply": "Använd",

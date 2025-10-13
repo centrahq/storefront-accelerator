@@ -38,12 +38,11 @@
     "title": "Gift card"
   },
   "information": "Information",
-  "no-payment-methods": "No payment methods",
   "pay-with-klarna": "Pay with Klarna",
   "payment": "Payment",
   "payment-failed": "Payment failed",
   "payment-method": "Payment method",
-  "proceed": "Proceed",
+  "payment-options": "Payment options",
   "receipt": {
     "credit": "Credit",
     "discount": "Discount",
@@ -54,7 +53,8 @@
   },
   "secure-transactions": "All transactions are secure and encrypted.",
   "shipping-address": "Shipping address",
-  "terms": "By clicking \"$t(proceed)\", you agree to our <1>terms and conditions</1>",
+  "something-went-wrong": "Something went wrong. Please try again.",
+  "terms": "By placing your order, you agree to our <1>Terms and Conditions</1>",
   "totals": "Totals",
   "voucher": {
     "apply": "Apply",

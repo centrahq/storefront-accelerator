@@ -24,9 +24,13 @@ export default async function ShippingPage() {
     }))
     .toSorted((a, b) => a.name.localeCompare(b.name));
 
+  const countriesWithStates = countries
+    .filter((country) => (country.states?.length ?? 0) > 0)
+    .map((country) => country.code);
+
   return (
     <>
-      <InitiateOnlyPayments />
+      <InitiateOnlyPayments countriesWithStates={countriesWithStates} />
       <div className="bg-mono-0 p-10">
         <AddressForm countries={countries} />
       </div>

@@ -112,54 +112,6 @@ export const useSetShippingMethod = () => {
   });
 };
 
-export const useSetPaymentMethod = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationKey: ['checkout', 'startPayment'],
-    mutationFn: async (paymentMethod: number) => {
-      const response = await mutationMutex.runExclusive(() =>
-        centraFetch(
-          graphql(`
-            mutation setPaymentMethod($paymentMethod: Int!) {
-              setPaymentMethod(id: $paymentMethod) {
-                selection {
-                  ...checkout
-                }
-                userErrors {
-                  message
-                  path
-                }
-              }
-            }
-          `),
-          {
-            variables: {
-              paymentMethod,
-            },
-          },
-        ),
-      );
-
-      if (response.data.setPaymentMethod.userErrors.length > 0) {
-        throw new UserError(response.data.setPaymentMethod.userErrors, response.extensions.traceId);
-      }
-
-      if (!response.data.setPaymentMethod.selection?.checkout) {
-        throw new Error('Something went wrong');
-      }
-
-      return {
-        ...response.data.setPaymentMethod.selection,
-        checkout: response.data.setPaymentMethod.selection.checkout,
-      };
-    },
-    onSuccess: (data) => {
-      queryClient.setQueryData(checkoutQuery.queryKey, data);
-    },
-  });
-};
-
 export const usePaymentInstructions = () => {
   const queryClient = useQueryClient();
 

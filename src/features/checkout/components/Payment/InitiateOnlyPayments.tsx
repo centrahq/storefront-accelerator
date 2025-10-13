@@ -2,12 +2,12 @@
 
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Translation } from '@/features/i18n';
 import { UserError } from '@/lib/centra/errors';
-import { CentraPaymentResponseEvent, mapAddress } from '@/lib/centra/events';
+import { CentraPaymentResponseEvent } from '@/lib/centra/events';
 import { PaymentEvent } from '@/lib/centra/types/events';
 import { checkUnavailableItems } from '@/lib/utils/unavailableItems';
 import { PaymentMethodKind } from '@gql/graphql';
@@ -18,22 +18,28 @@ import { showItemsRemovedToast } from '../../utils/showItemsRemovedToast';
 import { Widget } from '../Widget';
 
 // Payment methods to display as quick checkout
-const initOnlyPaymentMethods: PaymentMethodKind[] = [];
+const QUICK_PAYMENT_METHODS: PaymentMethodKind[] = [
+  PaymentMethodKind.StripePaymentIntents,
+  PaymentMethodKind.PaypalCommerce,
+];
 
-export const InitiateOnlyPayments = () => {
+export const InitiateOnlyPayments = ({ countriesWithStates }: { countriesWithStates: string[] }) => {
   const { data } = useSuspenseQuery(checkoutQuery);
 
   const { paymentMethods, shippingAddress } = data.checkout;
   const country = shippingAddress.country?.code;
+  const state = shippingAddress.state?.code;
 
-  if (country) {
+  if (country && (!countriesWithStates.includes(country) || state)) {
     return (
       <>
-        {paymentMethods
-          .filter((method) => method.initiateOnlySupported && initOnlyPaymentMethods.includes(method.kind))
-          .map((method) => (
-            <InitiateOnlyPayment key={method.id} id={method.id} uri={method.uri} />
-          ))}
+        {QUICK_PAYMENT_METHODS.map((kind) => {
+          const method = paymentMethods.find((method) => method.kind === kind);
+
+          if (method) {
+            return <InitiateOnlyPayment key={method.id} id={method.id} uri={method.uri} />;
+          }
+        })}
       </>
     );
   }
@@ -42,23 +48,20 @@ export const InitiateOnlyPayments = () => {
 export const InitiateOnlyPayment = ({ id, uri }: { id: number; uri: string }) => {
   const { data } = useSuspenseQuery(checkoutQuery);
   const router = useRouter();
-  const paymentInstructionsMutation = usePaymentInstructions();
-  const [widget, setWidget] = useState('');
-  const hasInitiated = useRef(false);
+  const { mutate: getPaymentInstructions } = usePaymentInstructions();
+  const [widget, setWidget] = useState<string | null>(null);
 
   const { shippingAddress, separateBillingAddress: billingAddress } = data.checkout;
   const country = shippingAddress.country?.code;
   const state = shippingAddress.state?.code;
 
   useEffect(() => {
-    if (!country || hasInitiated.current) {
+    if (!country) {
       return;
     }
 
-    hasInitiated.current = true;
-
-    paymentInstructionsMutation
-      .mutateAsync({
+    getPaymentInstructions(
+      {
         paymentFailedPage: `${window.location.origin}/failed`,
         paymentReturnPage: `${window.location.origin}/success`,
         paymentInitiateOnly: true,
@@ -67,49 +70,49 @@ export const InitiateOnlyPayment = ({ id, uri }: { id: number; uri: string }) =>
           country,
           state,
         },
-      })
-      .then((data) => {
-        if (data.action && 'formType' in data.action) {
-          setWidget(data.action.html);
-        } else {
-          throw new Error('No payment action or unsupported action type');
-        }
-      })
-      .catch((error: unknown) => {
-        console.error(`Could not initiate payment method ${id}`, error);
-      });
-  }, [country, id, paymentInstructionsMutation, state]);
+      },
+      {
+        onSuccess: (data) => {
+          if (data.action && 'formType' in data.action) {
+            setWidget(data.action.html);
+          } else {
+            throw new Error('No payment action or unsupported action type');
+          }
+        },
+        onError: (error) => {
+          if (error instanceof UserError && checkUnavailableItems(error.userErrors)) {
+            showItemsRemovedToast();
+          }
+        },
+      },
+    );
+  }, [country, id, getPaymentInstructions, state]);
 
   useEffect(() => {
     const handlePaymentCallback = ({ detail }: PaymentEvent) => {
-      // TODO: Remove after https://centracommerce.atlassian.net/browse/DT-951
       if (detail.paymentMethod !== uri && detail.paymentMethod !== id) {
         return;
       }
 
-      const shipping = detail.addressIncluded
-        ? mapAddress(detail.shippingAddress)
-        : {
-            ...shippingAddress,
-            country: shippingAddress.country?.code ?? '',
-            state: shippingAddress.state?.code,
-          };
-
-      const billing = detail.addressIncluded
-        ? mapAddress(detail.billingAddress)
-        : {
-            ...billingAddress,
-            country: billingAddress?.country?.code ?? '',
-            state: billingAddress?.state?.code,
-          };
-
-      paymentInstructionsMutation.mutate(
+      getPaymentInstructions(
         {
           paymentFailedPage: `${window.location.origin}/failed`,
           paymentReturnPage: `${window.location.origin}/success`,
           paymentMethod: id,
-          shippingAddress: shipping,
-          separateBillingAddress: billing,
+          shippingAddress: detail.addressIncluded
+            ? detail.shippingAddress
+            : {
+                ...shippingAddress,
+                country: shippingAddress.country?.code ?? '',
+                state: shippingAddress.state?.code,
+              },
+          separateBillingAddress: detail.addressIncluded
+            ? detail.billingAddress
+            : {
+                ...billingAddress,
+                country: billingAddress?.country?.code ?? '',
+                state: billingAddress?.state?.code,
+              },
           paymentMethodSpecificFields: detail.paymentMethodSpecificFields,
         },
         {
@@ -158,11 +161,9 @@ export const InitiateOnlyPayment = ({ id, uri }: { id: number; uri: string }) =>
     return () => {
       document.removeEventListener('centra_checkout_payment_callback', handlePaymentCallback);
     };
-  }, [billingAddress, id, router, shippingAddress, paymentInstructionsMutation, uri]);
+  }, [billingAddress, id, router, shippingAddress, getPaymentInstructions, uri]);
 
-  if (!widget) {
-    return null;
+  if (widget) {
+    return <Widget html={widget} />;
   }
-
-  return <Widget html={widget} />;
 };

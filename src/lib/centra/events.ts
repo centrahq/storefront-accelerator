@@ -1,21 +1,4 @@
-import { AddressInput, CartFragment, CheckoutFragment } from '@gql/graphql';
-
-import { EventAddress } from './types/events';
-
-/**
- * `company` key is set instead of `companyName`
- * TODO: Remove after https://centracommerce.atlassian.net/browse/DT-691
- */
-export const mapAddress = (address: EventAddress): AddressInput => {
-  const addressCopy = { ...address };
-  const companyName = addressCopy.company;
-  delete addressCopy.company;
-
-  return {
-    ...addressCopy,
-    companyName,
-  };
-};
+import { CartFragment, CheckoutFragment } from '@gql/graphql';
 
 export class CentraPaymentResponseEvent extends CustomEvent<unknown> {
   constructor(payload: unknown) {
