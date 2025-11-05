@@ -1,17 +1,18 @@
 'use client';
 
 import {
-    AddressData,
-    AdyenCheckout,
-    ApplePay,
-    GooglePay,
-    SubmitActions,
-    SubmitData,
-    UIElement,
+  AddressData,
+  AdyenCheckout,
+  ApplePay,
+  GooglePay,
+  SubmitActions,
+  SubmitData,
+  UIElement,
 } from '@adyen/adyen-web';
 import { useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef } from 'react';
 
+import { useAddToCart } from '@/features/cart/mutations';
 import { selectionQuery } from '@/features/cart/queries';
 import { createAbsoluteURL } from '@/lib/utils/createAbsoluteURL';
 import { isDefined } from '@/lib/utils/isDefined';
@@ -24,69 +25,49 @@ import { AdyenAddress } from './types';
 
 interface Props {
   itemId?: string;
-  product?: {
-    uri: string;
-    name: string;
-    price: number;
-  };
 }
 
-export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
+export const AdyenExpressCheckout = ({ itemId }: Props) => {
   const queryClient = useQueryClient();
   const { data: checkoutData } = useSuspenseQuery(checkoutQuery);
   const { data: selectionData } = useSuspenseQuery(selectionQuery);
   const { data: sessionData } = useSuspenseQuery(sessionQuery);
   const { adyenConfig } = useAdyenExpressCheckoutConfig();
-  
+
   const initializedRef = useRef(false);
   const googlePayContainerRef = useRef<HTMLDivElement>(null);
   const applePayContainerRef = useRef<HTMLDivElement>(null);
   const shippingAddressRef = useRef<AdyenAddress | undefined>(undefined);
   const billingAddressRef = useRef<AdyenAddress | undefined>(undefined);
-  const productRef = useRef(product);
   const itemIdRef = useRef(itemId);
 
   const setShippingMethodMutation = useSetShippingMethod();
   const paymentInstructionsMutation = usePaymentInstructions();
+  const addToCartMutation = useAddToCart();
 
   const returnUrl = createAbsoluteURL('/confirmation');
 
   // Find Adyen payment method from checkout
-  const adyenPaymentMethod = checkoutData.checkout.paymentMethods?.find(
-    (method) => method.name.toLowerCase().includes('adyen')
+  const adyenPaymentMethod = checkoutData.checkout.paymentMethods?.find((method) =>
+    method.name.toLowerCase().includes('adyen'),
   );
 
   // Calculate total amount
-  const grandTotal = checkoutData.checkout.totals.find(
-    (total) => total.type === SelectionTotalRowType.GrandTotal
-  )?.price.value ?? 0;
+  const grandTotal =
+    checkoutData.checkout.totals.find((total) => total.type === SelectionTotalRowType.GrandTotal)?.price.value ?? 0;
 
   const cartTotalInMinor = Math.round(grandTotal * 100);
 
-  // Check if product is already in cart
-  const hasProductInSelection = product 
-    ? selectionData.lines.some((line) => line?.item.id === product.uri)
-    : false;
-
-  // Calculate line items for payment
+  // Calculate line items for payment (initially without the product if on PDP)
   const initialLineItems = useMemo(() => {
-    const items = selectionData.lines.map((line) => ({
+    return selectionData.lines.map((line) => ({
       name: line?.displayItem.name ?? 'Product',
       price: line?.lineValue.value.toFixed(2) ?? '0.00',
     }));
+  }, [selectionData.lines]);
 
-    // Add product if not in cart yet
-    if (product && !hasProductInSelection) {
-      items.push({
-        name: product.name,
-        price: product.price.toFixed(2),
-      });
-    }
-
-    return items;
-  }, [selectionData.lines, product, hasProductInSelection]);
-
-  const totalAmount = cartTotalInMinor + (!hasProductInSelection && product ? Math.round(product.price * 100) : 0);
+  // Calculate total amount based on current cart
+  const totalAmount = cartTotalInMinor;
 
   // Fetch payment configuration
   const { data: paymentConfig } = useQuery(
@@ -95,13 +76,12 @@ export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
       returnUrl: createAbsoluteURL('/confirmation'),
       amount: totalAmount,
       lineItems: initialLineItems,
-    })
+    }),
   );
 
   useEffect(() => {
-    productRef.current = product;
     itemIdRef.current = itemId;
-  }, [product, itemId]);
+  }, [itemId]);
 
   const mapApplePayAddressToCentra = (
     appleAddress: ApplePayJS.ApplePayPaymentContact,
@@ -137,7 +117,7 @@ export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
 
   const createApplePayLineItems = (
     totals: typeof checkoutData.checkout.totals,
-    lines: typeof selectionData.lines
+    lines: typeof selectionData.lines,
   ): ApplePayJS.ApplePayLineItem[] => {
     const itemsTotal = totals.find((t) => t.type === SelectionTotalRowType.ItemsSubtotal)?.price.value ?? 0;
     const tax = totals.find((t) => t.type === SelectionTotalRowType.IncludingTaxTotal)?.price.value ?? 0;
@@ -169,7 +149,7 @@ export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
 
   const createGooglePayLineItems = (
     totals: typeof checkoutData.checkout.totals,
-    lines: typeof selectionData.lines
+    lines: typeof selectionData.lines,
   ): google.payments.api.DisplayItem[] => {
     const itemsTotal = totals.find((t) => t.type === SelectionTotalRowType.ItemsSubtotal)?.price.value ?? 0;
     const tax = totals.find((t) => t.type === SelectionTotalRowType.IncludingTaxTotal)?.price.value ?? 0;
@@ -201,7 +181,7 @@ export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
 
   const setDefaultShippingMethod = async () => {
     const shippingMethods = checkoutData.checkout.shippingMethods ?? [];
-    
+
     if (shippingMethods.length === 0) {
       throw new Error('No shipping methods available');
     }
@@ -215,7 +195,7 @@ export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
   const addressUpdateHandler = async (shippingAddress: google.payments.api.IntermediateAddress) => {
     try {
       await setDefaultShippingMethod();
-      
+
       const address = {
         city: shippingAddress.locality ?? '',
         country: shippingAddress.countryCode ?? '',
@@ -239,9 +219,8 @@ export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
       const updatedSelection = await queryClient.fetchQuery(selectionQuery);
       const updatedSession = await queryClient.fetchQuery(sessionQuery);
 
-      const grandTotal = updatedCheckout.checkout.totals.find(
-        (t) => t.type === SelectionTotalRowType.GrandTotal
-      )?.price.value ?? 0;
+      const grandTotal =
+        updatedCheckout.checkout.totals.find((t) => t.type === SelectionTotalRowType.GrandTotal)?.price.value ?? 0;
 
       return {
         currency: updatedSession.pricelist.currency.code,
@@ -262,14 +241,13 @@ export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
 
   const handleGooglePayShippingMethodUpdate = async (shippingMethodId: string) => {
     await setShippingMethodMutation.mutateAsync(Number(shippingMethodId));
-    
+
     const updatedCheckout = await queryClient.fetchQuery(checkoutQuery);
     const updatedSelection = await queryClient.fetchQuery(selectionQuery);
     const updatedSession = await queryClient.fetchQuery(sessionQuery);
 
-    const grandTotal = updatedCheckout.checkout.totals.find(
-      (t) => t.type === SelectionTotalRowType.GrandTotal
-      )?.price.value ?? 0;
+    const grandTotal =
+      updatedCheckout.checkout.totals.find((t) => t.type === SelectionTotalRowType.GrandTotal)?.price.value ?? 0;
 
     return {
       currency: updatedSession.pricelist.currency.code,
@@ -283,37 +261,45 @@ export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
     shippingAddress,
     shippingOptionData,
   }) => {
-      if (callbackTrigger === 'INITIALIZE') {
-      // Add product to cart if needed
-        const currentProduct = productRef.current;
+    if (callbackTrigger === 'INITIALIZE') {
       const currentItemId = itemIdRef.current;
 
-      if (currentProduct && currentItemId && !hasProductInSelection) {
-        // TODO: Add item to cart mutation
-        // await addToCartMutation.mutateAsync({ item: currentItemId });
+      if (currentItemId) {
+        // Fetch current selection state to check if product is already in cart
+        const currentSelection = await queryClient.fetchQuery(selectionQuery);
+        const hasProductInSelection = currentSelection.lines.some((line) => line?.item.id === currentItemId);
+
+        if (!hasProductInSelection) {
+          try {
+            await addToCartMutation.mutateAsync({ item: currentItemId });
+          } catch (error) {
+            console.error('Failed to add item to cart:', error);
+            throw new Error('Failed to add item to cart');
+          }
         }
       }
+    }
 
-      if (callbackTrigger === 'INITIALIZE' || callbackTrigger === 'SHIPPING_ADDRESS') {
+    if (callbackTrigger === 'INITIALIZE' || callbackTrigger === 'SHIPPING_ADDRESS') {
       const detail = await addressUpdateHandler(shippingAddress!);
 
-        return {
-          newShippingOptionParameters: {
+      return {
+        newShippingOptionParameters: {
           shippingOptions: detail.shippingMethodsAvailable.map((method) => ({
             description: '',
             id: method.id,
             label: `${method.name} - ${method.price}`,
           })),
-          },
-          newTransactionInfo: {
-            currencyCode: detail.currency,
-            displayItems: detail.displayItems,
-            totalPrice: detail.grandTotalPriceAsNumber,
-            totalPriceLabel: 'Total',
-            totalPriceStatus: 'FINAL',
-          },
-        };
-      }
+        },
+        newTransactionInfo: {
+          currencyCode: detail.currency,
+          displayItems: detail.displayItems,
+          totalPrice: detail.grandTotalPriceAsNumber,
+          totalPriceLabel: 'Total',
+          totalPriceStatus: 'FINAL',
+        },
+      };
+    }
 
     if (callbackTrigger === 'SHIPPING_OPTION') {
       const detail = await handleGooglePayShippingMethodUpdate(shippingOptionData!.id);
@@ -329,7 +315,7 @@ export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
       };
     }
 
-      return {};
+    return {};
   };
 
   const onAuthorizedHandler = (
@@ -444,11 +430,15 @@ export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
         },
       });
     }
-    };
+  };
 
   useEffect(() => {
     const init = async () => {
-      if (!paymentConfig || (!googlePayContainerRef.current && !applePayContainerRef.current) || initializedRef.current) {
+      if (
+        !paymentConfig ||
+        (!googlePayContainerRef.current && !applePayContainerRef.current) ||
+        initializedRef.current
+      ) {
         return;
       }
       initializedRef.current = true;
@@ -603,15 +593,27 @@ export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
           actions.resolve();
         },
         onClick: async (resolve, reject) => {
-          const currentProduct = productRef.current;
           const currentItemId = itemIdRef.current;
 
-          if (currentProduct && currentItemId && !hasProductInSelection) {
-            // TODO: Add item to cart mutation
-            // await addToCartMutation.mutateAsync({ item: currentItemId });
+          if (currentItemId) {
+            // Fetch current selection state to check if product is already in cart
+            const currentSelection = await queryClient.fetchQuery(selectionQuery);
+            const hasProductInSelection = currentSelection.lines.some((line) => line?.item.id === currentItemId);
+
+            if (!hasProductInSelection) {
+              try {
+                await addToCartMutation.mutateAsync({ item: currentItemId });
+              } catch (error) {
+                console.error('Failed to add item to cart:', error);
+                reject(new Error('Failed to add item to cart'));
+                return;
+              }
+            }
           }
 
-          if (selectionData.lines.length === 0) {
+          // Check if cart has items after potentially adding the product
+          const finalSelection = await queryClient.fetchQuery(selectionQuery);
+          if (finalSelection.lines.length === 0) {
             reject(new Error('Selection is empty'));
             return;
           }
@@ -627,7 +629,7 @@ export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
                 new (window as any).ApplePayError(
                   'shippingContactInvalid',
                   'countryCode',
-                  'Cannot ship to the selected address'
+                  'Cannot ship to the selected address',
                 ),
               ],
               newTotal: {
@@ -660,9 +662,9 @@ export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
             const updatedCheckout = await queryClient.fetchQuery(checkoutQuery);
             const updatedSelection = await queryClient.fetchQuery(selectionQuery);
 
-            const grandTotal = updatedCheckout.checkout.totals.find(
-              (t) => t.type === SelectionTotalRowType.GrandTotal
-            )?.price.value ?? 0;
+            const grandTotal =
+              updatedCheckout.checkout.totals.find((t) => t.type === SelectionTotalRowType.GrandTotal)?.price.value ??
+              0;
 
             const shippingMethods = (updatedCheckout.checkout.shippingMethods ?? []).map((method) => ({
               amount: method.price.value.toString(),
@@ -691,9 +693,9 @@ export const AdyenExpressCheckout = ({ itemId, product }: Props) => {
             const updatedCheckout = await queryClient.fetchQuery(checkoutQuery);
             const updatedSelection = await queryClient.fetchQuery(selectionQuery);
 
-            const grandTotal = updatedCheckout.checkout.totals.find(
-              (t) => t.type === SelectionTotalRowType.GrandTotal
-            )?.price.value ?? 0;
+            const grandTotal =
+              updatedCheckout.checkout.totals.find((t) => t.type === SelectionTotalRowType.GrandTotal)?.price.value ??
+              0;
 
             resolve({
               newLineItems: createApplePayLineItems(updatedCheckout.checkout.totals, updatedSelection.lines),
