@@ -25,6 +25,11 @@ type AddItemPayload implements Payload & SelectionMutationPayload {
   userErrors: [UserError!]!
 }
 
+type AddWishlistItemPayload implements Payload {
+  userErrors: [UserError!]!
+  wishlist: Wishlist
+}
+
 type Address {
   address1: String
   address2: String
@@ -1378,6 +1383,19 @@ type Mutation {
   addVoucher(code: String!): SelectionMutationPayload!
 
   """
+  Add a display item to an existing wishlist.
+  
+  Required [operating mode](#operating-mode): `LOGGED_IN`
+  """
+  addWishlistItem(
+    displayItemId: Int!
+
+    """ Optional ID of the wishlist to add the item to. If not specified, the item is added to the user's default wishlist. 
+    """
+    wishlistId: Int
+  ): AddWishlistItemPayload!
+
+  """
   Apply a gift card on the current selection.
   
   Possible Error Codes:
@@ -1540,6 +1558,13 @@ type Mutation {
   Required [operating mode](#operating-mode): `SESSION`
   """
   removeVoucher(code: String!): SelectionMutationPayload!
+
+  """
+  Remove a display item to an existing wishlist.
+  
+  Required [operating mode](#operating-mode): `LOGGED_IN`
+  """
+  removeWishlistItem(displayItemId: Int!, wishlistId: Int!): RemoveWishlistItemPayload!
 
   """
   Request reset password email to be sent to the provided email.
@@ -2358,6 +2383,11 @@ type RedirectPaymentAction implements PaymentAction {
 type RelatedDisplayItems {
   displayItems: [DisplayItem!]
   relation: String!
+}
+
+type RemoveWishlistItemPayload implements Payload {
+  userErrors: [UserError!]!
+  wishlist: Wishlist
 }
 
 type RequestPasswordResetEmailPayload implements Payload {

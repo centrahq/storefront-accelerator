@@ -31,6 +31,11 @@ export type AddItemPayloadSelectionArgs = {
   voucherMode?: Voucher_Mode;
 };
 
+export type AddWishlistItemPayload = Payload & {
+  userErrors: Array<UserError>;
+  wishlist?: Maybe<Wishlist>;
+};
+
 export type Address = {
   address1?: Maybe<Scalars['String']['output']>;
   address2?: Maybe<Scalars['String']['output']>;
@@ -1465,6 +1470,12 @@ export type Mutation = {
    */
   addVoucher: SelectionMutationPayload;
   /**
+   * Add a display item to an existing wishlist.
+   *
+   * Required [operating mode](#operating-mode): `LOGGED_IN`
+   */
+  addWishlistItem: AddWishlistItemPayload;
+  /**
    * Apply a gift card on the current selection.
    *
    * Possible Error Codes:
@@ -1587,6 +1598,12 @@ export type Mutation = {
    * Required [operating mode](#operating-mode): `SESSION`
    */
   removeVoucher: SelectionMutationPayload;
+  /**
+   * Remove a display item to an existing wishlist.
+   *
+   * Required [operating mode](#operating-mode): `LOGGED_IN`
+   */
+  removeWishlistItem: RemoveWishlistItemPayload;
   /**
    * Request reset password email to be sent to the provided email.
    *
@@ -1799,6 +1816,12 @@ export type MutationAddVoucherArgs = {
 };
 
 
+export type MutationAddWishlistItemArgs = {
+  displayItemId: Scalars['Int']['input'];
+  wishlistId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type MutationApplyGiftCardArgs = {
   input: ApplyGiftCardInput;
 };
@@ -1876,6 +1899,12 @@ export type MutationRemoveSubscriptionPlanFromLineArgs = {
 
 export type MutationRemoveVoucherArgs = {
   code: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveWishlistItemArgs = {
+  displayItemId: Scalars['Int']['input'];
+  wishlistId: Scalars['Int']['input'];
 };
 
 
@@ -2661,6 +2690,11 @@ export type RelatedDisplayItems = {
   relation: Scalars['String']['output'];
 };
 
+export type RemoveWishlistItemPayload = Payload & {
+  userErrors: Array<UserError>;
+  wishlist?: Maybe<Wishlist>;
+};
+
 export type RequestPasswordResetEmailPayload = Payload & {
   userErrors: Array<UserError>;
 };
@@ -3262,6 +3296,17 @@ export type PaymentResultMutation = { paymentResult:
         | { message: string, path?: Array<string> | null }
       > }
    };
+
+export type ExpressCheckoutWidgetsQueryVariables = Exact<{
+  configurationOnly: Scalars['Boolean']['input'];
+  plugins: Array<ExpressCheckoutWidgetsPluginItem> | ExpressCheckoutWidgetsPluginItem;
+}>;
+
+
+export type ExpressCheckoutWidgetsQuery = { expressCheckoutWidgets: { list?: Array<{ name: string, widgets: Array<{ id?: string | null, name: string, contents?: string | null, error?: string | null }> }> | null, userErrors: Array<
+      | { message: string, path?: Array<string> | null }
+      | { message: string, path?: Array<string> | null }
+    > } };
 
 export type ChangeLocaleMutationVariables = Exact<{
   country: Scalars['String']['input'];
@@ -5714,6 +5759,25 @@ export const PaymentResultDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PaymentResultMutation, PaymentResultMutationVariables>;
+export const ExpressCheckoutWidgetsDocument = new TypedDocumentString(`
+    query ExpressCheckoutWidgets($configurationOnly: Boolean!, $plugins: [ExpressCheckoutWidgetsPluginItem!]!) {
+  expressCheckoutWidgets(configurationOnly: $configurationOnly, plugins: $plugins) {
+    list {
+      name
+      widgets {
+        id
+        name
+        contents
+        error
+      }
+    }
+    userErrors {
+      message
+      path
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ExpressCheckoutWidgetsQuery, ExpressCheckoutWidgetsQueryVariables>;
 export const ChangeLocaleDocument = new TypedDocumentString(`
     mutation changeLocale($country: String!, $language: String!) {
   setCountryState(countryCode: $country) {

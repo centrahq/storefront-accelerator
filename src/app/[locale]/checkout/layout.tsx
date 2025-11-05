@@ -13,6 +13,7 @@ import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { getQueryClient } from '@/lib/centra/dtc-api/queryClient';
 import { getSession } from '@/lib/centra/sessionCookie';
+import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/AdyenExpressCheckout';
 
 export const metadata: Metadata = {
   robots: {
@@ -70,6 +71,7 @@ export default async function CheckoutLayout({ children }: { children: ReactNode
             </div>
             <CheckoutItems />
             <Totals />
+            <AdyenExpressCheckout />
           </div>
         </div>
         {(isLoggedIn || !hasSubscriptionItems) && <CheckoutScript />}

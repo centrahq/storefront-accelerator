@@ -13,6 +13,7 @@ import { useTranslation } from '@/features/i18n/useTranslation/client';
 import { selectionQuery } from '../../queries';
 import { CartContext } from '../CartContext';
 import { CartItems } from '../CartItems';
+import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/AdyenExpressCheckout';
 
 export const CartPanel = () => {
   const { t } = useTranslation(['shop']);
@@ -89,6 +90,7 @@ export const CartPanel = () => {
                 {t('shop:cart.proceed')}
               </ShopLink>
             </div>
+            {/* <AdyenExpressCheckout /> */}
           </div>
         </DialogPanel>
       </Dialog>

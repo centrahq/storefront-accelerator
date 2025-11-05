@@ -12,6 +12,13 @@ export const getItemName = (item: ItemFragment, countryCode: string | undefined)
 };
 
 /**
+ * Returns the product URL path for a given product URI.
+ */
+export function getProductUrl(productUri: string): string {
+  return `/product/${productUri}`;
+}
+
+/**
  * Extracts the color code from a variant swatch attribute.
  * Assumes a swatch custom attribute is set with `variant_swatch` name. Example:
  * ```json

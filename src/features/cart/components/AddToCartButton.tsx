@@ -5,6 +5,8 @@ import { parseAsString, useQueryState } from 'nuqs';
 import { useContext } from 'react';
 import { toast } from 'sonner';
 
+import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/AdyenExpressCheckout';
+import { AdyenExpressCheckoutErrorBoundary } from '@/features/checkout/components/Payment/AdyenExpressCheckoutErrorBoundary';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
 import { parseAsBundledItems } from '@/features/product-details/bundle/components/bundledItemsSearchParam';
 
@@ -79,18 +81,23 @@ export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailabilit
   };
 
   return (
-    <button
-      type="button"
-      onClick={isFlexibleBundle ? addFlexibleBundle : addProduct}
-      disabled={addToCartMutation.isPending}
-      className={clsx(
-        'bg-mono-900 text-mono-0 flex w-full items-center justify-center px-6 py-4 text-xs font-bold uppercase sm:max-w-52',
-        {
-          'animate-pulse': addToCartMutation.isPending,
-        },
-      )}
-    >
-      {selectedPlan === '' ? t('shop:product.add-to-cart') : t('shop:product.subscriptions.subscribe')}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={isFlexibleBundle ? addFlexibleBundle : addProduct}
+        disabled={addToCartMutation.isPending}
+        className={clsx(
+          'bg-mono-900 text-mono-0 flex w-full items-center justify-center px-6 py-4 text-xs font-bold uppercase sm:max-w-52',
+          {
+            'animate-pulse': addToCartMutation.isPending,
+          },
+        )}
+      >
+        {selectedPlan === '' ? t('shop:product.add-to-cart') : t('shop:product.subscriptions.subscribe')}
+      </button>
+      <AdyenExpressCheckoutErrorBoundary>
+        <AdyenExpressCheckout itemId={itemId} />
+      </AdyenExpressCheckoutErrorBoundary>
+    </>
   );
 };
