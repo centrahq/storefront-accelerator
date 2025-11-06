@@ -16,6 +16,7 @@
     "gql-gen:watch": "gql-gen --watch"
   },
   "dependencies": {
+    "@adyen/adyen-web": "^6.25.0",
     "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",
     "@tanstack/react-query": "^5.90.7",
