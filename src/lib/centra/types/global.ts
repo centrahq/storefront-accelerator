@@ -17,7 +17,7 @@ declare global {
     // Ingrid/Shipwallet
     _sw?: (callback: (api: { destroy?: VoidFunction }) => void) => void;
     // Klarna payments
-    Klarna?: {
+    Klarna: {
       Payments: {
         init: (payload: { client_token: string }) => NonNullable<typeof window.Klarna>['Payments'];
         load: (
@@ -39,7 +39,7 @@ declare global {
         ) => void;
       };
     };
-    klarnaAsyncCallback?: VoidFunction;
+    klarnaAsyncCallback: VoidFunction;
     // Qliro One
     totalPrice?: number;
   }

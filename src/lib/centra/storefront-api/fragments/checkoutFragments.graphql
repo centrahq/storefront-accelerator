@@ -58,6 +58,9 @@ fragment checkout on Selection {
       price {
         value
         formattedValue
+        currency {
+          code
+        }
       }
     }
     widgets {

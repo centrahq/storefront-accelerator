@@ -7,6 +7,7 @@ import { Trans } from 'react-i18next/TransWithoutContext';
 import { Logo } from '@/components/layout/Logo';
 import { CheckoutItems } from '@/features/checkout/components/CheckoutItems';
 import { CheckoutScript } from '@/features/checkout/components/CheckoutScript';
+import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/AdyenExpressCheckout';
 import { InitiateOnlyPayments } from '@/features/checkout/components/Payment/InitiateOnlyPayments';
 import { Totals } from '@/features/checkout/components/Totals/Totals';
 import { checkoutQuery } from '@/features/checkout/queries';
@@ -74,6 +75,7 @@ export default async function CheckoutLayout({ children }: { children: ReactNode
             </div>
             <CheckoutItems />
             <Totals />
+            {process.env.NEXT_PUBLIC_ADYEN_EXPRESS_CHECKOUT_ENABLED === 'true' && <AdyenExpressCheckout />}
           </div>
         </div>
         {(isLoggedIn || !hasSubscriptionItems) && <CheckoutScript />}

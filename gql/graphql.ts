@@ -3297,6 +3297,16 @@ export type PaymentResultMutation = { paymentResult:
       > }
    };
 
+export type ExpressCheckoutWidgetsQueryVariables = Exact<{
+  plugins: Array<ExpressCheckoutWidgetsPluginItem> | ExpressCheckoutWidgetsPluginItem;
+}>;
+
+
+export type ExpressCheckoutWidgetsQuery = { expressCheckoutWidgets: { list?: Array<{ name: string, widgets: Array<{ id?: string | null, name: string, contents?: string | null, error?: string | null }> }> | null, userErrors: Array<
+      | { message: string, path?: Array<string> | null }
+      | { message: string, path?: Array<string> | null }
+    > } };
+
 export type ChangeLocaleMutationVariables = Exact<{
   country: Scalars['String']['input'];
   language: Scalars['String']['input'];
@@ -3414,8 +3424,8 @@ export type SetAddressMutation = { setAddress:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3432,8 +3442,8 @@ export type SetAddressMutation = { setAddress:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3450,8 +3460,8 @@ export type SetAddressMutation = { setAddress:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3468,8 +3478,8 @@ export type SetAddressMutation = { setAddress:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3494,8 +3504,8 @@ export type SetShippingMethodMutation = { setShippingMethod:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3512,8 +3522,8 @@ export type SetShippingMethodMutation = { setShippingMethod:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3530,8 +3540,8 @@ export type SetShippingMethodMutation = { setShippingMethod:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3548,8 +3558,8 @@ export type SetShippingMethodMutation = { setShippingMethod:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3579,8 +3589,8 @@ export type PaymentInstructionsMutation = { paymentInstructions: { action?:
         | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
       >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-          | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-          | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+          | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+          | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
         >, widgets?: Array<
           | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
           | { __typename: 'KlarnaCheckoutWidget' }
@@ -3604,8 +3614,8 @@ export type WidgetEventMutation = { handleWidgetEvent:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3622,8 +3632,8 @@ export type WidgetEventMutation = { handleWidgetEvent:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3640,8 +3650,8 @@ export type WidgetEventMutation = { handleWidgetEvent:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3658,8 +3668,8 @@ export type WidgetEventMutation = { handleWidgetEvent:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3684,8 +3694,8 @@ export type AddVoucherMutation = { addVoucher:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3702,8 +3712,8 @@ export type AddVoucherMutation = { addVoucher:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3720,8 +3730,8 @@ export type AddVoucherMutation = { addVoucher:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3738,8 +3748,8 @@ export type AddVoucherMutation = { addVoucher:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3764,8 +3774,8 @@ export type RemoveVoucherMutation = { removeVoucher:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3782,8 +3792,8 @@ export type RemoveVoucherMutation = { removeVoucher:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3800,8 +3810,8 @@ export type RemoveVoucherMutation = { removeVoucher:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3818,8 +3828,8 @@ export type RemoveVoucherMutation = { removeVoucher:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3849,8 +3859,8 @@ export type UpdateLineCheckoutMutation = { updateLine:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3867,8 +3877,8 @@ export type UpdateLineCheckoutMutation = { updateLine:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3885,8 +3895,8 @@ export type UpdateLineCheckoutMutation = { updateLine:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3903,8 +3913,8 @@ export type UpdateLineCheckoutMutation = { updateLine:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3927,8 +3937,8 @@ export type ApplyGiftCardMutation = { applyGiftCard:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3945,8 +3955,8 @@ export type ApplyGiftCardMutation = { applyGiftCard:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3963,8 +3973,8 @@ export type ApplyGiftCardMutation = { applyGiftCard:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -3981,8 +3991,8 @@ export type ApplyGiftCardMutation = { applyGiftCard:
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
           >, widgets?: Array<
             | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
             | { __typename: 'KlarnaCheckoutWidget' }
@@ -4004,8 +4014,8 @@ export type CheckoutQuery = { selection: { externalGiftCardAvailable: boolean, l
       | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
       | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
     >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-        | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-        | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+        | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+        | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
       >, widgets?: Array<
         | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
         | { __typename: 'KlarnaCheckoutWidget' }
@@ -4326,8 +4336,8 @@ export type CheckoutFragment = { externalGiftCardAvailable: boolean, lines: Arra
     | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
     | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
   >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-      | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
-      | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
+      | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+      | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
     >, widgets?: Array<
       | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
       | { __typename: 'KlarnaCheckoutWidget' }
@@ -4688,6 +4698,9 @@ export const CheckoutFragmentDoc = new TypedDocumentString(`
       price {
         value
         formattedValue
+        currency {
+          code
+        }
       }
     }
     widgets {
@@ -5667,6 +5680,25 @@ export const PaymentResultDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PaymentResultMutation, PaymentResultMutationVariables>;
+export const ExpressCheckoutWidgetsDocument = new TypedDocumentString(`
+    query expressCheckoutWidgets($plugins: [ExpressCheckoutWidgetsPluginItem!]!) {
+  expressCheckoutWidgets(configurationOnly: true, plugins: $plugins) {
+    list {
+      name
+      widgets {
+        id
+        name
+        contents
+        error
+      }
+    }
+    userErrors {
+      message
+      path
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ExpressCheckoutWidgetsQuery, ExpressCheckoutWidgetsQueryVariables>;
 export const ChangeLocaleDocument = new TypedDocumentString(`
     mutation changeLocale($country: String!, $language: String!) {
   setCountryState(countryCode: $country) {
@@ -6125,6 +6157,9 @@ export const SetAddressDocument = new TypedDocumentString(`
       price {
         value
         formattedValue
+        currency {
+          code
+        }
       }
     }
     widgets {
@@ -6308,6 +6343,9 @@ export const SetShippingMethodDocument = new TypedDocumentString(`
       price {
         value
         formattedValue
+        currency {
+          code
+        }
       }
     }
     widgets {
@@ -6495,6 +6533,9 @@ export const PaymentInstructionsDocument = new TypedDocumentString(`
       price {
         value
         formattedValue
+        currency {
+          code
+        }
       }
     }
     widgets {
@@ -6698,6 +6739,9 @@ export const WidgetEventDocument = new TypedDocumentString(`
       price {
         value
         formattedValue
+        currency {
+          code
+        }
       }
     }
     widgets {
@@ -6881,6 +6925,9 @@ export const AddVoucherDocument = new TypedDocumentString(`
       price {
         value
         formattedValue
+        currency {
+          code
+        }
       }
     }
     widgets {
@@ -7064,6 +7111,9 @@ export const RemoveVoucherDocument = new TypedDocumentString(`
       price {
         value
         formattedValue
+        currency {
+          code
+        }
       }
     }
     widgets {
@@ -7251,6 +7301,9 @@ export const UpdateLineCheckoutDocument = new TypedDocumentString(`
       price {
         value
         formattedValue
+        currency {
+          code
+        }
       }
     }
     widgets {
@@ -7434,6 +7487,9 @@ export const ApplyGiftCardDocument = new TypedDocumentString(`
       price {
         value
         formattedValue
+        currency {
+          code
+        }
       }
     }
     widgets {
@@ -7611,6 +7667,9 @@ export const CheckoutDocument = new TypedDocumentString(`
       price {
         value
         formattedValue
+        currency {
+          code
+        }
       }
     }
     widgets {
