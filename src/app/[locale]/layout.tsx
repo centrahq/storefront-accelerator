@@ -11,7 +11,7 @@ import { Toaster } from 'sonner';
 import { ItemsRemovedToast } from '@/components/ItemsRemovedToast';
 import { parseLocale } from '@/features/i18n/routing/localeParam';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
-import { getLanguages } from '@/lib/centra/dtc-api/fetchers/noSession';
+import { getLanguages } from '@/lib/centra/storefront-api/fetchers/noSession';
 
 import { Providers } from './providers';
 

@@ -34,6 +34,7 @@ export type ShippingAddressChangedPayload = {
   shippingCountry: string;
   shippingState: string;
   shippingZipCode: string | undefined;
+  shippingCity: string | undefined;
 };
 
 export type ShippingMethodChangedEvent = CustomEvent<ShippingMethodChangedPayload>;

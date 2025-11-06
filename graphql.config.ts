@@ -18,7 +18,7 @@ module.exports = {
       ],
       /*
         // Uncomment to use offline local schema
-        schema: ['./gql/dtc_schema.graphql'],
+        schema: ['./gql/storefront_api_schema.graphql'],
       */
       documents: ['src/**/*.{ts,tsx,graphql}'],
       extensions: {
@@ -40,7 +40,7 @@ module.exports = {
                 },
               },
             },
-            'gql/dtc_schema.graphql': {
+            'gql/storefront_api_schema.graphql': {
               plugins: ['schema-ast'],
             },
           },

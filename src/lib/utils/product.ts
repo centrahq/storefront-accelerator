@@ -27,7 +27,7 @@ export const getItemName = (item: ItemFragment, countryCode: string | undefined)
  *   }
  * }
  * ```
- * Attribute must be enabled in "Display item attributes" field under DTC API plugin settings.
+ * Attribute must be enabled in "Display item attributes" field under Storefront API plugin settings.
  */
 export const getSwatchColorCode = (attribute: VariantSwatchFragment['swatch']) => {
   const swatch = attribute[0];
@@ -59,7 +59,7 @@ export const getSwatchColorCode = (attribute: VariantSwatchFragment['swatch']) =
  *   }
  * }
  * ```
- * Attribute must be enabled in "Display item attributes" field under DTC API plugin settings.
+ * Attribute must be enabled in "Display item attributes" field under Storefront API plugin settings.
  */
 export const getSizeGuideTable = (attribute: SizeGuideFragment['sizeGuide']) => {
   const sizeGuide = attribute[0];

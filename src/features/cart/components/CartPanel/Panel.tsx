@@ -3,8 +3,7 @@
 import { CloseButton, Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { ShoppingBagIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useIsMutating, useSuspenseQuery } from '@tanstack/react-query';
-import { usePathname } from 'next/navigation';
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 
 import { Trans } from '@/features/i18n';
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
@@ -18,15 +17,9 @@ export const CartPanel = () => {
   const { t } = useTranslation(['shop']);
   const { data } = useSuspenseQuery(selectionQuery);
   const isMutatingSelection = useIsMutating({ mutationKey: ['selection'] }) > 0;
-  const pathname = usePathname();
 
   const { grandTotal, lines } = data;
   const { isCartOpen, setIsCartOpen } = useContext(CartContext);
-
-  useEffect(() => {
-    // Close the cart when navigating to a different page
-    setIsCartOpen(false);
-  }, [pathname, setIsCartOpen]);
 
   const totalQuantity = useMemo(() => {
     return lines.reduce((acc, line) => acc + (line?.quantity ?? 0), 0);
@@ -62,7 +55,7 @@ export const CartPanel = () => {
         />
         <DialogPanel
           transition
-          className="bg-mono-0 fixed inset-y-0 right-0 size-full translate-x-0 overflow-auto duration-300 ease-out data-closed:translate-x-full md:w-[30rem]"
+          className="bg-mono-0 fixed inset-y-0 right-0 size-full translate-x-0 overflow-auto duration-300 ease-out data-closed:translate-x-full md:w-120"
         >
           <CloseButton className="absolute top-4 right-4">
             <XMarkIcon className="size-6" aria-hidden="true" />

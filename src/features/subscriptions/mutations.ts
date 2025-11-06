@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
-import { mutationMutex } from '@/lib/centra/dtc-api/mutationLock';
 import { UserError } from '@/lib/centra/errors';
+import { centraFetch } from '@/lib/centra/storefront-api/fetchers/session';
+import { mutationMutex } from '@/lib/centra/storefront-api/mutationLock';
 import { graphql } from '@gql/gql';
 import {
   ChangeSubscriptionContractAddressMutationVariables,

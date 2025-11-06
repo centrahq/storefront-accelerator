@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { ResultOf, VariablesOf } from '@graphql-typed-document-node/core/typings';
-import { unstable_cacheLife as cacheLife, unstable_cacheTag as cacheTag } from 'next/cache';
+import { cacheLife, cacheTag } from 'next/cache';
 
 import { graphql } from '@gql/gql';
 import {
@@ -21,7 +21,7 @@ type BaseRequest = Omit<RequestInit, 'body' | 'method' | 'headers'> & {
 };
 
 /**
- * Fetches data from Centra DTC API without session. Can be used on server side only.
+ * Fetches data from Centra Storefront API without session. Can be used on server side only.
  * Use `graphql` function to get type safety.
  *
  * @example

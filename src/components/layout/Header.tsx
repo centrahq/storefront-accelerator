@@ -5,7 +5,7 @@ import { Logo } from '@/components/layout/Logo';
 import { Cart } from '@/features/cart/components/CartPanel';
 import { NavLink, ShopLink } from '@/features/i18n/routing/ShopLink';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
-import { getCountries, getLanguages } from '@/lib/centra/dtc-api/fetchers/noSession';
+import { getCountries, getLanguages } from '@/lib/centra/storefront-api/fetchers/noSession';
 
 import { getSession } from '../../lib/centra/sessionCookie';
 import { CategoryLinks } from './CategoryLinks';

@@ -12,8 +12,8 @@ import {
   serializeProductsFilters,
 } from '@/features/product-listing/productListSearchParams';
 import { FilterKey } from '@/lib/centra/constants';
-import { filterProducts } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
+import { filterProducts } from '@/lib/centra/storefront-api/fetchers/noSession';
 import { SortKey, SortOrder } from '@gql/graphql';
 
 const ITEMS_PER_PAGE = 24;

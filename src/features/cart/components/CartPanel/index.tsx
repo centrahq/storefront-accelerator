@@ -1,6 +1,6 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
-import { getQueryClient } from '@/lib/centra/dtc-api/queryClient';
+import { getQueryClient } from '@/lib/centra/storefront-api/queryClient';
 
 import { selectionQuery } from '../../queries';
 import { CartPanel } from './Panel';

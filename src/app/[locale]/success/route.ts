@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
+import { centraFetch } from '@/lib/centra/storefront-api/fetchers/session';
 import { graphql } from '@gql/gql';
 import { PaymentResultType } from '@gql/graphql';
 

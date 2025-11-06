@@ -13,8 +13,8 @@ import { Variants } from '@/features/product-details/components/Variants';
 import { ProductAccordion } from '@/features/product-listing/components/ProductAccordion';
 import { ProductBreadcrumbs } from '@/features/product-listing/components/ProductBreadcrumbs';
 import { ProductDescription } from '@/features/product-listing/components/ProductDescription/ProductDescription';
-import { lookupProduct } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
+import { lookupProduct } from '@/lib/centra/storefront-api/fetchers/noSession';
 import { BundlePriceType, BundleType } from '@gql/graphql';
 
 interface PageProps {

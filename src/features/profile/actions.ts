@@ -8,9 +8,9 @@ import { serializeLocale } from '@/features/i18n/routing/localeParam';
 import { DEFAULT_LANGUAGE } from '@/features/i18n/settings';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { apiTokenCookie, sessionCookie } from '@/lib/centra/cookies';
-import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
 import { UserError } from '@/lib/centra/errors';
 import { createSessionCookie, getSession, mapSession } from '@/lib/centra/sessionCookie';
+import { centraFetch } from '@/lib/centra/storefront-api/fetchers/session';
 import { graphql } from '@gql/gql';
 
 export async function login(_prevState: unknown, formData: FormData) {
@@ -226,7 +226,7 @@ export async function forgotPassword(_prevState: unknown, formData: FormData) {
       {
         variables: {
           email: parsedInput.data.email,
-          // Base url is set in DTC API plugin's "Frontend URL" field
+          // Base url is set in Storefront API plugin's "Frontend URL" field
           uri: `${serializeLocale(session)}/reset-password`,
         },
       },

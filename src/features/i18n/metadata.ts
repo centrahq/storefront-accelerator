@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-import { getCountries, getLanguages } from '@/lib/centra/dtc-api/fetchers/noSession';
+import { getCountries, getLanguages } from '@/lib/centra/storefront-api/fetchers/noSession';
 
 import { DEFAULT_LANGUAGE } from './settings';
 

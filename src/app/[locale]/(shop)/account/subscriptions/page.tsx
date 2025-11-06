@@ -6,7 +6,7 @@ import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { SubscriptionContractsTable } from '@/features/subscriptions/components/SubscriptionContractsTable';
 import { SubscriptionsSkeleton } from '@/features/subscriptions/components/SubscriptionsSkeleton';
 import { subscriptionsContractsQuery } from '@/features/subscriptions/queries';
-import { getQueryClient } from '@/lib/centra/dtc-api/queryClient';
+import { getQueryClient } from '@/lib/centra/storefront-api/queryClient';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getTranslation(['server']);

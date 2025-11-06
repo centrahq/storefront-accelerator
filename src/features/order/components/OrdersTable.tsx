@@ -4,7 +4,7 @@ import { LocaleDate } from '@/components/LocaleDate';
 import { Pagination } from '@/components/Pagination';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { OrderStatus } from '@/features/order/components/OrderStatus';
-import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
+import { centraFetch } from '@/lib/centra/storefront-api/fetchers/session';
 import { graphql } from '@gql/gql';
 import { SelectionTotalRowType } from '@gql/graphql';
 

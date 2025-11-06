@@ -1,15 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { sessionCookie } from '@/lib/centra/cookies';
-import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
-import { mutationMutex } from '@/lib/centra/dtc-api/mutationLock';
 import { UserError } from '@/lib/centra/errors';
+import { centraFetch } from '@/lib/centra/storefront-api/fetchers/session';
+import { mutationMutex } from '@/lib/centra/storefront-api/mutationLock';
 import { graphql } from '@gql/gql';
 import {
   ApplyGiftCardMutationVariables,
   PaymentInstructionsInput,
   SetAddressMutationVariables,
-  SetCountryStateMutationVariables,
   UpdateLineCheckoutMutationVariables,
 } from '@gql/graphql';
 
@@ -24,7 +23,7 @@ export const useSetAddress = () => {
       const response = await mutationMutex.runExclusive(() =>
         centraFetch(
           graphql(`
-            mutation setAddress($billingAddress: AddressInput!, $shippingAddress: AddressInput!) {
+            mutation setAddress($billingAddress: AddressInput, $shippingAddress: AddressInput!) {
               setAddress(separateBillingAddress: $billingAddress, shippingAddress: $shippingAddress) {
                 selection {
                   ...checkout
@@ -321,55 +320,6 @@ export const useRemoveVoucher = () => {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(checkoutQuery.queryKey, data);
-    },
-  });
-};
-
-export const useSetCountryState = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationKey: ['checkout', 'setCountryState'],
-    mutationFn: async (variables: SetCountryStateMutationVariables) => {
-      const response = await mutationMutex.runExclusive(() =>
-        centraFetch(
-          graphql(`
-            mutation setCountryState($countryCode: String!, $stateCode: String!) {
-              setCountryState(countryCode: $countryCode, stateCode: $stateCode) {
-                selection {
-                  ...checkout
-                }
-                userErrors {
-                  __typename
-                  message
-                  path
-                }
-              }
-            }
-          `),
-          {
-            variables,
-          },
-        ),
-      );
-
-      if (response.data.setCountryState.userErrors.length > 0) {
-        throw new UserError(response.data.setCountryState.userErrors, response.extensions.traceId);
-      }
-
-      if (!response.data.setCountryState.selection?.checkout) {
-        throw new Error('No selection');
-      }
-
-      return {
-        ...response.data.setCountryState.selection,
-        checkout: response.data.setCountryState.selection.checkout,
-      };
-    },
-    onSuccess: (data) => {
-      queryClient.setQueryData(checkoutQuery.queryKey, data);
-      // Reset the session cookie, in case the country or state has changed
-      document.cookie = `${sessionCookie.name}=;PATH=${sessionCookie.path};Max-Age=-99999999;`;
     },
   });
 };

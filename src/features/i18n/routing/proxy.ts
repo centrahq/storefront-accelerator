@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { apiTokenCookie, sessionCookie } from '@/lib/centra/cookies';
-import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
 import { CentraError } from '@/lib/centra/errors';
 import { createSessionCookie, mapSession, verifySessionCookie } from '@/lib/centra/sessionCookie';
+import { centraFetch } from '@/lib/centra/storefront-api/fetchers/session';
 import { checkUnavailableItems, REMOVED_ITEMS_PARAM } from '@/lib/utils/unavailableItems';
 import { graphql } from '@gql/gql';
 
@@ -110,9 +110,9 @@ const updateSession = async ({
 };
 
 /**
- * Middleware to handle routing and session based on locale.
+ * Proxy to handle routing and session based on locale.
  */
-export const routingMiddleware = async (request: NextRequest) => {
+export const routingProxy = async (request: NextRequest) => {
   const url = parseLocale(request.nextUrl.pathname.split('/')[1] ?? '');
 
   // Get session from cookies or Centra

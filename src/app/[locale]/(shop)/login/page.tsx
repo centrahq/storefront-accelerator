@@ -5,8 +5,8 @@ import { generateAlternates } from '@/features/i18n/metadata';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { LoginForm } from '@/features/profile/components/LoginForm';
 import { RegisterForm } from '@/features/profile/components/RegisterForm';
-import { getCountries } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
+import { getCountries } from '@/lib/centra/storefront-api/fetchers/noSession';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { t } = await getTranslation(['shop']);

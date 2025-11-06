@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { OrderDetails } from '@/features/order/components/OrderDetails';
-import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
+import { centraFetch } from '@/lib/centra/storefront-api/fetchers/session';
 import { graphql } from '@gql/gql';
 
 export async function generateMetadata(): Promise<Metadata> {

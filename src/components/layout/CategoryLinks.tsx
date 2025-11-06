@@ -1,6 +1,6 @@
 import { NavLink } from '@/features/i18n/routing/ShopLink';
-import { getRootCategories } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
+import { getRootCategories } from '@/lib/centra/storefront-api/fetchers/noSession';
 
 export const CategoryLinks = async () => {
   const { market, language } = await getSession();

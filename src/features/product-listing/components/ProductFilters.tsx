@@ -94,7 +94,7 @@ export const ProductFilters = ({ filters }: { filters: Filter[] }) => {
                 </ListboxButton>
                 <ListboxOptions
                   anchor="bottom start"
-                  className="border-mono-200 bg-mono-0/95 min-w-[var(--button-width)] rounded-xs border p-1 shadow-xs [--anchor-gap:var(--spacing-1)] focus:outline-hidden"
+                  className="border-mono-200 bg-mono-0/95 min-w-(--button-width) rounded-xs border p-1 shadow-xs [--anchor-gap:var(--spacing-1)] focus:outline-hidden"
                 >
                   {brandOptions.map((filter) => (
                     <ListboxOption
@@ -135,7 +135,7 @@ export const ProductFilters = ({ filters }: { filters: Filter[] }) => {
                 </ListboxButton>
                 <ListboxOptions
                   anchor="bottom start"
-                  className="border-mono-200 bg-mono-0/95 min-w-[var(--button-width)] rounded-xs border p-1 shadow-xs [--anchor-gap:var(--spacing-1)] focus:outline-hidden"
+                  className="border-mono-200 bg-mono-0/95 min-w-(--button-width) rounded-xs border p-1 shadow-xs [--anchor-gap:var(--spacing-1)] focus:outline-hidden"
                 >
                   {sizeOptions.map((filter) => (
                     <ListboxOption
@@ -176,7 +176,7 @@ export const ProductFilters = ({ filters }: { filters: Filter[] }) => {
                 </ListboxButton>
                 <ListboxOptions
                   anchor="bottom start"
-                  className="border-mono-200 bg-mono-0/95 min-w-[var(--button-width)] rounded-xs border p-1 shadow-xs [--anchor-gap:var(--spacing-1)] focus:outline-hidden"
+                  className="border-mono-200 bg-mono-0/95 min-w-(--button-width) rounded-xs border p-1 shadow-xs [--anchor-gap:var(--spacing-1)] focus:outline-hidden"
                 >
                   {collectionOptions.map((filter) => (
                     <ListboxOption

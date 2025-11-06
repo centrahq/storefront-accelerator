@@ -1,16 +1,12 @@
-import { FlatCompat } from '@eslint/eslintrc';
+import nextVitals from 'eslint-config-next/core-web-vitals';
 import tseslint from 'typescript-eslint';
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-});
 
 /** @type {import('eslint').Linter.Config[]} */
 const eslintConfig = [
   {
     ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts'],
   },
-  ...compat.extends('next/core-web-vitals'),
+  ...nextVitals,
   ...tseslint.configs.strictTypeChecked,
   {
     languageOptions: {

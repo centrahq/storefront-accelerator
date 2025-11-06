@@ -1,4 +1,4 @@
-import { unstable_cacheLife as cacheLife, unstable_cacheTag as cacheTag } from 'next/cache';
+import { cacheLife, cacheTag } from 'next/cache';
 import { notFound } from 'next/navigation';
 import { SearchParams } from 'nuqs';
 import { Suspense } from 'react';
@@ -14,8 +14,8 @@ import {
   serializeProductsFilters,
 } from '@/features/product-listing/productListSearchParams';
 import { FilterKey, TAGS } from '@/lib/centra/constants';
-import { filterProducts, lookupCategory } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
+import { filterProducts, lookupCategory } from '@/lib/centra/storefront-api/fetchers/noSession';
 import { ProductsQueryVariables, SortKey, SortOrder } from '@gql/graphql';
 
 const ITEMS_PER_PAGE = 24;

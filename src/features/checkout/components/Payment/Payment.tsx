@@ -38,7 +38,9 @@ export const Payment = () => {
           </Trans>
         </p>
       </div>
-      {paymentMethods.length === 1 && paymentMethods[0] && <PaymentWidget id={paymentMethods[0].id} />}
+      {paymentMethods.length === 1 && paymentMethods[0] && (
+        <PaymentWidget id={paymentMethods[0].id} uri={paymentMethods[0].uri} />
+      )}
       {paymentMethods.length > 1 && (
         <div className="flex flex-col gap-4">
           {paymentMethods.map((method, index) => (
@@ -55,7 +57,7 @@ export const Payment = () => {
                   <ChevronDownIcon className="text-mono-800 size-4" aria-hidden="true" />
                 )}
               </button>
-              {selectedPaymentMethod === method.id && <PaymentWidget id={method.id} />}
+              {selectedPaymentMethod === method.id && <PaymentWidget id={method.id} uri={method.uri} />}
             </div>
           ))}
         </div>

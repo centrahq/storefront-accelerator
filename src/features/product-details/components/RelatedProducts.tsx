@@ -1,7 +1,7 @@
 import { getTranslation } from '@/features/i18n/useTranslation/server';
 import { ProductCard, ProductCardSkeleton } from '@/features/product-listing/components/ProductCard';
-import { getRelatedProducts } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
+import { getRelatedProducts } from '@/lib/centra/storefront-api/fetchers/noSession';
 
 const RelatedProductsRow = ({ children }: { children: React.ReactNode }) => {
   return (

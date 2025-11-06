@@ -1,4 +1,4 @@
-This is a boilerplate shop using Centra's DTC API, built with Next.js 15.
+This is a boilerplate shop using Centra's Storefront API, built with Next.js 15.
 
 ## Getting Started
 
@@ -11,11 +11,11 @@ npm install
 Create a .env file in the root of the project and add your Centra API credentials:
 
 ```env
-NEXT_PUBLIC_GQL_API="API Endpoint of session dtc api plugin"
-GQL_AUTHORIZATION="Session mode token of session dtc api plugin"
-NO_SESSION_GQL_API="API Endpoint of no-session dtc api plugin"
-NO_SESSION_GQL_AUTHORIZATION="Non-session mode token of no-session dtc api plugin"
-NO_SESSION_GQL_SHARED_SECRET="Shared secret of no-session dtc api plugin"
+NEXT_PUBLIC_GQL_API="API Endpoint of session Storefront API plugin"
+GQL_AUTHORIZATION="Session mode token of session Storefront API plugin"
+NO_SESSION_GQL_API="API Endpoint of no-session Storefront API plugin"
+NO_SESSION_GQL_AUTHORIZATION="Non-session mode token of no-session Storefront API plugin"
+NO_SESSION_GQL_SHARED_SECRET="Shared secret of no-session Storefront API plugin"
 CENTRA_WEBHOOK_SECRET="Endpoint secret of Centra webhook plugin"
 SESSION_SECRET="At least 256 bit (32 byte) secret for signing session cookies"
 ```

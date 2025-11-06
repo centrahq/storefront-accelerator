@@ -75,26 +75,26 @@ export const revalidateHandler = async (req: NextRequest): Promise<NextResponse>
 
   if (payload.DisplayItems) {
     console.info('Revalidated products.', payload.DisplayItems);
-    revalidateTag(TAGS.products);
+    revalidateTag(TAGS.products, { expire: 0 });
     uniq(payload.DisplayItems).forEach((id) => {
-      revalidateTag(TAGS.product(id));
+      revalidateTag(TAGS.product(id), { expire: 0 });
     });
   }
 
   if (payload.Markets) {
     console.info('Revalidated markets.', payload.Markets);
-    revalidateTag(TAGS.markets);
+    revalidateTag(TAGS.markets, { expire: 0 });
   }
 
   if (payload.Languages) {
     console.info('Revalidated languages.', payload.Languages);
-    revalidateTag(TAGS.languages);
+    revalidateTag(TAGS.languages, { expire: 0 });
   }
 
   if (payload.Categories) {
     console.info('Revalidated categories.', payload.Categories);
-    revalidateTag(TAGS.categories);
-    uniq(payload.Categories).forEach((id) => revalidateTag(TAGS.category(id)));
+    revalidateTag(TAGS.categories, { expire: 0 });
+    uniq(payload.Categories).forEach((id) => revalidateTag(TAGS.category(id), { expire: 0 }));
   }
 
   return NextResponse.json({}, { status: 200 });

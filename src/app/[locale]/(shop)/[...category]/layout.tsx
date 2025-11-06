@@ -4,8 +4,8 @@ import { notFound } from 'next/navigation';
 import { generateAlternates } from '@/features/i18n/metadata';
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
-import { lookupCategory } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
+import { lookupCategory } from '@/lib/centra/storefront-api/fetchers/noSession';
 
 export async function generateMetadata(
   { params }: { params: Promise<{ locale: string; category: string[] }> },

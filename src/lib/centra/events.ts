@@ -1,6 +1,8 @@
 import { CartFragment, CheckoutFragment } from '@gql/graphql';
 
 export class CentraPaymentResponseEvent extends CustomEvent<unknown> {
+  public static ERROR_PAYLOAD = { error: true };
+
   constructor(payload: unknown) {
     super('centra_checkout_payment_response', { detail: payload });
   }

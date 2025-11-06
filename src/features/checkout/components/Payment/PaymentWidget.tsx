@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useEffectEvent, useState } from 'react';
 import { toast } from 'sonner';
 
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -20,7 +20,7 @@ import { KlarnaPayments } from './KlarnaPayments';
 
 type Status = { status: 'loading' } | { status: 'error' } | { status: 'success'; node: ReactNode };
 
-export const PaymentWidget = ({ id }: { id: number }) => {
+export const PaymentWidget = ({ id, uri }: { id: number; uri: string }) => {
   const [widget, setWidget] = useState<Status>({ status: 'loading' });
   const router = useRouter();
   const { data } = useSuspenseQuery(checkoutQuery);
@@ -29,7 +29,7 @@ export const PaymentWidget = ({ id }: { id: number }) => {
 
   const { shippingAddress, separateBillingAddress: billingAddress } = data.checkout;
 
-  const handlePaymentAction = useCallback(
+  const handlePaymentAction = useEffectEvent(
     (paymentAction: PaymentInstructionsMutation['paymentInstructions']['action']) => {
       if (!paymentAction) {
         throw new Error('No payment action');
@@ -43,7 +43,7 @@ export const PaymentWidget = ({ id }: { id: number }) => {
         location.href = paymentAction.url;
       } else if (paymentAction.__typename === 'JavascriptPaymentAction') {
         // Execute payment action script
-        eval(paymentAction.script);
+        setWidget({ status: 'success', node: <Widget html={`<script>${paymentAction.script}</script>`} /> });
       } else if (paymentAction.__typename === 'FormPaymentAction') {
         // Display payment widget
         if (paymentAction.formType === 'klarna-payments') {
@@ -61,11 +61,14 @@ export const PaymentWidget = ({ id }: { id: number }) => {
         throw new Error('Unknown payment action');
       }
     },
-    [router],
   );
 
   useEffect(() => {
-    // Initialize payment
+    if (widget.status !== 'loading') {
+      return;
+    }
+
+    // Initialize payment widget
     getPaymentInstructions(
       {
         paymentFailedPage: `${window.location.origin}/failed`,
@@ -95,67 +98,74 @@ export const PaymentWidget = ({ id }: { id: number }) => {
         },
       },
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run once
-  }, []);
+  }, [billingAddress, getPaymentInstructions, id, shippingAddress, widget.status]);
+
+  const handlePaymentCallback = useEffectEvent(({ detail }: PaymentEvent) => {
+    if (detail.paymentMethod !== id && detail.paymentMethod !== uri) {
+      return;
+    }
+
+    getPaymentInstructions(
+      {
+        paymentFailedPage: `${window.location.origin}/failed`,
+        paymentReturnPage: `${window.location.origin}/success`,
+        paymentMethod: id,
+        shippingAddress: detail.addressIncluded
+          ? detail.shippingAddress
+          : {
+              ...shippingAddress,
+              country: shippingAddress.country?.code ?? '',
+              state: shippingAddress.state?.code,
+            },
+        separateBillingAddress: detail.addressIncluded
+          ? detail.billingAddress
+          : {
+              ...billingAddress,
+              country: billingAddress?.country?.code ?? '',
+              state: billingAddress?.state?.code,
+            },
+        paymentMethodSpecificFields: detail.paymentMethodSpecificFields,
+      },
+      {
+        onSuccess: (data) => {
+          const paymentAction = data.action;
+
+          if (
+            detail.responseEventRequired &&
+            paymentAction?.__typename === 'JavascriptPaymentAction' &&
+            paymentAction.formFields
+          ) {
+            // If `responseEventRequired` is true, let CentraCheckout handle it.
+            document.dispatchEvent(new CentraPaymentResponseEvent(paymentAction.formFields));
+          } else {
+            handlePaymentAction(paymentAction);
+          }
+        },
+        onError: (error) => {
+          if (detail.responseEventRequired) {
+            document.dispatchEvent(new CentraPaymentResponseEvent(CentraPaymentResponseEvent.ERROR_PAYLOAD));
+          }
+
+          if (error instanceof UserError && checkUnavailableItems(error.userErrors)) {
+            showItemsRemovedToast();
+          } else {
+            toast.error(<Translation>{(t) => t('checkout:errors.could-not-finalize-payment')}</Translation>, {
+              id: 'payment-error',
+            });
+          }
+        },
+      },
+    );
+  });
 
   useEffect(() => {
-    // Get payment instructions when a payment widget needs to
-    const handlePaymentCallback = ({ detail }: PaymentEvent) => {
-      getPaymentInstructions(
-        {
-          paymentFailedPage: `${window.location.origin}/failed`,
-          paymentReturnPage: `${window.location.origin}/success`,
-          paymentMethod: id,
-          shippingAddress: detail.addressIncluded
-            ? detail.shippingAddress
-            : {
-                ...shippingAddress,
-                country: shippingAddress.country?.code ?? '',
-                state: shippingAddress.state?.code,
-              },
-          separateBillingAddress: detail.addressIncluded
-            ? detail.billingAddress
-            : {
-                ...billingAddress,
-                country: billingAddress?.country?.code ?? '',
-                state: billingAddress?.state?.code,
-              },
-          paymentMethodSpecificFields: detail.paymentMethodSpecificFields,
-        },
-        {
-          onSuccess: (data) => {
-            const paymentAction = data.action;
-
-            if (
-              detail.responseEventRequired &&
-              paymentAction?.__typename === 'JavascriptPaymentAction' &&
-              paymentAction.formFields
-            ) {
-              // If `responseEventRequired` is true, let CentraCheckout handle it.
-              document.dispatchEvent(new CentraPaymentResponseEvent(paymentAction.formFields));
-            } else {
-              handlePaymentAction(paymentAction);
-            }
-          },
-          onError: (error) => {
-            if (error instanceof UserError && checkUnavailableItems(error.userErrors)) {
-              showItemsRemovedToast();
-            } else {
-              toast.error(<Translation>{(t) => t('checkout:errors.could-not-finalize-payment')}</Translation>, {
-                id: 'payment-error',
-              });
-            }
-          },
-        },
-      );
-    };
-
+    // Handle payment actions from CentraCheckout
     document.addEventListener('centra_checkout_payment_callback', handlePaymentCallback);
 
     return () => {
       document.removeEventListener('centra_checkout_payment_callback', handlePaymentCallback);
     };
-  }, [billingAddress, handlePaymentAction, id, shippingAddress, getPaymentInstructions]);
+  }, []);
 
   if (widget.status === 'loading') {
     return (

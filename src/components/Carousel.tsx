@@ -31,7 +31,7 @@ export const Carousel = ({ children }: { children: React.ReactNode }) => {
         <div className="-ml-2 flex touch-pan-y touch-pinch-zoom">
           {Children.map(children, (child, index) => {
             return (
-              <div className="min-w-0 flex-shrink-0 flex-grow-0 basis-full transform-gpu pl-4 select-none" key={index}>
+              <div className="min-w-0 shrink-0 grow-0 basis-full transform-gpu pl-4 select-none" key={index}>
                 {child}
               </div>
             );

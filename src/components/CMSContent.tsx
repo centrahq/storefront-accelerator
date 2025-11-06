@@ -157,12 +157,12 @@ export const Hero = () => {
         <br />
         <span className="font-light">for your next adventure</span>
       </h1>
-      <div className="hidden h-[36rem] gap-10 overflow-x-auto xl:flex">
-        <div className="relative min-w-[34rem] flex-grow p-10">
+      <div className="hidden h-144 gap-10 overflow-x-auto xl:flex">
+        <div className="relative min-w-136 grow p-10">
           <NewArrivals />
         </div>
 
-        <div className="relative min-w-[34rem] shrink-0 p-10">
+        <div className="relative min-w-136 shrink-0 p-10">
           <Bestsellers />
         </div>
       </div>
@@ -183,7 +183,7 @@ export const Hero = () => {
 
 export const Newsletter = () => {
   return (
-    <section className="grid h-[26rem] grid-cols-1 grid-rows-2 bg-white lg:grid-cols-2 lg:grid-rows-1">
+    <section className="grid h-104 grid-cols-1 grid-rows-2 bg-white lg:grid-cols-2 lg:grid-rows-1">
       <div className="text-mono-900 flex flex-col justify-center gap-3 px-6 lg:gap-6 lg:px-20">
         <PercentBadgeIcon className="size-6 lg:size-10" aria-hidden="true" />
         <div className="text-2xl leading-none lg:text-4xl lg:leading-tight">
@@ -194,7 +194,7 @@ export const Newsletter = () => {
         </div>
         <div className="text-mono-500 text-sm lg:text-xl">Stay in the know about our newest collections.</div>
         <form className="flex items-center gap-3">
-          <Field className="max-w-[28rem] flex-grow">
+          <Field className="max-w-md grow">
             <Label className="sr-only">Email address</Label>
             <Input
               type="email"

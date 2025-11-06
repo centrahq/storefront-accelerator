@@ -1,6 +1,6 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useEffectEvent, useRef } from 'react';
 
 export const Widget = ({
   html,
@@ -12,32 +12,24 @@ export const Widget = ({
   onMount?: VoidFunction;
 }) => {
   const widgetRef = useRef<HTMLDivElement | null>(null);
-  const triggeredHtmlRef = useRef<string | null>(null);
-  const cleanUpRef = useRef(cleanUp);
-  const onMountRef = useRef(onMount);
 
-  useLayoutEffect(() => {
-    cleanUpRef.current = cleanUp;
-    onMountRef.current = onMount;
-  }, [cleanUp, onMount]);
+  const mountHandler = useEffectEvent(() => onMount?.());
+  const cleanUpHandler = useEffectEvent(() => cleanUp?.());
 
-  useLayoutEffect(() => {
-    // Prevent double run on strict mode
-    if (triggeredHtmlRef.current === html) {
+  useEffect(() => {
+    const widget = widgetRef.current;
+
+    if (!widget) {
       return;
     }
 
-    cleanUpRef.current?.();
+    widget.innerHTML = '';
+    widget.appendChild(document.createRange().createContextualFragment(html));
+    mountHandler();
 
-    const widget = widgetRef.current;
-
-    if (widget) {
-      widget.innerHTML = '';
-      // Insert and run scripts in the html
-      widget.appendChild(document.createRange().createContextualFragment(html));
-      onMountRef.current?.();
-      triggeredHtmlRef.current = html;
-    }
+    return () => {
+      cleanUpHandler();
+    };
   }, [html]);
 
   return <div ref={widgetRef} className="contents" />;

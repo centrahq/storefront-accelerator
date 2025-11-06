@@ -25,7 +25,7 @@ type BaseRequest = Omit<RequestInit, 'body' | 'method' | 'cache' | 'headers'> & 
 };
 
 /**
- * Fetches data from Centra DTC API with session. Can be used on client and server side.
+ * Fetches data from Centra Storefront API with session. Can be used on client and server side.
  * API token can be provided, if it's not provided it will be taken from cookies.
  * Use `graphql` function to get type safety.
  *

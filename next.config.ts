@@ -5,6 +5,7 @@ import { validateEnv } from '@/config/env';
 validateEnv();
 
 const nextConfig: NextConfig = {
+  reactStrictMode: false,
   logging: {
     fetches: {
       fullUrl: true,

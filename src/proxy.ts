@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
 
-import { routingMiddleware } from '@/features/i18n/routing/middleware';
+import { routingProxy } from '@/features/i18n/routing/proxy';
 
-export default function middleware(request: NextRequest) {
-  return routingMiddleware(request);
+export default function proxy(request: NextRequest) {
+  return routingProxy(request);
 }
 
 export const config = {

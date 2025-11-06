@@ -1,13 +1,13 @@
 import { Metadata } from 'next';
-import { unstable_cacheLife as cacheLife, unstable_cacheTag as cacheTag } from 'next/cache';
+import { cacheLife, cacheTag } from 'next/cache';
 
 import { Hero, MoreSection, Newsletter, SocialProof } from '@/components/CMSContent';
 import { generateAlternates } from '@/features/i18n/metadata';
 import { ProductCard } from '@/features/product-listing/components/ProductCard';
 import { ProductGrid } from '@/features/product-listing/components/ProductGrid';
 import { TAGS } from '@/lib/centra/constants';
-import { filterProducts } from '@/lib/centra/dtc-api/fetchers/noSession';
 import { getSession } from '@/lib/centra/sessionCookie';
+import { filterProducts } from '@/lib/centra/storefront-api/fetchers/noSession';
 import { ProductsQueryVariables, SortKey, SortOrder } from '@gql/graphql';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {

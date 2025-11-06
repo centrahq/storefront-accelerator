@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
 import { getTranslation } from '@/features/i18n/useTranslation/server';
-import { centraFetch } from '@/lib/centra/dtc-api/fetchers/session';
+import { centraFetch } from '@/lib/centra/storefront-api/fetchers/session';
 import { graphql } from '@gql/gql';
 
 export async function generateMetadata(): Promise<Metadata> {

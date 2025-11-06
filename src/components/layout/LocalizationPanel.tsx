@@ -89,7 +89,7 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
         />
         <DialogPanel
           transition
-          className="bg-mono-0 fixed inset-y-0 right-0 size-full translate-x-0 overflow-auto duration-300 ease-out data-closed:translate-x-full md:w-[30rem]"
+          className="bg-mono-0 fixed inset-y-0 right-0 size-full translate-x-0 overflow-auto duration-300 ease-out data-closed:translate-x-full md:w-120"
         >
           <CloseButton className="absolute top-4 right-4">
             <XMarkIcon className="size-6" aria-hidden="true" />

@@ -2,23 +2,19 @@
 
 import { CloseButton, Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { usePathname } from 'next/navigation';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 import { useTranslation } from '@/features/i18n/useTranslation/client';
+
+import { WatchPathname } from '../WatchPathname';
 
 export const NavMenuPanel = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation(['shop']);
   const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname();
-
-  useEffect(() => {
-    // Close the menu when navigating to a different page
-    setIsOpen(false);
-  }, [pathname]);
 
   return (
     <>
+      <WatchPathname onChange={() => setIsOpen(false)} />
       <button type="button" onClick={() => setIsOpen(true)}>
         <Bars3Icon className="size-8" aria-hidden="true" />
         <span className="sr-only">{t('shop:show-menu')}</span>
@@ -30,7 +26,7 @@ export const NavMenuPanel = ({ children }: { children: ReactNode }) => {
         />
         <DialogPanel
           transition
-          className="bg-mono-0 fixed inset-y-0 left-0 size-full translate-x-0 overflow-auto duration-300 ease-out data-closed:-translate-x-full md:w-[30rem]"
+          className="bg-mono-0 fixed inset-y-0 left-0 size-full translate-x-0 overflow-auto duration-300 ease-out data-closed:-translate-x-full md:w-120"
         >
           <CloseButton className="absolute top-4 right-4">
             <XMarkIcon className="size-6" aria-hidden="true" />
