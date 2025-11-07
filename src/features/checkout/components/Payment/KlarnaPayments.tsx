@@ -9,6 +9,37 @@ import { checkoutQuery } from '../../queries';
 
 const KLARNA_SDK_SRC = 'https://x.klarnacdn.net/kp/lib/v1/api.js';
 
+// Local Klarna types (more specific than the global 'any' types from @adyen/adyen-web)
+interface KlarnaPayments {
+  init: (payload: { client_token: string }) => KlarnaPayments;
+  load: (
+    payload: { container: string; payment_method_category: string },
+    _: unknown,
+    onLoad: VoidFunction,
+  ) => void;
+  authorize: (
+    payload: { payment_method_category: string },
+    authorizePayload: unknown,
+    callback?: (
+      result:
+        | {
+            approved: true;
+            authorization_token: string;
+          }
+        | { approved: false; error: unknown },
+    ) => void,
+  ) => void;
+}
+
+type WindowWithKlarna = Omit<Window, 'Klarna' | 'klarnaAsyncCallback'> & {
+  Klarna?: {
+    Payments: KlarnaPayments;
+  };
+  klarnaAsyncCallback?: VoidFunction;
+};
+
+declare const window: WindowWithKlarna;
+
 export const KlarnaPayments = ({
   authorizePayload,
   clientToken,
