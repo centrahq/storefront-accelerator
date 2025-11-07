@@ -16,30 +16,6 @@ declare global {
     };
     // Ingrid/Shipwallet
     _sw?: (callback: (api: { destroy?: VoidFunction }) => void) => void;
-    // Klarna payments
-    Klarna: {
-      Payments: {
-        init: (payload: { client_token: string }) => NonNullable<typeof window.Klarna>['Payments'];
-        load: (
-          payload: { container: string; payment_method_category: string },
-          _: unknown,
-          onLoad: VoidFunction,
-        ) => void;
-        authorize: (
-          payload: { payment_method_category: string },
-          authorizePayload: unknown,
-          callback?: (
-            result:
-              | {
-                  approved: true;
-                  authorization_token: string;
-                }
-              | { approved: false; error: unknown },
-          ) => void,
-        ) => void;
-      };
-    };
-    klarnaAsyncCallback: VoidFunction;
     // Qliro One
     totalPrice?: number;
   }

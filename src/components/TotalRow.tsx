@@ -1,4 +1,4 @@
-import { CheckoutFragment, SelectionTotalRowType } from '@gql/graphql';
+import { CheckoutFragment, OrderFragment, SelectionTotalRowType } from '@gql/graphql';
 
 export const TotalRow = ({
   totals,
@@ -7,7 +7,7 @@ export const TotalRow = ({
   pending = false,
   optional = false,
 }: {
-  totals: NonNullable<CheckoutFragment['checkout']>['totals'];
+  totals: NonNullable<OrderFragment['totals']>;
   type: SelectionTotalRowType;
   term: string;
   pending?: boolean;
