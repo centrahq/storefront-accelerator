@@ -34,7 +34,7 @@ const getNewestProducts = async ({
   language,
   pricelist,
 }: Pick<ProductsQueryVariables, 'market' | 'language' | 'pricelist'>) => {
-  'use cache';
+  'use cache: remote';
 
   cacheTag(TAGS.products);
   cacheLife('hours');
@@ -63,7 +63,7 @@ const getSpecialOffers = async ({
   language,
   pricelist,
 }: Pick<ProductsQueryVariables, 'market' | 'language' | 'pricelist'>) => {
-  'use cache';
+  'use cache: remote';
 
   cacheTag(TAGS.products);
   cacheLife('hours');

@@ -76,7 +76,7 @@ export async function centraFetchNoSession<T>(
  *       In such cases, use the `displayItem` query with the item ID instead.
  */
 export const lookupProduct = async (variables: LookupProductMutationVariables) => {
-  'use cache';
+  'use cache: remote';
 
   const result = await centraFetchNoSession(
     graphql(`
@@ -113,7 +113,7 @@ export const lookupProduct = async (variables: LookupProductMutationVariables) =
 };
 
 export const getRelatedProducts = async (variables: RelatedProductsQueryVariables) => {
-  'use cache';
+  'use cache: remote';
 
   const result = await centraFetchNoSession(
     graphql(`
@@ -200,7 +200,7 @@ export const filterProducts = async (variables: ProductsQueryVariables) => {
 };
 
 export const getCountries = async () => {
-  'use cache';
+  'use cache: remote';
 
   const response = await centraFetchNoSession(
     graphql(`
@@ -234,7 +234,7 @@ export const getCountries = async () => {
 };
 
 export const getLanguages = async () => {
-  'use cache';
+  'use cache: remote';
 
   const response = await centraFetchNoSession(
     graphql(`
@@ -256,7 +256,7 @@ export const getLanguages = async () => {
 };
 
 export const getRootCategories = async (variables: CategoriesQueryVariables) => {
-  'use cache';
+  'use cache: remote';
 
   cacheTag(TAGS.categories);
   cacheLife('days');
@@ -281,7 +281,7 @@ export const getRootCategories = async (variables: CategoriesQueryVariables) => 
 };
 
 export const lookupCategory = async (variables: LookupCategoryMutationVariables) => {
-  'use cache';
+  'use cache: remote';
 
   const result = await centraFetchNoSession(
     graphql(`

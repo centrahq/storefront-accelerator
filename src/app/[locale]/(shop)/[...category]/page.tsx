@@ -26,7 +26,7 @@ type FetchProductsVariables = Omit<ProductsQueryVariables, 'where'> & {
 };
 
 const fetchCategoryProductsCached = async (variables: FetchProductsVariables) => {
-  'use cache';
+  'use cache: remote';
 
   cacheTag(TAGS.products);
   cacheLife('hours');
