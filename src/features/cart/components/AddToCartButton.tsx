@@ -24,7 +24,7 @@ interface AddToCartButtonProps {
 
 export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailability }: AddToCartButtonProps) => {
   const { t } = useTranslation(['shop']);
-  const [itemId] = useQueryState('item', parseAsString.withDefault(items[0]?.id ?? ''));
+  const [itemId] = useQueryState('item', parseAsString.withDefault(items.filter((item) => item.isAvailable)[0]?.id ?? ''));
   const [bundledItems] = useQueryState('bundledItems', parseAsBundledItems);
   const [selectedPlan] = useQueryState('plan', parseAsString.withDefault(''));
   const addToCartMutation = useAddToCart();
@@ -97,7 +97,7 @@ export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailabilit
       </button>
       {process.env.NEXT_PUBLIC_ADYEN_EXPRESS_CHECKOUT_ENABLED === 'true' && (
         <AdyenExpressCheckoutErrorBoundary>
-          <AdyenExpressCheckout itemId={itemId} />
+          <AdyenExpressCheckout itemId={itemId} cartTotal={30} initialLineItems={[{ name: 'Dress', price: '30.00' }]} />
         </AdyenExpressCheckoutErrorBoundary>
       )}
     </>

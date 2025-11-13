@@ -1,31 +1,16 @@
 import { PaymentMethodsResponse } from '@adyen/adyen-web';
 import { queryOptions } from '@tanstack/react-query';
 
-import { centraFetch } from '@/lib/centra/storefront-api/fetchers/session';
-import { graphql } from '@gql/gql';
+import { fetchCheckout, fetchCheckoutPaymentMethods } from './service';
 
 export const checkoutQuery = queryOptions({
   queryKey: ['checkout'],
-  queryFn: async () => {
-    const response = await centraFetch(
-      graphql(`
-        query checkout {
-          selection {
-            ...checkout
-          }
-        }
-      `),
-    );
+  queryFn: fetchCheckout,
+});
 
-    if (!response.data.selection.checkout) {
-      throw new Error('Checkout not found');
-    }
-
-    return {
-      ...response.data.selection,
-      checkout: response.data.selection.checkout,
-    };
-  },
+export const checkoutPaymentMethodsQuery = queryOptions({
+  queryKey: ['checkout-payment-methods'],
+  queryFn: fetchCheckoutPaymentMethods,
 });
 
 interface LineItem {

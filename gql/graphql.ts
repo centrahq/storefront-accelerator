@@ -3348,21 +3348,6 @@ export type AddFlexibleBundleToCartMutation = { addFlexibleBundle: { userErrors:
         | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
        | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null } };
 
-export type AddItemMutationVariables = Exact<{
-  item: Scalars['String']['input'];
-  quantity?: InputMaybe<Scalars['Int']['input']>;
-  subscriptionPlan?: InputMaybe<Scalars['Int']['input']>;
-}>;
-
-
-export type AddItemMutation = { addItem: { userErrors: Array<
-      | { message: string, path?: Array<string> | null }
-      | { message: string, path?: Array<string> | null }
-    >, selection?: { lines: Array<
-        | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-        | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-       | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null } };
-
 export type UpdateLineMutationVariables = Exact<{
   id: Scalars['String']['input'];
   quantity: Scalars['Int']['input'];
@@ -3408,6 +3393,21 @@ export type CartQuery = { selection: { lines: Array<
       | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
       | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
      | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } };
+
+export type AddItemMutationVariables = Exact<{
+  item: Scalars['String']['input'];
+  quantity?: InputMaybe<Scalars['Int']['input']>;
+  subscriptionPlan?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type AddItemMutation = { addItem: { userErrors: Array<
+      | { message: string, path?: Array<string> | null }
+      | { message: string, path?: Array<string> | null }
+    >, selection?: { lines: Array<
+        | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+        | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+       | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null } };
 
 export type SetAddressMutationVariables = Exact<{
   billingAddress?: InputMaybe<AddressInput>;
@@ -3489,116 +3489,6 @@ export type SetAddressMutation = { setAddress:
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
    };
-
-export type SetShippingMethodMutationVariables = Exact<{
-  id: Scalars['Int']['input'];
-}>;
-
-
-export type SetShippingMethodMutation = { setShippingMethod:
-    | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-         | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
-          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
-          >, widgets?: Array<
-            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
-            | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
-          > | null } | null } | null, userErrors: Array<
-        | { message: string, path?: Array<string> | null }
-        | { message: string, path?: Array<string> | null }
-      > }
-    | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-         | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
-          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
-          >, widgets?: Array<
-            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
-            | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
-          > | null } | null } | null, userErrors: Array<
-        | { message: string, path?: Array<string> | null }
-        | { message: string, path?: Array<string> | null }
-      > }
-    | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-         | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
-          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
-          >, widgets?: Array<
-            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
-            | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
-          > | null } | null } | null, userErrors: Array<
-        | { message: string, path?: Array<string> | null }
-        | { message: string, path?: Array<string> | null }
-      > }
-    | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-         | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
-          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
-            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
-          >, widgets?: Array<
-            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
-            | { __typename: 'KlarnaCheckoutWidget' }
-            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
-          > | null } | null } | null, userErrors: Array<
-        | { message: string, path?: Array<string> | null }
-        | { message: string, path?: Array<string> | null }
-      > }
-   };
-
-export type PaymentInstructionsMutationVariables = Exact<{
-  input: PaymentInstructionsInput;
-}>;
-
-
-export type PaymentInstructionsMutation = { paymentInstructions: { action?:
-      | { __typename: 'FormPaymentAction', html: string, formFields?: Record<string, unknown> | null, formType: string }
-      | { __typename: 'JavascriptPaymentAction', script: string, formFields?: Record<string, unknown> | null }
-      | { __typename: 'RedirectPaymentAction', url: string }
-      | { __typename: 'SuccessPaymentAction', order: { id: string } }
-      | { __typename: 'SuccessStoredPaymentAction' }
-     | null, selection: { externalGiftCardAvailable: boolean, lines: Array<
-        | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-        | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-       | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
-        | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-        | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-        | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-      >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-          | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
-          | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
-        >, widgets?: Array<
-          | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
-          | { __typename: 'KlarnaCheckoutWidget' }
-          | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
-        > | null } | null }, userErrors: Array<
-      | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
-      | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
-    > } };
 
 export type WidgetEventMutationVariables = Exact<{
   payload: Scalars['Map']['input'];
@@ -4021,6 +3911,121 @@ export type CheckoutQuery = { selection: { externalGiftCardAvailable: boolean, l
         | { __typename: 'KlarnaCheckoutWidget' }
         | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
       > | null } | null } };
+
+export type CheckoutPaymentMethodsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CheckoutPaymentMethodsQuery = { selection: { checkout?: { paymentMethods: Array<{ uri: string, kind: PaymentMethodKind }>, shippingMethods?: Array<{ id: number }> | null } | null } };
+
+export type SetShippingMethodMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type SetShippingMethodMutation = { setShippingMethod:
+    | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+         | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+          >, widgets?: Array<
+            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
+            | { __typename: 'KlarnaCheckoutWidget' }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
+          > | null } | null } | null, userErrors: Array<
+        | { message: string, path?: Array<string> | null }
+        | { message: string, path?: Array<string> | null }
+      > }
+    | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+         | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+          >, widgets?: Array<
+            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
+            | { __typename: 'KlarnaCheckoutWidget' }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
+          > | null } | null } | null, userErrors: Array<
+        | { message: string, path?: Array<string> | null }
+        | { message: string, path?: Array<string> | null }
+      > }
+    | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+         | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+          >, widgets?: Array<
+            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
+            | { __typename: 'KlarnaCheckoutWidget' }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
+          > | null } | null } | null, userErrors: Array<
+        | { message: string, path?: Array<string> | null }
+        | { message: string, path?: Array<string> | null }
+      > }
+    | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+         | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+          >, widgets?: Array<
+            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
+            | { __typename: 'KlarnaCheckoutWidget' }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
+          > | null } | null } | null, userErrors: Array<
+        | { message: string, path?: Array<string> | null }
+        | { message: string, path?: Array<string> | null }
+      > }
+   };
+
+export type PaymentInstructionsMutationVariables = Exact<{
+  input: PaymentInstructionsInput;
+}>;
+
+
+export type PaymentInstructionsMutation = { paymentInstructions: { action?:
+      | { __typename: 'FormPaymentAction', html: string, formFields?: Record<string, unknown> | null, formType: string }
+      | { __typename: 'JavascriptPaymentAction', script: string, formFields?: Record<string, unknown> | null }
+      | { __typename: 'RedirectPaymentAction', url: string }
+      | { __typename: 'SuccessPaymentAction', order: { id: string } }
+      | { __typename: 'SuccessStoredPaymentAction' }
+     | null, selection: { externalGiftCardAvailable: boolean, lines: Array<
+        | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+        | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+       | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
+        | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+        | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+        | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+      >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
+          | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+          | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+        >, widgets?: Array<
+          | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
+          | { __typename: 'KlarnaCheckoutWidget' }
+          | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
+        > | null } | null }, userErrors: Array<
+      | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
+      | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
+    > } };
 
 export type SessionQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -5825,92 +5830,6 @@ fragment line on Line {
     }
   }
 }`) as unknown as TypedDocumentString<AddFlexibleBundleToCartMutation, AddFlexibleBundleToCartMutationVariables>;
-export const AddItemDocument = new TypedDocumentString(`
-    mutation addItem($item: String!, $quantity: Int = 1, $subscriptionPlan: Int) {
-  addItem(item: $item, quantity: $quantity, subscriptionPlan: $subscriptionPlan) {
-    userErrors {
-      message
-      path
-    }
-    selection {
-      ...cart
-    }
-  }
-}
-    fragment item on Item {
-  id
-  name
-  sizeLocalization {
-    name
-    countries {
-      code
-    }
-  }
-}
-fragment subscriptionPlan on SubscriptionPlan {
-  id
-  discount
-  interval {
-    value
-    type
-  }
-}
-fragment cart on Selection {
-  lines {
-    ...line
-  }
-  grandTotal {
-    currency {
-      prefix
-      suffix
-    }
-  }
-}
-fragment line on Line {
-  __typename
-  id
-  item {
-    ...item
-  }
-  quantity
-  lineValue {
-    formattedValue
-    value
-  }
-  subscriptionId
-  displayItem {
-    name
-    uri
-    media {
-      altText
-      source(sizeName: "mini") {
-        url
-      }
-    }
-    subscriptionPlans {
-      ...subscriptionPlan
-    }
-  }
-  ... on BundleLine {
-    bundle {
-      type
-      sections {
-        quantity
-        lines {
-          id
-          lineValue {
-            formattedValue
-          }
-          name
-          quantity
-          item {
-            ...item
-          }
-        }
-      }
-    }
-  }
-}`) as unknown as TypedDocumentString<AddItemMutation, AddItemMutationVariables>;
 export const UpdateLineDocument = new TypedDocumentString(`
     mutation updateLine($id: String!, $quantity: Int!, $subscriptionPlanId: Int) {
   updateLine(
@@ -6081,6 +6000,92 @@ fragment line on Line {
     }
   }
 }`) as unknown as TypedDocumentString<CartQuery, CartQueryVariables>;
+export const AddItemDocument = new TypedDocumentString(`
+    mutation addItem($item: String!, $quantity: Int = 1, $subscriptionPlan: Int) {
+  addItem(item: $item, quantity: $quantity, subscriptionPlan: $subscriptionPlan) {
+    userErrors {
+      message
+      path
+    }
+    selection {
+      ...cart
+    }
+  }
+}
+    fragment item on Item {
+  id
+  name
+  sizeLocalization {
+    name
+    countries {
+      code
+    }
+  }
+}
+fragment subscriptionPlan on SubscriptionPlan {
+  id
+  discount
+  interval {
+    value
+    type
+  }
+}
+fragment cart on Selection {
+  lines {
+    ...line
+  }
+  grandTotal {
+    currency {
+      prefix
+      suffix
+    }
+  }
+}
+fragment line on Line {
+  __typename
+  id
+  item {
+    ...item
+  }
+  quantity
+  lineValue {
+    formattedValue
+    value
+  }
+  subscriptionId
+  displayItem {
+    name
+    uri
+    media {
+      altText
+      source(sizeName: "mini") {
+        url
+      }
+    }
+    subscriptionPlans {
+      ...subscriptionPlan
+    }
+  }
+  ... on BundleLine {
+    bundle {
+      type
+      sections {
+        quantity
+        lines {
+          id
+          lineValue {
+            formattedValue
+          }
+          name
+          quantity
+          item {
+            ...item
+          }
+        }
+      }
+    }
+  }
+}`) as unknown as TypedDocumentString<AddItemMutation, AddItemMutationVariables>;
 export const SetAddressDocument = new TypedDocumentString(`
     mutation setAddress($billingAddress: AddressInput, $shippingAddress: AddressInput!) {
   setAddress(
@@ -6271,402 +6276,6 @@ fragment line on Line {
     }
   }
 }`) as unknown as TypedDocumentString<SetAddressMutation, SetAddressMutationVariables>;
-export const SetShippingMethodDocument = new TypedDocumentString(`
-    mutation setShippingMethod($id: Int!) {
-  setShippingMethod(id: $id) {
-    selection {
-      ...checkout
-    }
-    userErrors {
-      message
-      path
-    }
-  }
-}
-    fragment checkout on Selection {
-  lines {
-    ...line
-  }
-  grandTotal {
-    value
-    currency {
-      denominator
-      code
-    }
-  }
-  discounts {
-    ...voucher
-  }
-  externalGiftCardAvailable
-  checkout {
-    checkoutScript
-    separateBillingAddress {
-      ...address
-    }
-    shippingAddress {
-      ...address
-    }
-    paymentMethods {
-      id
-      uri
-      name
-      kind
-      initiateOnlySupported
-      handlingCost {
-        formattedValue
-        value
-      }
-    }
-    paymentMethod {
-      id
-    }
-    shippingMethods {
-      id
-      name
-      comment
-      price {
-        formattedValue
-        value
-      }
-    }
-    shippingMethod {
-      id
-      name
-      comment
-      price {
-        value
-        formattedValue
-      }
-    }
-    totals {
-      type
-      price {
-        value
-        formattedValue
-        currency {
-          code
-        }
-      }
-    }
-    widgets {
-      __typename
-      ... on IngridWidget {
-        snippet
-        deliveryOptionsAvailable
-      }
-      ... on KlarnaPaymentWidget {
-        client_token
-        authorizePayload
-      }
-    }
-  }
-}
-fragment address on Address {
-  country {
-    code
-    name
-  }
-  state {
-    code
-    name
-  }
-  address1
-  address2
-  city
-  zipCode
-  email
-  firstName
-  lastName
-  phoneNumber
-  companyName
-  vatNumber
-}
-fragment voucher on Voucher {
-  name
-  value {
-    value
-    formattedValue
-  }
-  ... on CodeVoucher {
-    code
-  }
-  giftCard {
-    lastFourDigits
-  }
-}
-fragment item on Item {
-  id
-  name
-  sizeLocalization {
-    name
-    countries {
-      code
-    }
-  }
-}
-fragment subscriptionPlan on SubscriptionPlan {
-  id
-  discount
-  interval {
-    value
-    type
-  }
-}
-fragment line on Line {
-  __typename
-  id
-  item {
-    ...item
-  }
-  quantity
-  lineValue {
-    formattedValue
-    value
-  }
-  subscriptionId
-  displayItem {
-    name
-    uri
-    media {
-      altText
-      source(sizeName: "mini") {
-        url
-      }
-    }
-    subscriptionPlans {
-      ...subscriptionPlan
-    }
-  }
-  ... on BundleLine {
-    bundle {
-      type
-      sections {
-        quantity
-        lines {
-          id
-          lineValue {
-            formattedValue
-          }
-          name
-          quantity
-          item {
-            ...item
-          }
-        }
-      }
-    }
-  }
-}`) as unknown as TypedDocumentString<SetShippingMethodMutation, SetShippingMethodMutationVariables>;
-export const PaymentInstructionsDocument = new TypedDocumentString(`
-    mutation paymentInstructions($input: PaymentInstructionsInput!) {
-  paymentInstructions(input: $input) {
-    action {
-      ...paymentAction
-    }
-    selection {
-      ...checkout
-    }
-    userErrors {
-      __typename
-      message
-      path
-    }
-  }
-}
-    fragment checkout on Selection {
-  lines {
-    ...line
-  }
-  grandTotal {
-    value
-    currency {
-      denominator
-      code
-    }
-  }
-  discounts {
-    ...voucher
-  }
-  externalGiftCardAvailable
-  checkout {
-    checkoutScript
-    separateBillingAddress {
-      ...address
-    }
-    shippingAddress {
-      ...address
-    }
-    paymentMethods {
-      id
-      uri
-      name
-      kind
-      initiateOnlySupported
-      handlingCost {
-        formattedValue
-        value
-      }
-    }
-    paymentMethod {
-      id
-    }
-    shippingMethods {
-      id
-      name
-      comment
-      price {
-        formattedValue
-        value
-      }
-    }
-    shippingMethod {
-      id
-      name
-      comment
-      price {
-        value
-        formattedValue
-      }
-    }
-    totals {
-      type
-      price {
-        value
-        formattedValue
-        currency {
-          code
-        }
-      }
-    }
-    widgets {
-      __typename
-      ... on IngridWidget {
-        snippet
-        deliveryOptionsAvailable
-      }
-      ... on KlarnaPaymentWidget {
-        client_token
-        authorizePayload
-      }
-    }
-  }
-}
-fragment address on Address {
-  country {
-    code
-    name
-  }
-  state {
-    code
-    name
-  }
-  address1
-  address2
-  city
-  zipCode
-  email
-  firstName
-  lastName
-  phoneNumber
-  companyName
-  vatNumber
-}
-fragment voucher on Voucher {
-  name
-  value {
-    value
-    formattedValue
-  }
-  ... on CodeVoucher {
-    code
-  }
-  giftCard {
-    lastFourDigits
-  }
-}
-fragment paymentAction on PaymentAction {
-  __typename
-  ... on FormPaymentAction {
-    html
-    formFields
-    formType
-  }
-  ... on RedirectPaymentAction {
-    url
-  }
-  ... on JavascriptPaymentAction {
-    script
-    formFields
-  }
-  ... on SuccessPaymentAction {
-    order {
-      id
-    }
-  }
-}
-fragment item on Item {
-  id
-  name
-  sizeLocalization {
-    name
-    countries {
-      code
-    }
-  }
-}
-fragment subscriptionPlan on SubscriptionPlan {
-  id
-  discount
-  interval {
-    value
-    type
-  }
-}
-fragment line on Line {
-  __typename
-  id
-  item {
-    ...item
-  }
-  quantity
-  lineValue {
-    formattedValue
-    value
-  }
-  subscriptionId
-  displayItem {
-    name
-    uri
-    media {
-      altText
-      source(sizeName: "mini") {
-        url
-      }
-    }
-    subscriptionPlans {
-      ...subscriptionPlan
-    }
-  }
-  ... on BundleLine {
-    bundle {
-      type
-      sections {
-        quantity
-        lines {
-          id
-          lineValue {
-            formattedValue
-          }
-          name
-          quantity
-          item {
-            ...item
-          }
-        }
-      }
-    }
-  }
-}`) as unknown as TypedDocumentString<PaymentInstructionsMutation, PaymentInstructionsMutationVariables>;
 export const WidgetEventDocument = new TypedDocumentString(`
     mutation widgetEvent($payload: Map!) {
   handleWidgetEvent(payload: $payload) {
@@ -7781,6 +7390,417 @@ fragment line on Line {
     }
   }
 }`) as unknown as TypedDocumentString<CheckoutQuery, CheckoutQueryVariables>;
+export const CheckoutPaymentMethodsDocument = new TypedDocumentString(`
+    query checkoutPaymentMethods {
+  selection {
+    checkout {
+      paymentMethods {
+        uri
+        kind
+      }
+      shippingMethods {
+        id
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<CheckoutPaymentMethodsQuery, CheckoutPaymentMethodsQueryVariables>;
+export const SetShippingMethodDocument = new TypedDocumentString(`
+    mutation setShippingMethod($id: Int!) {
+  setShippingMethod(id: $id) {
+    selection {
+      ...checkout
+    }
+    userErrors {
+      message
+      path
+    }
+  }
+}
+    fragment checkout on Selection {
+  lines {
+    ...line
+  }
+  grandTotal {
+    value
+    currency {
+      denominator
+      code
+    }
+  }
+  discounts {
+    ...voucher
+  }
+  externalGiftCardAvailable
+  checkout {
+    checkoutScript
+    separateBillingAddress {
+      ...address
+    }
+    shippingAddress {
+      ...address
+    }
+    paymentMethods {
+      id
+      uri
+      name
+      kind
+      initiateOnlySupported
+      handlingCost {
+        formattedValue
+        value
+      }
+    }
+    paymentMethod {
+      id
+    }
+    shippingMethods {
+      id
+      name
+      comment
+      price {
+        formattedValue
+        value
+      }
+    }
+    shippingMethod {
+      id
+      name
+      comment
+      price {
+        value
+        formattedValue
+      }
+    }
+    totals {
+      type
+      price {
+        value
+        formattedValue
+        currency {
+          code
+        }
+      }
+    }
+    widgets {
+      __typename
+      ... on IngridWidget {
+        snippet
+        deliveryOptionsAvailable
+      }
+      ... on KlarnaPaymentWidget {
+        client_token
+        authorizePayload
+      }
+    }
+  }
+}
+fragment address on Address {
+  country {
+    code
+    name
+  }
+  state {
+    code
+    name
+  }
+  address1
+  address2
+  city
+  zipCode
+  email
+  firstName
+  lastName
+  phoneNumber
+  companyName
+  vatNumber
+}
+fragment voucher on Voucher {
+  name
+  value {
+    value
+    formattedValue
+  }
+  ... on CodeVoucher {
+    code
+  }
+  giftCard {
+    lastFourDigits
+  }
+}
+fragment item on Item {
+  id
+  name
+  sizeLocalization {
+    name
+    countries {
+      code
+    }
+  }
+}
+fragment subscriptionPlan on SubscriptionPlan {
+  id
+  discount
+  interval {
+    value
+    type
+  }
+}
+fragment line on Line {
+  __typename
+  id
+  item {
+    ...item
+  }
+  quantity
+  lineValue {
+    formattedValue
+    value
+  }
+  subscriptionId
+  displayItem {
+    name
+    uri
+    media {
+      altText
+      source(sizeName: "mini") {
+        url
+      }
+    }
+    subscriptionPlans {
+      ...subscriptionPlan
+    }
+  }
+  ... on BundleLine {
+    bundle {
+      type
+      sections {
+        quantity
+        lines {
+          id
+          lineValue {
+            formattedValue
+          }
+          name
+          quantity
+          item {
+            ...item
+          }
+        }
+      }
+    }
+  }
+}`) as unknown as TypedDocumentString<SetShippingMethodMutation, SetShippingMethodMutationVariables>;
+export const PaymentInstructionsDocument = new TypedDocumentString(`
+    mutation paymentInstructions($input: PaymentInstructionsInput!) {
+  paymentInstructions(input: $input) {
+    action {
+      ...paymentAction
+    }
+    selection {
+      ...checkout
+    }
+    userErrors {
+      __typename
+      message
+      path
+    }
+  }
+}
+    fragment checkout on Selection {
+  lines {
+    ...line
+  }
+  grandTotal {
+    value
+    currency {
+      denominator
+      code
+    }
+  }
+  discounts {
+    ...voucher
+  }
+  externalGiftCardAvailable
+  checkout {
+    checkoutScript
+    separateBillingAddress {
+      ...address
+    }
+    shippingAddress {
+      ...address
+    }
+    paymentMethods {
+      id
+      uri
+      name
+      kind
+      initiateOnlySupported
+      handlingCost {
+        formattedValue
+        value
+      }
+    }
+    paymentMethod {
+      id
+    }
+    shippingMethods {
+      id
+      name
+      comment
+      price {
+        formattedValue
+        value
+      }
+    }
+    shippingMethod {
+      id
+      name
+      comment
+      price {
+        value
+        formattedValue
+      }
+    }
+    totals {
+      type
+      price {
+        value
+        formattedValue
+        currency {
+          code
+        }
+      }
+    }
+    widgets {
+      __typename
+      ... on IngridWidget {
+        snippet
+        deliveryOptionsAvailable
+      }
+      ... on KlarnaPaymentWidget {
+        client_token
+        authorizePayload
+      }
+    }
+  }
+}
+fragment address on Address {
+  country {
+    code
+    name
+  }
+  state {
+    code
+    name
+  }
+  address1
+  address2
+  city
+  zipCode
+  email
+  firstName
+  lastName
+  phoneNumber
+  companyName
+  vatNumber
+}
+fragment voucher on Voucher {
+  name
+  value {
+    value
+    formattedValue
+  }
+  ... on CodeVoucher {
+    code
+  }
+  giftCard {
+    lastFourDigits
+  }
+}
+fragment paymentAction on PaymentAction {
+  __typename
+  ... on FormPaymentAction {
+    html
+    formFields
+    formType
+  }
+  ... on RedirectPaymentAction {
+    url
+  }
+  ... on JavascriptPaymentAction {
+    script
+    formFields
+  }
+  ... on SuccessPaymentAction {
+    order {
+      id
+    }
+  }
+}
+fragment item on Item {
+  id
+  name
+  sizeLocalization {
+    name
+    countries {
+      code
+    }
+  }
+}
+fragment subscriptionPlan on SubscriptionPlan {
+  id
+  discount
+  interval {
+    value
+    type
+  }
+}
+fragment line on Line {
+  __typename
+  id
+  item {
+    ...item
+  }
+  quantity
+  lineValue {
+    formattedValue
+    value
+  }
+  subscriptionId
+  displayItem {
+    name
+    uri
+    media {
+      altText
+      source(sizeName: "mini") {
+        url
+      }
+    }
+    subscriptionPlans {
+      ...subscriptionPlan
+    }
+  }
+  ... on BundleLine {
+    bundle {
+      type
+      sections {
+        quantity
+        lines {
+          id
+          lineValue {
+            formattedValue
+          }
+          name
+          quantity
+          item {
+            ...item
+          }
+        }
+      }
+    }
+  }
+}`) as unknown as TypedDocumentString<PaymentInstructionsMutation, PaymentInstructionsMutationVariables>;
 export const SessionDocument = new TypedDocumentString(`
     query session {
   session {
