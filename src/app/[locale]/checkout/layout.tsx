@@ -29,9 +29,16 @@ export const dynamic = 'force-dynamic';
 export default async function CheckoutLayout({ children }: { children: ReactNode }) {
   const queryClient = getQueryClient();
   const { isLoggedIn } = await getSession();
-  const { lines } = await queryClient.fetchQuery(checkoutQuery);
+  const { lines, checkout } = await queryClient.fetchQuery(checkoutQuery);
 
   const hasSubscriptionItems = lines.some((line) => line?.subscriptionId != null);
+  const cartTotal = checkout.totals.find((total) => total.type === 'GRAND_TOTAL')?.price.value ?? 0;
+  const lineItems = lines
+    .filter((line): line is NonNullable<typeof line> => line !== null)
+    .map((line) => ({
+      name: line.displayItem.name,
+      price: line.lineValue.value.toFixed(2),
+    }));
 
   const { t } = await getTranslation(['server', 'checkout']);
 
@@ -75,7 +82,9 @@ export default async function CheckoutLayout({ children }: { children: ReactNode
             </div>
             <CheckoutItems />
             <Totals />
-            {process.env.NEXT_PUBLIC_ADYEN_EXPRESS_CHECKOUT_ENABLED === 'true' && <AdyenExpressCheckout />}
+            {process.env.NEXT_PUBLIC_ADYEN_EXPRESS_CHECKOUT_ENABLED === 'true' && lineItems.length > 0 && (
+              <AdyenExpressCheckout cartTotal={cartTotal} initialLineItems={lineItems} />
+            )}
           </div>
         </div>
         {(isLoggedIn || !hasSubscriptionItems) && <CheckoutScript />}

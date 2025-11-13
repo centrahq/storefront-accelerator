@@ -122,9 +122,10 @@ interface Props {
     name: string;
     price: string;
   }[];
+  disabled?: boolean;
 }
 
-export const AdyenExpressCheckout = ({ itemId, cartTotal, initialLineItems }: Props) => {
+export const AdyenExpressCheckout = ({ itemId, cartTotal, initialLineItems, disabled = false }: Props) => {
   const { data: checkoutPaymentMethodsData } = useSuspenseQuery(checkoutPaymentMethodsQuery);
   const initializedRef = useRef(false);
   const googlePayContainerRef = useRef<HTMLDivElement>(null);
@@ -132,7 +133,6 @@ export const AdyenExpressCheckout = ({ itemId, cartTotal, initialLineItems }: Pr
   const itemRef = useRef<string | undefined>(undefined);
   const shippingAddressRef = useRef<AdyenAddress | undefined>(undefined);
   const billingAddressRef = useRef<AdyenAddress | undefined>(undefined);
-  const returnUrl = `${window.location.origin}/confirmation`;
   const adyenPaymentMethod = checkoutPaymentMethodsData?.paymentMethods.find(
     (method) => method.kind === PaymentMethodKind.AdyenDropin,
   );
@@ -156,11 +156,14 @@ export const AdyenExpressCheckout = ({ itemId, cartTotal, initialLineItems }: Pr
   );
 
   useEffect(() => {
+    const returnUrl = `${window.location.origin}/confirmation`;
+
     const init = async () => {
       if (
         !paymentConfig ||
         (!googlePayContainerRef.current && !applePayContainerRef.current) ||
-        initializedRef.current
+        initializedRef.current ||
+        disabled
       ) {
         return;
       }
@@ -735,12 +738,12 @@ export const AdyenExpressCheckout = ({ itemId, cartTotal, initialLineItems }: Pr
     };
 
     void init();
-  }, [initialLineItems, paymentConfig, returnUrl, shippingMethods]);
+  }, [initialLineItems, paymentConfig, shippingMethods, disabled]);
 
   return (
     <>
-      <div ref={googlePayContainerRef} />
-      <div ref={applePayContainerRef} />
+      <div ref={googlePayContainerRef} style={{ display: disabled ? 'none' : 'block' }} />
+      <div ref={applePayContainerRef} style={{ display: disabled ? 'none' : 'block' }} />
     </>
   );
 };
