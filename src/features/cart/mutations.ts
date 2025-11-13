@@ -6,11 +6,11 @@ import { mutationMutex } from '@/lib/centra/storefront-api/mutationLock';
 import { graphql } from '@gql/gql';
 import {
   AddFlexibleBundleToCartMutationVariables,
-  AddItemMutationVariables,
-  UpdateLineMutationVariables,
+  UpdateLineMutationVariables
 } from '@gql/graphql';
 
 import { selectionQuery } from './queries';
+import { addToCart } from './service';
 
 export const useAddFlexibleBundleToCart = () => {
   const queryClient = useQueryClient();
@@ -70,38 +70,7 @@ export const useAddToCart = () => {
 
   return useMutation({
     mutationKey: ['selection', 'addToCart'],
-    mutationFn: async (variables: AddItemMutationVariables) => {
-      const response = await mutationMutex.runExclusive(() =>
-        centraFetch(
-          graphql(`
-            mutation addItem($item: String!, $quantity: Int = 1, $subscriptionPlan: Int) {
-              addItem(item: $item, quantity: $quantity, subscriptionPlan: $subscriptionPlan) {
-                userErrors {
-                  message
-                  path
-                }
-                selection {
-                  ...cart
-                }
-              }
-            }
-          `),
-          {
-            variables,
-          },
-        ),
-      );
-
-      if (response.data.addItem.userErrors.length > 0) {
-        throw new UserError(response.data.addItem.userErrors, response.extensions.traceId);
-      }
-
-      if (!response.data.addItem.selection) {
-        throw new Error('No selection');
-      }
-
-      return response.data.addItem.selection;
-    },
+    mutationFn: addToCart,
     onSuccess: (data) => {
       queryClient.setQueryData(selectionQuery.queryKey, data);
     },

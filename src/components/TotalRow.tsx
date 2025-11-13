@@ -1,4 +1,4 @@
-import { CheckoutFragment, OrderFragment, SelectionTotalRowType } from '@gql/graphql';
+import { OrderFragment, SelectionTotalRowType } from '@gql/graphql';
 
 export const TotalRow = ({
   totals,

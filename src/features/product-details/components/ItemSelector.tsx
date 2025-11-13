@@ -15,7 +15,7 @@ interface Props {
 }
 
 export const ItemSelector = ({ items, sizeGuideTable }: Props) => {
-  const [selectedItem, setSelectedItem] = useQueryState('item', parseAsString.withDefault(items[0]?.id ?? ''));
+  const [selectedItem, setSelectedItem] = useQueryState('item',  parseAsString.withDefault(items.filter((item) => item.isAvailable)[0]?.id ?? ''));
 
   return (
     <ItemsField

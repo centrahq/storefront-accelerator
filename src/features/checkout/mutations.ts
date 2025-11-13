@@ -7,12 +7,12 @@ import { mutationMutex } from '@/lib/centra/storefront-api/mutationLock';
 import { graphql } from '@gql/gql';
 import {
   ApplyGiftCardMutationVariables,
-  PaymentInstructionsInput,
   SetAddressMutationVariables,
-  UpdateLineCheckoutMutationVariables,
+  UpdateLineCheckoutMutationVariables
 } from '@gql/graphql';
 
 import { checkoutQuery } from './queries';
+import { setShippingMethod, submitPaymentInstructions } from './service';
 
 export const useSetAddress = () => {
   const queryClient = useQueryClient();
@@ -68,43 +68,7 @@ export const useSetShippingMethod = () => {
 
   return useMutation({
     mutationKey: ['checkout', 'setShippingMethod'],
-    mutationFn: async (id: number) => {
-      const response = await mutationMutex.runExclusive(() =>
-        centraFetch(
-          graphql(`
-            mutation setShippingMethod($id: Int!) {
-              setShippingMethod(id: $id) {
-                selection {
-                  ...checkout
-                }
-                userErrors {
-                  message
-                  path
-                }
-              }
-            }
-          `),
-          {
-            variables: {
-              id,
-            },
-          },
-        ),
-      );
-
-      if (response.data.setShippingMethod.userErrors.length > 0) {
-        throw new UserError(response.data.setShippingMethod.userErrors, response.extensions.traceId);
-      }
-
-      if (!response.data.setShippingMethod.selection?.checkout) {
-        throw new Error('Something went wrong');
-      }
-
-      return {
-        ...response.data.setShippingMethod.selection,
-        checkout: response.data.setShippingMethod.selection.checkout,
-      };
-    },
+    mutationFn: setShippingMethod,
     onSuccess: (data) => {
       queryClient.setQueryData(checkoutQuery.queryKey, data);
     },
@@ -116,53 +80,7 @@ export const usePaymentInstructions = () => {
 
   return useMutation({
     mutationKey: ['checkout', 'startPayment'],
-    mutationFn: async (variables: Omit<PaymentInstructionsInput, 'termsAndConditions'>) => {
-      const response = await mutationMutex.runExclusive(() =>
-        centraFetch(
-          graphql(`
-            mutation paymentInstructions($input: PaymentInstructionsInput!) {
-              paymentInstructions(input: $input) {
-                action {
-                  ...paymentAction
-                }
-                selection {
-                  ...checkout
-                }
-                userErrors {
-                  __typename
-                  message
-                  path
-                }
-              }
-            }
-          `),
-          {
-            variables: {
-              input: {
-                ...variables,
-                termsAndConditions: true,
-              },
-            },
-          },
-        ),
-      );
-
-      if (response.data.paymentInstructions.userErrors.length > 0) {
-        throw new UserError(response.data.paymentInstructions.userErrors, response.extensions.traceId);
-      }
-
-      if (!response.data.paymentInstructions.selection.checkout) {
-        throw new Error('No selection');
-      }
-
-      return {
-        ...response.data.paymentInstructions,
-        selection: {
-          ...response.data.paymentInstructions.selection,
-          checkout: response.data.paymentInstructions.selection.checkout,
-        },
-      };
-    },
+    mutationFn: submitPaymentInstructions,
     onSuccess: (data) => {
       queryClient.setQueryData(checkoutQuery.queryKey, data.selection);
     },
