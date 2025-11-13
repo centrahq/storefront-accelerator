@@ -4,10 +4,6 @@ import { mutationMutex } from '@/lib/centra/storefront-api/mutationLock';
 import { graphql } from '@gql/gql';
 import { AddItemMutationVariables } from '@gql/graphql';
 
-/**
- * Adds an item to the cart
- * @param variables - Item details including item ID, quantity, and optional subscription plan
- */
 export async function addToCart(variables: AddItemMutationVariables) {
   const response = await mutationMutex.runExclusive(() =>
     centraFetch(

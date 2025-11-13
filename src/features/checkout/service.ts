@@ -4,9 +4,6 @@ import { mutationMutex } from '@/lib/centra/storefront-api/mutationLock';
 import { graphql } from '@gql/gql';
 import { PaymentInstructionsInput } from '@gql/graphql';
 
-/**
- * Fetches the current checkout state
- */
 export async function fetchCheckout() {
   const response = await centraFetch(
     graphql(`
@@ -28,9 +25,6 @@ export async function fetchCheckout() {
   };
 }
 
-/**
- * Fetches available payment methods and shipping methods for the current checkout
- */
 export async function fetchCheckoutPaymentMethods() {
   const response = await centraFetch(
     graphql(`
@@ -53,10 +47,6 @@ export async function fetchCheckoutPaymentMethods() {
   return response.data.selection.checkout;
 }
 
-/**
- * Sets the shipping method for the current checkout
- * @param id - The shipping method ID to set
- */
 export async function setShippingMethod(id: number) {
   const response = await mutationMutex.runExclusive(() =>
     centraFetch(
@@ -95,10 +85,6 @@ export async function setShippingMethod(id: number) {
   };
 }
 
-/**
- * Submits payment instructions to process the payment
- * @param variables - Payment instructions data (termsAndConditions will be automatically set to true)
- */
 export async function submitPaymentInstructions(variables: Omit<PaymentInstructionsInput, 'termsAndConditions'>) {
   const response = await mutationMutex.runExclusive(() =>
     centraFetch(

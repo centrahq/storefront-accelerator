@@ -9,7 +9,6 @@ import { checkoutQuery } from '../../queries';
 
 const KLARNA_SDK_SRC = 'https://x.klarnacdn.net/kp/lib/v1/api.js';
 
-// Local Klarna types (more specific than the global 'any' types from @adyen/adyen-web)
 interface KlarnaPayments {
   init: (payload: { client_token: string }) => KlarnaPayments;
   load: (
