@@ -9,6 +9,7 @@ import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/Ady
 import { AdyenExpressCheckoutErrorBoundary } from '@/features/checkout/components/Payment/AdyenExpressCheckoutErrorBoundary';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
 import { parseAsBundledItems } from '@/features/product-details/bundle/components/bundledItemsSearchParam';
+import { ProductDetailsFragment } from '@gql/graphql';
 
 import { useAddFlexibleBundleToCart, useAddToCart } from '../mutations';
 import { CartContext } from './CartContext';
@@ -19,17 +20,21 @@ interface AddToCartButtonProps {
     id: string;
     isAvailable: boolean;
   }>;
+  product: ProductDetailsFragment;
   bundleItemAvailability: { [sectionId: number]: { [itemId: string]: boolean } };
 }
 
-export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailability }: AddToCartButtonProps) => {
+export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailability, product }: AddToCartButtonProps) => {
   const { t } = useTranslation(['shop']);
-  const [itemId] = useQueryState('item', parseAsString.withDefault(items.filter((item) => item.isAvailable)[0]?.id ?? ''));
+  const [itemId] = useQueryState('item', parseAsString.withDefault(items[0]?.id ?? ''));
   const [bundledItems] = useQueryState('bundledItems', parseAsBundledItems);
   const [selectedPlan] = useQueryState('plan', parseAsString.withDefault(''));
   const addToCartMutation = useAddToCart();
   const addFlexibleBundleToCartMutation = useAddFlexibleBundleToCart();
   const { setIsCartOpen } = useContext(CartContext);
+
+  const currentItem = items.find((item) => item.id === itemId);
+  const isCurrentItemAvailable = currentItem?.isAvailable ?? false;
 
   const addFlexibleBundle = () => {
     const sections = Object.entries(bundledItems).map(([sectionId, item]) => ({
@@ -97,7 +102,12 @@ export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailabilit
       </button>
       {process.env.NEXT_PUBLIC_ADYEN_EXPRESS_CHECKOUT_ENABLED === 'true' && (
         <AdyenExpressCheckoutErrorBoundary>
-          <AdyenExpressCheckout itemId={itemId} cartTotal={30} initialLineItems={[{ name: 'Dress', price: '30.00' }]} />
+          <AdyenExpressCheckout
+            itemId={itemId}
+            cartTotal={product.price?.value ?? 0}
+            disabled={!isCurrentItemAvailable}
+            initialLineItems={[{ name: product.name, price: product.price?.value.toFixed(2) ?? '0.00' }]}
+          />
         </AdyenExpressCheckoutErrorBoundary>
       )}
     </>
