@@ -9,7 +9,6 @@ import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/Ady
 import { AdyenExpressCheckoutErrorBoundary } from '@/features/checkout/components/Payment/AdyenExpressCheckoutErrorBoundary';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
 import { parseAsBundledItems } from '@/features/product-details/bundle/components/bundledItemsSearchParam';
-import { ProductDetailsFragment } from '@gql/graphql';
 
 import { useAddFlexibleBundleToCart, useAddToCart } from '../mutations';
 import { CartContext } from './CartContext';
@@ -20,11 +19,12 @@ interface AddToCartButtonProps {
     id: string;
     isAvailable: boolean;
   }>;
-  product: ProductDetailsFragment;
+  productName: string;
+  productPrice: number;
   bundleItemAvailability: { [sectionId: number]: { [itemId: string]: boolean } };
 }
 
-export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailability, product }: AddToCartButtonProps) => {
+export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailability, productName, productPrice }: AddToCartButtonProps) => {
   const { t } = useTranslation(['shop']);
   const [itemId] = useQueryState('item', parseAsString.withDefault(items[0]?.id ?? ''));
   const [bundledItems] = useQueryState('bundledItems', parseAsBundledItems);
@@ -104,9 +104,9 @@ export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailabilit
         <AdyenExpressCheckoutErrorBoundary>
           <AdyenExpressCheckout
             itemId={itemId}
-            cartTotal={product.price?.value ?? 0}
+            cartTotal={productPrice}
             disabled={!isCurrentItemAvailable}
-            initialLineItems={[{ name: product.name, price: product.price?.value.toFixed(2) ?? '0.00' }]}
+            initialLineItems={[{ name: productName, price: productPrice.toFixed(2) }]}
           />
         </AdyenExpressCheckoutErrorBoundary>
       )}

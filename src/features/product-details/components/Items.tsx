@@ -54,7 +54,8 @@ export const Items = async ({ product }: { product: ProductDetailsFragment }) =>
       {product.subscriptionPlans.length > 0 && <SubscriptionSelector plans={product.subscriptionPlans} />}
       <AddToCartButton
         items={itemsData}
-        product={product}
+        productName={product.name}
+        productPrice={product.price?.value ?? 0}
         isFlexibleBundle={product.bundle?.type === BundleType.Flexible}
         bundleItemAvailability={bundleItemAvailability}
       />
