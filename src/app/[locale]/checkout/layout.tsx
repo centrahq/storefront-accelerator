@@ -28,7 +28,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function CheckoutLayout({ children }: { children: ReactNode }) {
   const queryClient = getQueryClient();
-  const { isLoggedIn } = await getSession();
+  const { isLoggedIn, language, market } = await getSession();
   const { lines, checkout } = await queryClient.fetchQuery(checkoutQuery);
 
   const hasSubscriptionItems = lines.some((line) => line?.subscriptionId != null);
@@ -83,7 +83,12 @@ export default async function CheckoutLayout({ children }: { children: ReactNode
             <CheckoutItems />
             <Totals />
             {process.env.NEXT_PUBLIC_ADYEN_EXPRESS_CHECKOUT_ENABLED === 'true' && lineItems.length > 0 && (
-              <AdyenExpressCheckout cartTotal={cartTotal} initialLineItems={lineItems} />
+              <AdyenExpressCheckout
+                cartTotal={cartTotal}
+                initialLineItems={lineItems}
+                language={language}
+                market={market}
+              />
             )}
           </div>
         </div>
