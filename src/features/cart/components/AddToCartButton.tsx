@@ -22,9 +22,11 @@ interface AddToCartButtonProps {
   productName: string;
   productPrice: number;
   bundleItemAvailability: { [sectionId: number]: { [itemId: string]: boolean } };
+  language: string;
+  market: number;
 }
 
-export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailability, productName, productPrice }: AddToCartButtonProps) => {
+export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailability, productName, productPrice, language, market }: AddToCartButtonProps) => {
   const { t } = useTranslation(['shop']);
   const [itemId] = useQueryState('item', parseAsString.withDefault(items[0]?.id ?? ''));
   const [bundledItems] = useQueryState('bundledItems', parseAsBundledItems);
@@ -107,6 +109,8 @@ export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailabilit
             cartTotal={productPrice}
             disabled={!isCurrentItemAvailable}
             initialLineItems={[{ name: productName, price: productPrice.toFixed(2) }]}
+            language={language}
+            market={market}
           />
         </AdyenExpressCheckoutErrorBoundary>
       )}

@@ -23,6 +23,8 @@ interface ExpressCheckoutWidgetsParams {
   returnUrl: string;
   amount: number;
   lineItems: LineItem[];
+  language: string;
+  market: number;
 }
 
 interface ShippingMethod {
@@ -69,9 +71,9 @@ interface ExpressCheckoutWidgetsData {
   };
 }
 
-export function expressCheckoutWidgetsQuery({ pluginUri, returnUrl, amount, lineItems }: ExpressCheckoutWidgetsParams) {
+export function expressCheckoutWidgetsQuery({ pluginUri, returnUrl, amount, lineItems, language, market }: ExpressCheckoutWidgetsParams) {
   return queryOptions({
-    queryKey: ['express-checkout-widgets', pluginUri, returnUrl, amount, lineItems],
+    queryKey: ['express-checkout-widgets', pluginUri, returnUrl, amount, lineItems, language, market],
     enabled: !!pluginUri,
     queryFn: async () => {
       const response = await fetch('/api/express-checkout-widgets', {

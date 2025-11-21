@@ -4,6 +4,7 @@ import {
   AddressData,
   AdyenCheckout,
   ApplePay,
+  CheckoutAdvancedFlowResponse,
   GooglePay,
   SubmitActions,
   SubmitData,
@@ -123,9 +124,18 @@ interface Props {
     price: string;
   }[];
   disabled?: boolean;
+  language: string;
+  market: number;
 }
 
-export const AdyenExpressCheckout = ({ itemId, cartTotal, initialLineItems, disabled = false }: Props) => {
+export const AdyenExpressCheckout = ({
+  itemId,
+  cartTotal,
+  initialLineItems,
+  disabled = false,
+  language,
+  market,
+}: Props) => {
   const { data: checkoutPaymentMethodsData } = useSuspenseQuery(checkoutPaymentMethodsQuery);
   const initializedRef = useRef(false);
   const googlePayContainerRef = useRef<HTMLDivElement>(null);
@@ -140,6 +150,7 @@ export const AdyenExpressCheckout = ({ itemId, cartTotal, initialLineItems, disa
     () => checkoutPaymentMethodsData?.shippingMethods ?? [],
     [checkoutPaymentMethodsData],
   );
+  console.log(checkoutPaymentMethodsData);
   const grandTotal = cartTotal;
   const cartTotalInMinor = Math.round(grandTotal * 100);
   useEffect(() => {
@@ -149,14 +160,17 @@ export const AdyenExpressCheckout = ({ itemId, cartTotal, initialLineItems, disa
   const { data: paymentConfig } = useQuery(
     expressCheckoutWidgetsQuery({
       pluginUri: adyenPaymentMethod?.uri,
-      returnUrl: `${window.location.origin}/confirmation`,
+      returnUrl: `${window.location.origin}/success`,
       amount: cartTotalInMinor,
       lineItems: initialLineItems,
+      language,
+      market,
     }),
   );
+  console.log(paymentConfig);
 
   useEffect(() => {
-    const returnUrl = `${window.location.origin}/confirmation`;
+    const returnUrl = `${window.location.origin}/success`;
 
     const init = async () => {
       if (
@@ -195,7 +209,7 @@ export const AdyenExpressCheckout = ({ itemId, cartTotal, initialLineItems, disa
               address1: '',
               ...address,
             },
-            paymentReturnPage: `${window.location.origin}/confirmation`,
+            paymentReturnPage: `${window.location.origin}/success`,
             paymentFailedPage: `${window.location.origin}/failed`,
             paymentInitiateOnly: true,
             express: true,
@@ -396,15 +410,18 @@ export const AdyenExpressCheckout = ({ itemId, cartTotal, initialLineItems, disa
               lastName: adyenBillingAddress.lastName,
               phoneNumber: adyenBillingAddress.phoneNumber,
             },
-            paymentReturnPage: `${window.location.origin}/confirmation`,
+            paymentReturnPage: `${window.location.origin}/success`,
             paymentFailedPage: `${window.location.origin}/failed`,
             paymentMethodSpecificFields: state.data as unknown as Record<string, unknown>,
             express: true,
           });
-
-          if (response.action) {
+          const formFields: Record<string, string> | null =
+            response.action?.__typename === 'JavascriptPaymentAction'
+              ? ((response.action.formFields as Record<string, string> | undefined) ?? {})
+              : null;
+          if (formFields) {
             actions.resolve({
-              resultCode: 'Authorised',
+              ...(formFields as unknown as CheckoutAdvancedFlowResponse),
             });
           } else {
             actions.resolve({
@@ -503,7 +520,7 @@ export const AdyenExpressCheckout = ({ itemId, cartTotal, initialLineItems, disa
             address1: '',
             ...address,
           },
-          paymentReturnPage: `${window.location.origin}/confirmation`,
+          paymentReturnPage: `${window.location.origin}/success`,
           paymentFailedPage: `${window.location.origin}/failed`,
           paymentInitiateOnly: true,
           express: true,
@@ -544,6 +561,46 @@ export const AdyenExpressCheckout = ({ itemId, cartTotal, initialLineItems, disa
         environment: paymentConfig.context,
         locale: paymentConfig.languageCode,
         paymentMethodsResponse: paymentConfig.paymentMethodsResponse,
+        onAdditionalDetails: (state) => {
+          function flattenForPost(data: Record<string, unknown>, prefix: string): Record<string, string> {
+            const result: Record<string, string> = {};
+
+            for (const key in data) {
+              if (!Object.prototype.hasOwnProperty.call(data, key)) {
+                continue;
+              }
+
+              const value = data[key];
+              const flatKey = prefix.length ? `${prefix}[${key}]` : key;
+
+              if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+                Object.assign(result, flattenForPost(value as Record<string, unknown>, flatKey));
+              } else {
+                result[flatKey] = value as string;
+              }
+            }
+
+            return result;
+          }
+
+          const form = document.createElement('form');
+          form.method = 'post'; // required to be supported since adyen might send POST from 3DS
+          form.action = returnUrl;
+
+          const flattenedItems = flattenForPost(state.data as Record<string, unknown>, '');
+
+          Object.entries(flattenedItems).forEach(([name, value]) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+          });
+
+          form.style.cssText = 'position:absolute;left:-100px;top:-100px;';
+          document.body.appendChild(form);
+          form.submit();
+        },
       });
 
       const googlePay = new GooglePay(checkout, {
@@ -555,40 +612,6 @@ export const AdyenExpressCheckout = ({ itemId, cartTotal, initialLineItems, disa
         callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
         emailRequired: true,
         isExpress: true,
-        onAdditionalDetails: (state) => {
-          const form = document.createElement('form');
-          form.method = 'post';
-          form.action = returnUrl;
-
-          const flattenForPost = (data: Record<string, unknown>, prefix = ''): Record<string, string> => {
-            const result: Record<string, string> = {};
-            for (const key in data) {
-              const value = data[key];
-              const newKey = prefix ? `${prefix}[${key}]` : key;
-              if (typeof value === 'object' && value !== null) {
-                Object.assign(result, flattenForPost(value as Record<string, unknown>, newKey));
-              } else {
-                result[newKey] = String(value);
-              }
-            }
-            return result;
-          };
-
-          const flattenedItems = flattenForPost(state.data as Record<string, unknown>);
-          Object.entries(flattenedItems).forEach(([name, value]) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = name;
-            input.value = value;
-            form.appendChild(input);
-          });
-
-          form.style.position = 'absolute';
-          form.style.left = '-100px';
-          form.style.top = '-100px';
-          document.body.appendChild(form);
-          form.submit();
-        },
         onAuthorized: onAuthorizedHandler,
         onPaymentCompleted: () => {
           window.location.href = returnUrl;
@@ -642,40 +665,6 @@ export const AdyenExpressCheckout = ({ itemId, cartTotal, initialLineItems, disa
           label: item.name,
           type: 'final' as const,
         })),
-        onAdditionalDetails: (state) => {
-          const form = document.createElement('form');
-          form.method = 'post';
-          form.action = returnUrl;
-
-          const flattenForPost = (data: Record<string, unknown>, prefix = ''): Record<string, string> => {
-            const result: Record<string, string> = {};
-            for (const key in data) {
-              const value = data[key];
-              const newKey = prefix ? `${prefix}[${key}]` : key;
-              if (typeof value === 'object' && value !== null) {
-                Object.assign(result, flattenForPost(value as Record<string, unknown>, newKey));
-              } else {
-                result[newKey] = String(value);
-              }
-            }
-            return result;
-          };
-
-          const flattenedItems = flattenForPost(state.data as Record<string, unknown>);
-          Object.entries(flattenedItems).forEach(([name, value]) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = name;
-            input.value = value;
-            form.appendChild(input);
-          });
-
-          form.style.position = 'absolute';
-          form.style.left = '-100px';
-          form.style.top = '-100px';
-          document.body.appendChild(form);
-          form.submit();
-        },
         onAuthorized: (payload, actions) => {
           const paymentData = payload.authorizedEvent.payment;
           const { shippingContact } = paymentData;
