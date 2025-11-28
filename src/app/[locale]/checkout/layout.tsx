@@ -82,7 +82,7 @@ export default async function CheckoutLayout({ children }: { children: ReactNode
             </div>
             <CheckoutItems />
             <Totals />
-            {lineItems.length > 0 && (
+            {!hasSubscriptionItems && lineItems.length > 0 && (
               <AdyenExpressCheckout
                 cartTotal={cartTotal}
                 initialLineItems={lineItems}
