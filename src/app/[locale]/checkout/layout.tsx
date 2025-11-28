@@ -82,7 +82,7 @@ export default async function CheckoutLayout({ children }: { children: ReactNode
             </div>
             <CheckoutItems />
             <Totals />
-            {process.env.NEXT_PUBLIC_ADYEN_EXPRESS_CHECKOUT_ENABLED === 'true' && lineItems.length > 0 && (
+            {lineItems.length > 0 && (
               <AdyenExpressCheckout
                 cartTotal={cartTotal}
                 initialLineItems={lineItems}

@@ -3,6 +3,7 @@
 import {
   AddressData,
   AdyenCheckout,
+  AdyenCheckoutError,
   ApplePay,
   CheckoutAdvancedFlowResponse,
   GooglePay,
@@ -13,11 +14,12 @@ import {
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef } from 'react';
 
-import { addToCart } from '@/features/cart/service';
+import { addToCart, updateLine } from '@/features/cart/service';
 import { CheckoutQuery, PaymentMethodKind, SelectionTotalRowType } from '@gql/graphql';
 
 import { checkoutPaymentMethodsQuery, expressCheckoutWidgetsQuery, PaymentConfigResponse } from '../../queries';
 import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../../service';
+import { AdyenExpressCheckoutErrorBoundary } from './AdyenExpressCheckoutErrorBoundary';
 import { AdyenAddress } from './types';
 
 const mapApplePayAddressToCentra = (
@@ -128,7 +130,7 @@ interface Props {
   market: number;
 }
 
-export const AdyenExpressCheckout = ({
+export const AdyenExpressCheckoutInner = ({
   itemId,
   cartTotal,
   initialLineItems,
@@ -143,6 +145,7 @@ export const AdyenExpressCheckout = ({
   const itemRef = useRef<string | undefined>(undefined);
   const shippingAddressRef = useRef<AdyenAddress | undefined>(undefined);
   const billingAddressRef = useRef<AdyenAddress | undefined>(undefined);
+  const addedItemLineRef = useRef<string | null>(null);
   const adyenPaymentMethod = checkoutPaymentMethodsData?.paymentMethods.find(
     (method) => method.kind === PaymentMethodKind.AdyenDropin,
   );
@@ -150,13 +153,12 @@ export const AdyenExpressCheckout = ({
     () => checkoutPaymentMethodsData?.shippingMethods ?? [],
     [checkoutPaymentMethodsData],
   );
-  console.log(checkoutPaymentMethodsData);
   const grandTotal = cartTotal;
   const cartTotalInMinor = Math.round(grandTotal * 100);
   useEffect(() => {
     itemRef.current = itemId;
   }, [itemId]);
-  // Fetch payment configuration
+
   const { data: paymentConfig } = useQuery(
     expressCheckoutWidgetsQuery({
       pluginUri: adyenPaymentMethod?.uri,
@@ -167,7 +169,6 @@ export const AdyenExpressCheckout = ({
       market,
     }),
   );
-  console.log(paymentConfig);
 
   useEffect(() => {
     const returnUrl = `${window.location.origin}/success`;
@@ -266,7 +267,12 @@ export const AdyenExpressCheckout = ({
               const hasProductInSelection = checkout.lines.some((line) => line?.item.id === itemRef.current);
 
               if (!hasProductInSelection) {
-                await addToCart({ item: itemRef.current });
+                const addedSelection = await addToCart({ item: itemRef.current });
+                // Find the newly added item's line ID
+                const addedItem = addedSelection.lines.find((line) => line?.item.id === itemRef.current);
+                if (addedItem) {
+                  addedItemLineRef.current = addedItem.id;
+                }
               }
             } catch (error) {
               console.error('Failed to add item to cart:', error);
@@ -449,7 +455,12 @@ export const AdyenExpressCheckout = ({
             const hasProductInSelection = checkout.lines.some((line) => line?.item.id === itemRef.current);
 
             if (!hasProductInSelection) {
-              await addToCart({ item: itemRef.current });
+              const addedSelection = await addToCart({ item: itemRef.current });
+              // Find the newly added item's line ID
+              const addedItem = addedSelection.lines.find((line) => line?.item.id === itemRef.current);
+              if (addedItem) {
+                addedItemLineRef.current = addedItem.id;
+              }
             }
           } catch (error) {
             console.error('Failed to add item to cart:', error);
@@ -561,6 +572,22 @@ export const AdyenExpressCheckout = ({
         environment: paymentConfig.context,
         locale: paymentConfig.languageCode,
         paymentMethodsResponse: paymentConfig.paymentMethodsResponse,
+        onError: (error: AdyenCheckoutError) => {
+          const isCancellationError =
+            error.name === 'CANCEL' ||
+            (error as unknown as { cause?: { statusCode?: string } }).cause?.statusCode === 'CANCELED';
+          if (isCancellationError && addedItemLineRef.current) {
+            const lineId = addedItemLineRef.current;
+            void updateLine({ id: lineId, quantity: 0 })
+              .then(() => {
+                console.log('Removed added item from cart due to cancellation');
+                addedItemLineRef.current = null;
+              })
+              .catch((removeError: unknown) => {
+                console.error('Failed to remove item from cart:', removeError);
+              });
+          }
+        },
         onAdditionalDetails: (state) => {
           function flattenForPost(data: Record<string, unknown>, prefix: string): Record<string, string> {
             const result: Record<string, string> = {};
@@ -621,9 +648,6 @@ export const AdyenExpressCheckout = ({
         },
         onPaymentFailed: () => {
           console.log('Payment failed');
-        },
-        onError: () => {
-          console.log('Error');
         },
         paymentDataCallbacks: {
           onPaymentDataChanged: googlePayPaymentDataChangedHandler,
@@ -734,5 +758,17 @@ export const AdyenExpressCheckout = ({
       <div ref={googlePayContainerRef} style={{ display: disabled ? 'none' : 'block' }} />
       <div ref={applePayContainerRef} style={{ display: disabled ? 'none' : 'block' }} />
     </>
+  );
+};
+
+export const AdyenExpressCheckout = (props: Props) => {
+  if (process.env.NEXT_PUBLIC_ADYEN_EXPRESS_CHECKOUT_ENABLED !== 'true') {
+    return null;
+  }
+
+  return (
+    <AdyenExpressCheckoutErrorBoundary>
+      <AdyenExpressCheckoutInner {...props} />
+    </AdyenExpressCheckoutErrorBoundary>
   );
 };

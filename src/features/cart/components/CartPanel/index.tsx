@@ -5,13 +5,18 @@ import { getQueryClient } from '@/lib/centra/storefront-api/queryClient';
 import { selectionQuery } from '../../queries';
 import { CartPanel } from './Panel';
 
-export const Cart = async () => {
+interface Props {
+  language: string;
+  market: number;
+}
+
+export const Cart = async ({ language, market }: Props) => {
   const queryClient = getQueryClient();
   await queryClient.prefetchQuery(selectionQuery);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <CartPanel />
+      <CartPanel language={language} market={market} />
     </HydrationBoundary>
   );
 };

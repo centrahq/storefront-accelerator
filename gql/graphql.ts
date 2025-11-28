@@ -3348,6 +3348,14 @@ export type AddFlexibleBundleToCartMutation = { addFlexibleBundle: { userErrors:
         | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
        | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null } };
 
+export type CartQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CartQuery = { selection: { lines: Array<
+      | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+      | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+     | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } };
+
 export type UpdateLineMutationVariables = Exact<{
   id: Scalars['String']['input'];
   quantity: Scalars['Int']['input'];
@@ -3385,14 +3393,6 @@ export type UpdateLineMutation = { updateLine:
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null }
    };
-
-export type CartQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type CartQuery = { selection: { lines: Array<
-      | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-      | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-     | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } };
 
 export type AddItemMutationVariables = Exact<{
   item: Scalars['String']['input'];
@@ -5830,6 +5830,86 @@ fragment line on Line {
     }
   }
 }`) as unknown as TypedDocumentString<AddFlexibleBundleToCartMutation, AddFlexibleBundleToCartMutationVariables>;
+export const CartDocument = new TypedDocumentString(`
+    query cart {
+  selection {
+    ...cart
+  }
+}
+    fragment item on Item {
+  id
+  name
+  sizeLocalization {
+    name
+    countries {
+      code
+    }
+  }
+}
+fragment subscriptionPlan on SubscriptionPlan {
+  id
+  discount
+  interval {
+    value
+    type
+  }
+}
+fragment cart on Selection {
+  lines {
+    ...line
+  }
+  grandTotal {
+    currency {
+      prefix
+      suffix
+    }
+  }
+}
+fragment line on Line {
+  __typename
+  id
+  item {
+    ...item
+  }
+  quantity
+  lineValue {
+    formattedValue
+    value
+  }
+  subscriptionId
+  displayItem {
+    name
+    uri
+    media {
+      altText
+      source(sizeName: "mini") {
+        url
+      }
+    }
+    subscriptionPlans {
+      ...subscriptionPlan
+    }
+  }
+  ... on BundleLine {
+    bundle {
+      type
+      sections {
+        quantity
+        lines {
+          id
+          lineValue {
+            formattedValue
+          }
+          name
+          quantity
+          item {
+            ...item
+          }
+        }
+      }
+    }
+  }
+}`) as unknown as TypedDocumentString<CartQuery, CartQueryVariables>;
 export const UpdateLineDocument = new TypedDocumentString(`
     mutation updateLine($id: String!, $quantity: Int!, $subscriptionPlanId: Int) {
   updateLine(
@@ -5920,86 +6000,6 @@ fragment line on Line {
     }
   }
 }`) as unknown as TypedDocumentString<UpdateLineMutation, UpdateLineMutationVariables>;
-export const CartDocument = new TypedDocumentString(`
-    query cart {
-  selection {
-    ...cart
-  }
-}
-    fragment item on Item {
-  id
-  name
-  sizeLocalization {
-    name
-    countries {
-      code
-    }
-  }
-}
-fragment subscriptionPlan on SubscriptionPlan {
-  id
-  discount
-  interval {
-    value
-    type
-  }
-}
-fragment cart on Selection {
-  lines {
-    ...line
-  }
-  grandTotal {
-    currency {
-      prefix
-      suffix
-    }
-  }
-}
-fragment line on Line {
-  __typename
-  id
-  item {
-    ...item
-  }
-  quantity
-  lineValue {
-    formattedValue
-    value
-  }
-  subscriptionId
-  displayItem {
-    name
-    uri
-    media {
-      altText
-      source(sizeName: "mini") {
-        url
-      }
-    }
-    subscriptionPlans {
-      ...subscriptionPlan
-    }
-  }
-  ... on BundleLine {
-    bundle {
-      type
-      sections {
-        quantity
-        lines {
-          id
-          lineValue {
-            formattedValue
-          }
-          name
-          quantity
-          item {
-            ...item
-          }
-        }
-      }
-    }
-  }
-}`) as unknown as TypedDocumentString<CartQuery, CartQueryVariables>;
 export const AddItemDocument = new TypedDocumentString(`
     mutation addItem($item: String!, $quantity: Int = 1, $subscriptionPlan: Int) {
   addItem(item: $item, quantity: $quantity, subscriptionPlan: $subscriptionPlan) {
