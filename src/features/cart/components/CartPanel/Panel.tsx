@@ -37,6 +37,7 @@ export const CartPanel = ({ language, market }: Props) => {
 
     return [currency.prefix, value, currency.suffix].filter((val) => val !== '' && val !== null).join(' ');
   }, [lines, grandTotal.currency]);
+  const hasSubscriptionItems = useMemo(() => lines.some((line) => line?.subscriptionId != null), [lines]);
 
   return (
     <>
@@ -87,7 +88,7 @@ export const CartPanel = ({ language, market }: Props) => {
               >
                 {t('shop:cart.proceed')}
               </ShopLink>
-              {lines.length > 0 && (
+              {!hasSubscriptionItems && lines.length > 0 && (
                 <AdyenExpressCheckout
                   cartTotal={totalValue}
                   initialLineItems={lines.map((line) => ({
