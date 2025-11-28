@@ -163,7 +163,7 @@ export const AdyenExpressCheckoutInner = ({
   const { data: paymentConfig } = useQuery(
     expressCheckoutWidgetsQuery({
       pluginUri: adyenPaymentMethod?.uri,
-      returnUrl: `${window.location.origin}/success`,
+      returnUrl: `${window.location.origin}/confirmation`,
       amount: cartTotalInMinor,
       lineItems: initialLineItems,
       language,
@@ -172,8 +172,6 @@ export const AdyenExpressCheckoutInner = ({
   );
 
   useEffect(() => {
-    const returnUrl = `${window.location.origin}/success`;
-
     const init = async () => {
       if (
         !paymentConfig ||
@@ -211,7 +209,7 @@ export const AdyenExpressCheckoutInner = ({
               address1: '',
               ...address,
             },
-            paymentReturnPage: `${window.location.origin}/success`,
+            paymentReturnPage: `${window.location.origin}/confirmation`,
             paymentFailedPage: `${window.location.origin}/failed`,
             paymentInitiateOnly: true,
             express: true,
@@ -417,7 +415,7 @@ export const AdyenExpressCheckoutInner = ({
               lastName: adyenBillingAddress.lastName,
               phoneNumber: adyenBillingAddress.phoneNumber,
             },
-            paymentReturnPage: `${window.location.origin}/success`,
+            paymentReturnPage: `${window.location.origin}/confirmation`,
             paymentFailedPage: `${window.location.origin}/failed`,
             paymentMethodSpecificFields: { ...(state.data as unknown as Record<string, unknown>), express: true },
             express: true,
@@ -532,7 +530,7 @@ export const AdyenExpressCheckoutInner = ({
             address1: '',
             ...address,
           },
-          paymentReturnPage: `${window.location.origin}/success`,
+          paymentReturnPage: `${window.location.origin}/confirmation`,
           paymentFailedPage: `${window.location.origin}/failed`,
           paymentInitiateOnly: true,
           express: true,
@@ -612,8 +610,8 @@ export const AdyenExpressCheckoutInner = ({
           }
 
           const form = document.createElement('form');
-          form.method = 'post'; // required to be supported since adyen might send POST from 3DS
-          form.action = returnUrl;
+          form.method = 'post';
+          form.action = `${window.location.origin}/success`;
 
           const flattenedItems = flattenForPost(state.data as Record<string, unknown>, '');
 
@@ -642,7 +640,7 @@ export const AdyenExpressCheckoutInner = ({
         isExpress: true,
         onAuthorized: onAuthorizedHandler,
         onPaymentCompleted: () => {
-          window.location.href = returnUrl;
+          window.location.href = `${window.location.origin}/confirmation`;
         },
         onSubmit: (state: SubmitData, _component: UIElement, actions: SubmitActions) => {
           void handleOnSubmit(state, actions);
