@@ -12,6 +12,7 @@ import {
   UIElement,
 } from '@adyen/adyen-web';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useRef } from 'react';
 
 import { addToCart, updateLine } from '@/features/cart/service';
@@ -418,7 +419,7 @@ export const AdyenExpressCheckoutInner = ({
             },
             paymentReturnPage: `${window.location.origin}/success`,
             paymentFailedPage: `${window.location.origin}/failed`,
-            paymentMethodSpecificFields: state.data as unknown as Record<string, unknown>,
+            paymentMethodSpecificFields: { ...(state.data as unknown as Record<string, unknown>), express: true },
             express: true,
           });
           const formFields: Record<string, string> | null =
@@ -761,6 +762,10 @@ export const AdyenExpressCheckoutInner = ({
   );
 };
 
+const AdyenExpressCheckoutDynamic = dynamic(() => Promise.resolve(AdyenExpressCheckoutInner), {
+  ssr: false,
+});
+
 export const AdyenExpressCheckout = (props: Props) => {
   if (process.env.NEXT_PUBLIC_ADYEN_EXPRESS_CHECKOUT_ENABLED !== 'true') {
     return null;
@@ -768,7 +773,7 @@ export const AdyenExpressCheckout = (props: Props) => {
 
   return (
     <AdyenExpressCheckoutErrorBoundary>
-      <AdyenExpressCheckoutInner {...props} />
+      <AdyenExpressCheckoutDynamic {...props} />
     </AdyenExpressCheckoutErrorBoundary>
   );
 };
