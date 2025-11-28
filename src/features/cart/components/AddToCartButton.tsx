@@ -6,7 +6,6 @@ import { useContext } from 'react';
 import { toast } from 'sonner';
 
 import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/AdyenExpressCheckout';
-import { AdyenExpressCheckoutErrorBoundary } from '@/features/checkout/components/Payment/AdyenExpressCheckoutErrorBoundary';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
 import { parseAsBundledItems } from '@/features/product-details/bundle/components/bundledItemsSearchParam';
 
@@ -26,7 +25,15 @@ interface AddToCartButtonProps {
   market: number;
 }
 
-export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailability, productName, productPrice, language, market }: AddToCartButtonProps) => {
+export const AddToCartButton = ({
+  items,
+  isFlexibleBundle,
+  bundleItemAvailability,
+  productName,
+  productPrice,
+  language,
+  market,
+}: AddToCartButtonProps) => {
   const { t } = useTranslation(['shop']);
   const [itemId] = useQueryState('item', parseAsString.withDefault(items[0]?.id ?? ''));
   const [bundledItems] = useQueryState('bundledItems', parseAsBundledItems);
@@ -102,18 +109,14 @@ export const AddToCartButton = ({ items, isFlexibleBundle, bundleItemAvailabilit
       >
         {selectedPlan === '' ? t('shop:product.add-to-cart') : t('shop:product.subscriptions.subscribe')}
       </button>
-      {process.env.NEXT_PUBLIC_ADYEN_EXPRESS_CHECKOUT_ENABLED === 'true' && (
-        <AdyenExpressCheckoutErrorBoundary>
-          <AdyenExpressCheckout
-            itemId={itemId}
-            cartTotal={productPrice}
-            disabled={!isCurrentItemAvailable}
-            initialLineItems={[{ name: productName, price: productPrice.toFixed(2) }]}
-            language={language}
-            market={market}
-          />
-        </AdyenExpressCheckoutErrorBoundary>
-      )}
+      <AdyenExpressCheckout
+        itemId={itemId}
+        cartTotal={productPrice}
+        disabled={!isCurrentItemAvailable}
+        initialLineItems={[{ name: productName, price: productPrice.toFixed(2) }]}
+        language={language}
+        market={market}
+      />
     </>
   );
 };

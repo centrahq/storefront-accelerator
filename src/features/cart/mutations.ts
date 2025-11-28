@@ -4,13 +4,10 @@ import { UserError } from '@/lib/centra/errors';
 import { centraFetch } from '@/lib/centra/storefront-api/fetchers/session';
 import { mutationMutex } from '@/lib/centra/storefront-api/mutationLock';
 import { graphql } from '@gql/gql';
-import {
-  AddFlexibleBundleToCartMutationVariables,
-  UpdateLineMutationVariables
-} from '@gql/graphql';
+import { AddFlexibleBundleToCartMutationVariables } from '@gql/graphql';
 
 import { selectionQuery } from './queries';
-import { addToCart } from './service';
+import { addToCart, updateLine } from './service';
 
 export const useAddFlexibleBundleToCart = () => {
   const queryClient = useQueryClient();
@@ -82,38 +79,7 @@ export const useUpdateLine = () => {
 
   return useMutation({
     mutationKey: ['selection', 'updateLine'],
-    mutationFn: async (variables: UpdateLineMutationVariables) => {
-      const response = await mutationMutex.runExclusive(() =>
-        centraFetch(
-          graphql(`
-            mutation updateLine($id: String!, $quantity: Int!, $subscriptionPlanId: Int) {
-              updateLine(lineId: $id, quantity: $quantity, subscriptionPlanId: $subscriptionPlanId) {
-                userErrors {
-                  message
-                  path
-                }
-                selection {
-                  ...cart
-                }
-              }
-            }
-          `),
-          {
-            variables,
-          },
-        ),
-      );
-
-      if (response.data.updateLine.userErrors.length > 0) {
-        throw new UserError(response.data.updateLine.userErrors, response.extensions.traceId);
-      }
-
-      if (!response.data.updateLine.selection) {
-        throw new Error('No selection');
-      }
-
-      return response.data.updateLine.selection;
-    },
+    mutationFn: updateLine,
     onSuccess: (data) => {
       queryClient.setQueryData(selectionQuery.queryKey, data);
     },

@@ -5,6 +5,7 @@ import { ShoppingBagIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useIsMutating, useSuspenseQuery } from '@tanstack/react-query';
 import { useContext, useMemo } from 'react';
 
+import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/AdyenExpressCheckout';
 import { Trans } from '@/features/i18n';
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
@@ -13,7 +14,12 @@ import { selectionQuery } from '../../queries';
 import { CartContext } from '../CartContext';
 import { CartItems } from '../CartItems';
 
-export const CartPanel = () => {
+interface Props {
+  language: string;
+  market: number;
+}
+
+export const CartPanel = ({ language, market }: Props) => {
   const { t } = useTranslation(['shop']);
   const { data } = useSuspenseQuery(selectionQuery);
   const isMutatingSelection = useIsMutating({ mutationKey: ['selection'] }) > 0;
@@ -24,8 +30,8 @@ export const CartPanel = () => {
   const totalQuantity = useMemo(() => {
     return lines.reduce((acc, line) => acc + (line?.quantity ?? 0), 0);
   }, [lines]);
-
-  const totalValue = useMemo(() => {
+  const totalValue = useMemo(() => lines.reduce((acc, line) => acc + (line?.lineValue.value ?? 0), 0), [lines]);
+  const totalValueFormatted = useMemo(() => {
     const value = lines.reduce((acc, line) => acc + (line?.lineValue.value ?? 0), 0);
     const currency = grandTotal.currency;
 
@@ -71,7 +77,7 @@ export const CartPanel = () => {
               <dl>
                 <div className="flex justify-between font-medium">
                   <dt>{t('shop:cart.total')}</dt>
-                  <dd>{isMutatingSelection ? '...' : totalValue}</dd>
+                  <dd>{isMutatingSelection ? '...' : totalValueFormatted}</dd>
                 </div>
               </dl>
               <ShopLink
@@ -81,6 +87,17 @@ export const CartPanel = () => {
               >
                 {t('shop:cart.proceed')}
               </ShopLink>
+              {lines.length > 0 && (
+                <AdyenExpressCheckout
+                  cartTotal={totalValue}
+                  initialLineItems={lines.map((line) => ({
+                    name: line?.displayItem.name ?? '',
+                    price: line?.lineValue.value.toFixed(2) ?? '',
+                  }))}
+                  language={language}
+                  market={market}
+                />
+              )}
             </div>
           </div>
         </DialogPanel>

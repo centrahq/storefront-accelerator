@@ -15,7 +15,7 @@ import { SearchButton } from './SearchButton';
 
 export const Header = async () => {
   const [countries, languages] = await Promise.all([getCountries(), getLanguages()]);
-  const { isLoggedIn } = await getSession();
+  const { isLoggedIn, language, market } = await getSession();
 
   const { t } = await getTranslation(['server', 'shop']);
 
@@ -79,7 +79,7 @@ export const Header = async () => {
             </ShopLink>
           </div>
           <Suspense fallback={<ShoppingBagIcon className="size-6" aria-hidden="true" />}>
-            <Cart />
+            <Cart language={language} market={market} />
           </Suspense>
         </div>
       </div>
