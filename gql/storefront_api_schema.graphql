@@ -2928,6 +2928,6 @@ enum WidgetKind {
 type Wishlist {
   id: Int!
   isDefault: Boolean!
-  items(limit: Int, page: Int): [DisplayItem!]!
+  items(limit: Int! = 20, page: Int! = 1): [DisplayItem!]!
   name: String!
 }

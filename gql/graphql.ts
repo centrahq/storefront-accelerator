@@ -3261,8 +3261,8 @@ export type Wishlist = {
 
 
 export type WishlistItemsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  page?: InputMaybe<Scalars['Int']['input']>;
+  limit?: Scalars['Int']['input'];
+  page?: Scalars['Int']['input'];
 };
 
 export type CustomerQueryVariables = Exact<{ [key: string]: never; }>;
