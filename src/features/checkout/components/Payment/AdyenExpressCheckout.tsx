@@ -23,6 +23,66 @@ import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../
 import { AdyenExpressCheckoutErrorBoundary } from './AdyenExpressCheckoutErrorBoundary';
 import { AdyenAddress } from './types';
 
+const ADYEN_EXPRESS_DEBUG_STORAGE_KEY = 'adyenExpressCheckout:debugLogs';
+
+const safeJsonStringify = (value: unknown) => {
+  try {
+    return JSON.stringify(
+      value,
+      (_key: string, v: unknown) => {
+        if (typeof v === 'function') {
+          return `[Function ${v.name || 'anonymous'}]`;
+        }
+        if (v instanceof Error) {
+          return { name: v.name, message: v.message, stack: v.stack };
+        }
+        return v;
+      },
+      2,
+    );
+  } catch (e) {
+    try {
+      return JSON.stringify({ unserializable: true, error: String(e) });
+    } catch {
+      return '{"unserializable":true}';
+    }
+  }
+};
+
+const debugLog = (event: string, payload: unknown) => {
+  if (process.env.NEXT_PUBLIC_ADYEN_EXPRESS_CHECKOUT_DEBUG !== 'true') {
+    return;
+  }
+
+  const entry = {
+    ts: new Date().toISOString(),
+    event,
+    payload,
+  };
+
+  // Keep logs readable in the console and also persisted across navigations.
+  const serialized = safeJsonStringify(entry);
+  console.log(`[AdyenExpressCheckout] ${event}`, serialized);
+
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    const existing = window.sessionStorage.getItem(ADYEN_EXPRESS_DEBUG_STORAGE_KEY);
+    const parsed: unknown = existing ? JSON.parse(existing) : [];
+    const list = Array.isArray(parsed) ? parsed : [];
+    list.push(entry);
+
+    // Prevent sessionStorage blowups: keep only the most recent N entries.
+    const MAX = 200;
+    const trimmed = list.length > MAX ? list.slice(list.length - MAX) : list;
+    window.sessionStorage.setItem(ADYEN_EXPRESS_DEBUG_STORAGE_KEY, safeJsonStringify(trimmed));
+  } catch (e) {
+    console.warn('[AdyenExpressCheckout] Failed to persist debug log', e);
+  }
+};
+
 const mapApplePayAddressToCentra = (
   appleAddress: ApplePayJS.ApplePayPaymentContact,
   email: string,
@@ -182,6 +242,16 @@ export const AdyenExpressCheckoutInner = ({
         return;
       }
       initializedRef.current = true;
+      debugLog('init:start', {
+        disabled,
+        itemId: itemRef.current,
+        cartTotal,
+        cartTotalInMinor,
+        initialLineItems,
+        hasGooglePayContainer: Boolean(googlePayContainerRef.current),
+        hasApplePayContainer: Boolean(applePayContainerRef.current),
+        paymentConfig,
+      });
       const setDefaultShippingMethod = async () => {
         if (shippingMethods.length === 0) {
           throw new Error('No shipping methods available');
@@ -189,12 +259,14 @@ export const AdyenExpressCheckoutInner = ({
 
         const defaultMethod = shippingMethods[0];
         if (defaultMethod) {
+          debugLog('setDefaultShippingMethod:choose', defaultMethod);
           await setShippingMethod(defaultMethod.id);
         }
       };
 
       const addressUpdateHandler = async (shippingAddress: google.payments.api.IntermediateAddress) => {
         try {
+          debugLog('addressUpdateHandler:input', { shippingAddress });
           await setDefaultShippingMethod();
 
           const address = {
@@ -203,6 +275,7 @@ export const AdyenExpressCheckoutInner = ({
             zipCode: shippingAddress.postalCode,
             state: shippingAddress.administrativeArea,
           };
+          debugLog('addressUpdateHandler:centraAddress', address);
 
           const data = await submitPaymentInstructions({
             shippingAddress: {
@@ -214,6 +287,7 @@ export const AdyenExpressCheckoutInner = ({
             paymentInitiateOnly: true,
             express: true,
           });
+          debugLog('addressUpdateHandler:submitPaymentInstructions:response', data);
 
           const grandTotal = data.selection.checkout.totals.find((t) => t.type === SelectionTotalRowType.GrandTotal);
 
@@ -221,7 +295,7 @@ export const AdyenExpressCheckoutInner = ({
             throw new Error('Grand total not found');
           }
 
-          return {
+          const ret = {
             currency: grandTotal.price.currency.code,
             displayItems: createGooglePayLineItems(data.selection.checkout.totals, data.selection.lines),
             grandTotalPriceAsNumber: grandTotal.price.value.toFixed(2),
@@ -232,14 +306,19 @@ export const AdyenExpressCheckoutInner = ({
               priceAsNumber: method.price.value,
             })),
           };
+          debugLog('addressUpdateHandler:return', ret);
+          return ret;
         } catch (error) {
+          debugLog('addressUpdateHandler:error', error);
           console.error('Address update error:', error);
           throw error;
         }
       };
 
       const handleGooglePayShippingMethodUpdate = async (shippingMethodId: string) => {
+        debugLog('handleGooglePayShippingMethodUpdate:input', { shippingMethodId });
         const data = await setShippingMethod(Number(shippingMethodId));
+        debugLog('handleGooglePayShippingMethodUpdate:setShippingMethod:response', data);
 
         const grandTotal = data.checkout.totals.find((t) => t.type === SelectionTotalRowType.GrandTotal);
 
@@ -247,11 +326,13 @@ export const AdyenExpressCheckoutInner = ({
           throw new Error('Grand total not found');
         }
 
-        return {
+        const ret = {
           currency: grandTotal.price.currency.code,
           displayItems: createGooglePayLineItems(data.checkout.totals, data.lines),
           grandTotalPriceAsNumber: grandTotal.price.value.toFixed(2),
         };
+        debugLog('handleGooglePayShippingMethodUpdate:return', ret);
+        return ret;
       };
 
       const googlePayPaymentDataChangedHandler: google.payments.api.PaymentDataChangedHandler = async ({
@@ -259,21 +340,29 @@ export const AdyenExpressCheckoutInner = ({
         shippingAddress,
         shippingOptionData,
       }) => {
+        debugLog('googlePayPaymentDataChangedHandler:input', { callbackTrigger, shippingAddress, shippingOptionData });
         if (callbackTrigger === 'INITIALIZE') {
           if (itemRef.current) {
             try {
               const checkout = await fetchCheckout();
+              debugLog('googlePayPaymentDataChangedHandler:INITIALIZE:fetchCheckout', checkout);
               const hasProductInSelection = checkout.lines.some((line) => line?.item.id === itemRef.current);
 
               if (!hasProductInSelection) {
                 const addedSelection = await addToCart({ item: itemRef.current });
+                debugLog('googlePayPaymentDataChangedHandler:INITIALIZE:addToCart:response', addedSelection);
                 // Find the newly added item's line ID
                 const addedItem = addedSelection.lines.find((line) => line?.item.id === itemRef.current);
                 if (addedItem) {
                   addedItemLineRef.current = addedItem.id;
+                  debugLog('googlePayPaymentDataChangedHandler:INITIALIZE:addedItemLine', {
+                    itemId: itemRef.current,
+                    lineId: addedItem.id,
+                  });
                 }
               }
             } catch (error) {
+              debugLog('googlePayPaymentDataChangedHandler:INITIALIZE:error', error);
               console.error('Failed to add item to cart:', error);
               throw new Error('Failed to add item to cart');
             }
@@ -287,7 +376,7 @@ export const AdyenExpressCheckoutInner = ({
 
           const detail = await addressUpdateHandler(shippingAddress);
 
-          return {
+          const ret = {
             newShippingOptionParameters: {
               shippingOptions: detail.shippingMethodsAvailable.map((method) => ({
                 description: '',
@@ -303,6 +392,8 @@ export const AdyenExpressCheckoutInner = ({
               totalPriceStatus: 'FINAL',
             },
           };
+          debugLog('googlePayPaymentDataChangedHandler:return', ret);
+          return ret;
         }
 
         if (callbackTrigger === 'SHIPPING_OPTION') {
@@ -312,7 +403,7 @@ export const AdyenExpressCheckoutInner = ({
 
           const detail = await handleGooglePayShippingMethodUpdate(shippingOptionData.id);
 
-          return {
+          const ret = {
             newTransactionInfo: {
               currencyCode: detail.currency,
               displayItems: detail.displayItems,
@@ -321,9 +412,13 @@ export const AdyenExpressCheckoutInner = ({
               totalPriceStatus: 'FINAL',
             },
           };
+          debugLog('googlePayPaymentDataChangedHandler:return', ret);
+          return ret;
         }
 
-        return {};
+        const ret = {};
+        debugLog('googlePayPaymentDataChangedHandler:return', ret);
+        return ret;
       };
 
       const onAuthorizedHandler = (
@@ -337,49 +432,65 @@ export const AdyenExpressCheckoutInner = ({
           reject: (error?: google.payments.api.PaymentDataError | string) => void;
         },
       ) => {
+        debugLog('googlePay:onAuthorized:input', payload);
         const { authorizedEvent } = payload;
         const { email } = authorizedEvent;
         const billingAddress = authorizedEvent.paymentMethodData.info?.billingAddress;
         const { shippingAddress } = authorizedEvent;
 
         if (!email) {
-          actions.reject({
+          const err = {
             intent: 'PAYMENT_AUTHORIZATION',
             message: 'Email is required',
             reason: 'PAYMENT_DATA_INVALID',
-          });
+          } as const;
+          debugLog('googlePay:onAuthorized:reject', err);
+          actions.reject(err);
           return;
         }
 
         if (!billingAddress) {
-          actions.reject({
+          const err = {
             intent: 'PAYMENT_AUTHORIZATION',
             message: 'Billing address is required',
             reason: 'PAYMENT_DATA_INVALID',
-          });
+          } as const;
+          debugLog('googlePay:onAuthorized:reject', err);
+          actions.reject(err);
           return;
         }
 
         if (!shippingAddress) {
-          actions.reject({
+          const err = {
             intent: 'PAYMENT_AUTHORIZATION',
             message: 'Shipping address is required',
             reason: 'PAYMENT_DATA_INVALID',
-          });
+          } as const;
+          debugLog('googlePay:onAuthorized:reject', err);
+          actions.reject(err);
           return;
         }
 
         billingAddressRef.current = mapAdyenAddressToCentra(billingAddress, email);
         shippingAddressRef.current = mapAdyenAddressToCentra(shippingAddress, email);
+        debugLog('googlePay:onAuthorized:resolvedAddresses', {
+          billingAddress: billingAddressRef.current,
+          shippingAddress: shippingAddressRef.current,
+        });
         actions.resolve();
       };
 
       const handleOnSubmit = async (state: SubmitData, actions: SubmitActions) => {
+        debugLog('handleOnSubmit:input', {
+          hasShippingAddress: Boolean(shippingAddressRef.current),
+          hasBillingAddress: Boolean(billingAddressRef.current),
+          stateData: state.data,
+        });
         const adyenShippingAddress = shippingAddressRef.current;
         const adyenBillingAddress = billingAddressRef.current;
 
         if (!adyenShippingAddress || !adyenBillingAddress) {
-          actions.reject({
+          const err = {
             error: {
               googlePayError: {
                 intent: 'PAYMENT_AUTHORIZATION',
@@ -387,7 +498,9 @@ export const AdyenExpressCheckoutInner = ({
                 reason: 'PAYMENT_DATA_INVALID',
               },
             },
-          });
+          } as const;
+          debugLog('handleOnSubmit:reject', err);
+          actions.reject(err);
           return;
         }
 
@@ -420,22 +533,28 @@ export const AdyenExpressCheckoutInner = ({
             paymentMethodSpecificFields: { ...(state.data as unknown as Record<string, unknown>), express: true },
             express: true,
           });
+          debugLog('handleOnSubmit:submitPaymentInstructions:response', response);
           const formFields: Record<string, string> | null =
             response.action?.__typename === 'JavascriptPaymentAction'
               ? ((response.action.formFields as Record<string, string> | undefined) ?? {})
               : null;
           if (formFields) {
-            actions.resolve({
+            const resolved = {
               ...(formFields as unknown as CheckoutAdvancedFlowResponse),
-            });
+            };
+            debugLog('handleOnSubmit:resolve', resolved);
+            actions.resolve(resolved);
           } else {
-            actions.resolve({
+            const resolved = {
               resultCode: 'Authorised',
-            });
+            } as const;
+            debugLog('handleOnSubmit:resolve', resolved);
+            actions.resolve(resolved);
           }
         } catch (error) {
+          debugLog('handleOnSubmit:error', error);
           console.error('Payment error:', error);
-          actions.reject({
+          const err = {
             error: {
               googlePayError: {
                 intent: 'PAYMENT_AUTHORIZATION',
@@ -443,31 +562,41 @@ export const AdyenExpressCheckoutInner = ({
                 reason: 'PAYMENT_DATA_INVALID',
               },
             },
-          });
+          } as const;
+          debugLog('handleOnSubmit:reject', err);
+          actions.reject(err);
         }
       };
 
       const onApplePayClick = async (resolve: VoidFunction, reject: (error: Error) => void) => {
+        debugLog('applePay:onClick:input', { itemId: itemRef.current });
         if (itemRef.current) {
           try {
             const checkout = await fetchCheckout();
+            debugLog('applePay:onClick:fetchCheckout', checkout);
             const hasProductInSelection = checkout.lines.some((line) => line?.item.id === itemRef.current);
 
             if (!hasProductInSelection) {
               const addedSelection = await addToCart({ item: itemRef.current });
+              debugLog('applePay:onClick:addToCart:response', addedSelection);
               // Find the newly added item's line ID
               const addedItem = addedSelection.lines.find((line) => line?.item.id === itemRef.current);
               if (addedItem) {
                 addedItemLineRef.current = addedItem.id;
+                debugLog('applePay:onClick:addedItemLine', { itemId: itemRef.current, lineId: addedItem.id });
               }
             }
           } catch (error) {
+            debugLog('applePay:onClick:error', error);
             console.error('Failed to add item to cart:', error);
-            reject(new Error('Failed to add item to cart'));
+            const err = new Error('Failed to add item to cart');
+            debugLog('applePay:onClick:reject', { name: err.name, message: err.message });
+            reject(err);
             return;
           }
         }
 
+        debugLog('applePay:onClick:resolve', {});
         resolve();
       };
 
@@ -477,19 +606,25 @@ export const AdyenExpressCheckoutInner = ({
         event: ApplePayJS.ApplePayShippingMethodSelectedEvent,
       ) => {
         try {
+          debugLog('applePay:onShippingMethodSelected:input', event);
           const data = await setShippingMethod(Number(event.shippingMethod.identifier));
+          debugLog('applePay:onShippingMethodSelected:setShippingMethod:response', data);
           const grandTotal =
             data.checkout.totals.find((t) => t.type === SelectionTotalRowType.GrandTotal)?.price.value ?? 0;
 
-          resolve({
+          const ret: ApplePayJS.ApplePayShippingMethodUpdate = {
             newLineItems: createApplePayLineItems(data.checkout.totals, data.lines),
             newTotal: {
               amount: grandTotal.toFixed(2),
               label: 'Total',
             },
-          });
+          };
+          debugLog('applePay:onShippingMethodSelected:resolve', ret);
+          resolve(ret);
         } catch (error) {
+          debugLog('applePay:onShippingMethodSelected:error', error);
           console.error('Shipping method error:', error);
+          debugLog('applePay:onShippingMethodSelected:reject', {});
           reject();
         }
       };
@@ -500,10 +635,11 @@ export const AdyenExpressCheckoutInner = ({
         event: ApplePayJS.ApplePayShippingContactSelectedEvent,
         paymentConfig: PaymentConfigResponse,
       ) => {
+        debugLog('applePay:onShippingContactSelected:input', { event, paymentConfig });
         const shippingAddress = event.shippingContact;
 
         if (shippingAddress.countryCode !== paymentConfig.country) {
-          resolve({
+          const ret: ApplePayJS.ApplePayShippingContactUpdate = {
             errors: [
               new (window as unknown as { ApplePayError: typeof ApplePayError }).ApplePayError(
                 'shippingContactInvalid',
@@ -515,7 +651,9 @@ export const AdyenExpressCheckoutInner = ({
               amount: paymentConfig.paymentAmount.amount.toString(),
               label: 'Total',
             },
-          });
+          };
+          debugLog('applePay:onShippingContactSelected:resolve', ret);
+          resolve(ret);
           return;
         }
 
@@ -525,6 +663,7 @@ export const AdyenExpressCheckoutInner = ({
           state: shippingAddress.administrativeArea ?? '',
           zipCode: shippingAddress.postalCode ?? '',
         };
+        debugLog('applePay:onShippingContactSelected:centraAddress', address);
         submitPaymentInstructions({
           shippingAddress: {
             address1: '',
@@ -536,6 +675,7 @@ export const AdyenExpressCheckoutInner = ({
           express: true,
         })
           .then((data) => {
+            debugLog('applePay:onShippingContactSelected:submitPaymentInstructions:response', data);
             const grandTotal =
               data.selection.checkout.totals.find((t) => t.type === SelectionTotalRowType.GrandTotal)?.price.value ?? 0;
 
@@ -546,17 +686,21 @@ export const AdyenExpressCheckoutInner = ({
               label: method.name,
             }));
 
-            resolve({
+            const ret: ApplePayJS.ApplePayShippingContactUpdate = {
               newLineItems: createApplePayLineItems(data.selection.checkout.totals, data.selection.lines),
               newShippingMethods: shippingMethods,
               newTotal: {
                 amount: grandTotal.toFixed(2),
                 label: 'Total',
               },
-            });
+            };
+            debugLog('applePay:onShippingContactSelected:resolve', ret);
+            resolve(ret);
           })
           .catch((error: unknown) => {
+            debugLog('applePay:onShippingContactSelected:error', error);
             console.error('Shipping contact error:', error);
+            debugLog('applePay:onShippingContactSelected:reject', {});
             reject();
           });
       };
@@ -572,6 +716,7 @@ export const AdyenExpressCheckoutInner = ({
         locale: paymentConfig.languageCode,
         paymentMethodsResponse: paymentConfig.paymentMethodsResponse,
         onError: (error: AdyenCheckoutError) => {
+          debugLog('adyenCheckout:onError', error);
           const isCancellationError =
             error.name === 'CANCEL' ||
             (error as unknown as { cause?: { statusCode?: string } }).cause?.statusCode === 'CANCELED';
@@ -588,6 +733,7 @@ export const AdyenExpressCheckoutInner = ({
           }
         },
         onAdditionalDetails: (state) => {
+          debugLog('adyenCheckout:onAdditionalDetails:input', { stateData: state.data });
           function flattenForPost(data: Record<string, unknown>, prefix: string): Record<string, string> {
             const result: Record<string, string> = {};
 
@@ -614,6 +760,7 @@ export const AdyenExpressCheckoutInner = ({
           form.action = `${window.location.origin}/success`;
 
           const flattenedItems = flattenForPost(state.data as Record<string, unknown>, '');
+          debugLog('adyenCheckout:onAdditionalDetails:flattenedForPost', flattenedItems);
 
           Object.entries(flattenedItems).forEach(([name, value]) => {
             const input = document.createElement('input');
@@ -625,6 +772,7 @@ export const AdyenExpressCheckoutInner = ({
 
           form.style.cssText = 'position:absolute;left:-100px;top:-100px;';
           document.body.appendChild(form);
+          debugLog('adyenCheckout:onAdditionalDetails:submit', { action: form.action, method: form.method });
           form.submit();
         },
       });
@@ -640,12 +788,15 @@ export const AdyenExpressCheckoutInner = ({
         isExpress: true,
         onAuthorized: onAuthorizedHandler,
         onPaymentCompleted: () => {
+          debugLog('googlePay:onPaymentCompleted', {});
           window.location.href = `${window.location.origin}/confirmation`;
         },
         onSubmit: (state: SubmitData, _component: UIElement, actions: SubmitActions) => {
+          debugLog('googlePay:onSubmit:called', { stateData: state.data });
           void handleOnSubmit(state, actions);
         },
         onPaymentFailed: () => {
+          debugLog('googlePay:onPaymentFailed', {});
           console.log('Payment failed');
         },
         paymentDataCallbacks: {
@@ -678,6 +829,7 @@ export const AdyenExpressCheckoutInner = ({
       });
 
       if (googlePayContainerRef.current) {
+        debugLog('googlePay:mount', { container: 'googlePayContainerRef' });
         googlePay.mount(googlePayContainerRef.current);
       }
 
@@ -689,18 +841,26 @@ export const AdyenExpressCheckoutInner = ({
           type: 'final' as const,
         })),
         onAuthorized: (payload, actions) => {
+          debugLog('applePay:onAuthorized:input', payload);
           const paymentData = payload.authorizedEvent.payment;
           const { shippingContact } = paymentData;
           const email = shippingContact?.emailAddress;
           const phoneNumber = shippingContact?.phoneNumber;
 
           if (!email || !phoneNumber || !paymentData.billingContact) {
+            debugLog('applePay:onAuthorized:reject', {
+              missing: { email: !email, phoneNumber: !phoneNumber, billingContact: !paymentData.billingContact },
+            });
             actions.reject();
             return;
           }
 
           billingAddressRef.current = mapApplePayAddressToCentra(paymentData.billingContact, email, phoneNumber);
           shippingAddressRef.current = mapApplePayAddressToCentra(shippingContact, email, phoneNumber);
+          debugLog('applePay:onAuthorized:resolvedAddresses', {
+            billingAddress: billingAddressRef.current,
+            shippingAddress: shippingAddressRef.current,
+          });
           actions.resolve();
         },
         onClick: (resolve: VoidFunction, reject: (error: Error) => void) => {
@@ -721,6 +881,7 @@ export const AdyenExpressCheckoutInner = ({
           void onApplePayShippingMethodSelected(resolve, reject, event);
         },
         onSubmit: (state: SubmitData, _component: UIElement, actions: SubmitActions) => {
+          debugLog('applePay:onSubmit:called', { stateData: state.data });
           void handleOnSubmit(state, actions);
         },
         requiredBillingContactFields: ['postalAddress', 'name', 'email'],
@@ -736,11 +897,14 @@ export const AdyenExpressCheckoutInner = ({
       applePay
         .isAvailable()
         .then(() => {
+          debugLog('applePay:isAvailable:resolved', {});
           if (applePayContainerRef.current) {
+            debugLog('applePay:mount', { container: 'applePayContainerRef' });
             applePay.mount(applePayContainerRef.current);
           }
         })
         .catch((error: unknown) => {
+          debugLog('applePay:isAvailable:error', error);
           if (error instanceof Error) {
             console.error('Apple Pay not available:', error.name, error.message);
           } else {
@@ -750,7 +914,7 @@ export const AdyenExpressCheckoutInner = ({
     };
 
     void init();
-  }, [initialLineItems, paymentConfig, shippingMethods, disabled]);
+  }, [initialLineItems, paymentConfig, shippingMethods, disabled, cartTotal, cartTotalInMinor]);
 
   return (
     <>
