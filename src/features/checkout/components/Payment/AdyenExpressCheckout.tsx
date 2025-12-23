@@ -285,7 +285,7 @@ export const AdyenExpressCheckoutInner = ({
             paymentReturnPage: `${window.location.origin}/confirmation`,
             paymentFailedPage: `${window.location.origin}/failed`,
             paymentInitiateOnly: true,
-            express: true,
+            paymentMethodSpecificFields: { express: true },
           });
           debugLog('addressUpdateHandler:submitPaymentInstructions:response', data);
 
@@ -531,7 +531,6 @@ export const AdyenExpressCheckoutInner = ({
             paymentReturnPage: `${window.location.origin}/confirmation`,
             paymentFailedPage: `${window.location.origin}/failed`,
             paymentMethodSpecificFields: { ...(state.data as unknown as Record<string, unknown>), express: true },
-            express: true,
           });
           debugLog('handleOnSubmit:submitPaymentInstructions:response', response);
           const formFields: Record<string, string> | null =
@@ -672,7 +671,7 @@ export const AdyenExpressCheckoutInner = ({
           paymentReturnPage: `${window.location.origin}/confirmation`,
           paymentFailedPage: `${window.location.origin}/failed`,
           paymentInitiateOnly: true,
-          express: true,
+          paymentMethodSpecificFields: { express: true },
         })
           .then((data) => {
             debugLog('applePay:onShippingContactSelected:submitPaymentInstructions:response', data);
