@@ -85,8 +85,8 @@ const debugLog = (event: string, payload: unknown) => {
 
 const mapApplePayAddressToCentra = (
   appleAddress: ApplePayJS.ApplePayPaymentContact,
-  email: string,
-  phoneNumber: string,
+  email: string | undefined,
+  phoneNumber: string | undefined,
 ): AdyenAddress => {
   return {
     address1: appleAddress.addressLines?.[0] ?? '',
@@ -842,20 +842,20 @@ export const AdyenExpressCheckoutInner = ({
         onAuthorized: (payload, actions) => {
           debugLog('applePay:onAuthorized:input', payload);
           const paymentData = payload.authorizedEvent.payment;
-          const { shippingContact } = paymentData;
-          const email = shippingContact?.emailAddress;
-          const phoneNumber = shippingContact?.phoneNumber;
-
-          if (!email || !phoneNumber || !paymentData.billingContact) {
+          const { shippingContact, billingContact } = paymentData;
+          if (!shippingContact || !billingContact) {
             debugLog('applePay:onAuthorized:reject', {
-              missing: { email: !email, phoneNumber: !phoneNumber, billingContact: !paymentData.billingContact },
+              missing: { shippingContact, billingContact },
             });
             actions.reject();
             return;
           }
-
-          billingAddressRef.current = mapApplePayAddressToCentra(paymentData.billingContact, email, phoneNumber);
-          shippingAddressRef.current = mapApplePayAddressToCentra(shippingContact, email, phoneNumber);
+          const shippingEmail = shippingContact.emailAddress;
+          const shippingPhoneNumber = shippingContact.phoneNumber;
+          const billingPhoneNumber = billingContact.phoneNumber;
+          const billingEmail = billingContact.emailAddress;
+          billingAddressRef.current = mapApplePayAddressToCentra(billingContact, billingEmail, billingPhoneNumber);
+          shippingAddressRef.current = mapApplePayAddressToCentra(shippingContact, shippingEmail, shippingPhoneNumber);
           debugLog('applePay:onAuthorized:resolvedAddresses', {
             billingAddress: billingAddressRef.current,
             shippingAddress: shippingAddressRef.current,
@@ -886,7 +886,9 @@ export const AdyenExpressCheckoutInner = ({
         requiredBillingContactFields: paymentConfig.billingPhoneNumberRequired
           ? ['postalAddress', 'name', 'email', 'phone']
           : ['postalAddress', 'name', 'email'],
-        requiredShippingContactFields: ['postalAddress', 'name', 'email', 'phone'],
+        requiredShippingContactFields: paymentConfig.shippingPhoneNumberRequired
+          ? ['postalAddress', 'name', 'email', 'phone']
+          : ['postalAddress', 'name', 'email'],
         shippingMethods: paymentConfig.shippingMethods.map((method) => ({
           amount: method.price.toString(),
           detail: '',
