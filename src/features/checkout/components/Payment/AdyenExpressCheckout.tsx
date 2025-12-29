@@ -883,8 +883,10 @@ export const AdyenExpressCheckoutInner = ({
           debugLog('applePay:onSubmit:called', { stateData: state.data });
           void handleOnSubmit(state, actions);
         },
-        requiredBillingContactFields: ['postalAddress', 'name', 'email'],
-        requiredShippingContactFields: ['postalAddress', 'name', 'email'],
+        requiredBillingContactFields: paymentConfig.billingPhoneNumberRequired
+          ? ['postalAddress', 'name', 'email', 'phone']
+          : ['postalAddress', 'name', 'email'],
+        requiredShippingContactFields: ['postalAddress', 'name', 'email', 'phone'],
         shippingMethods: paymentConfig.shippingMethods.map((method) => ({
           amount: method.price.toString(),
           detail: '',
