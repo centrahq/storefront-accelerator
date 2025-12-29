@@ -881,6 +881,10 @@ export const AdyenExpressCheckoutInner = ({
           debugLog('applePay:onSubmit:called', { stateData: state.data });
           void handleOnSubmit(state, actions);
         },
+        onPaymentCompleted: () => {
+          debugLog('applePay:onPaymentCompleted', {});
+          window.location.href = `${window.location.origin}/confirmation`;
+        },
         requiredBillingContactFields: ['postalAddress'],
         requiredShippingContactFields:
           paymentConfig.shippingPhoneNumberRequired || paymentConfig.billingPhoneNumberRequired
