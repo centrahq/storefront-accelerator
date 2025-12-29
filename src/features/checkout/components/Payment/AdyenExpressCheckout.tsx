@@ -852,9 +852,7 @@ export const AdyenExpressCheckoutInner = ({
           }
           const shippingEmail = shippingContact.emailAddress;
           const shippingPhoneNumber = shippingContact.phoneNumber;
-          const billingPhoneNumber = billingContact.phoneNumber;
-          const billingEmail = billingContact.emailAddress;
-          billingAddressRef.current = mapApplePayAddressToCentra(billingContact, billingEmail, billingPhoneNumber);
+          billingAddressRef.current = mapApplePayAddressToCentra(billingContact, shippingEmail, shippingPhoneNumber);
           shippingAddressRef.current = mapApplePayAddressToCentra(shippingContact, shippingEmail, shippingPhoneNumber);
           debugLog('applePay:onAuthorized:resolvedAddresses', {
             billingAddress: billingAddressRef.current,
@@ -883,12 +881,11 @@ export const AdyenExpressCheckoutInner = ({
           debugLog('applePay:onSubmit:called', { stateData: state.data });
           void handleOnSubmit(state, actions);
         },
-        requiredBillingContactFields: paymentConfig.billingPhoneNumberRequired
-          ? ['postalAddress', 'name', 'email', 'phone']
-          : ['postalAddress', 'name', 'email'],
-        requiredShippingContactFields: paymentConfig.shippingPhoneNumberRequired
-          ? ['postalAddress', 'name', 'email', 'phone']
-          : ['postalAddress', 'name', 'email'],
+        requiredBillingContactFields: ['postalAddress'],
+        requiredShippingContactFields:
+          paymentConfig.shippingPhoneNumberRequired || paymentConfig.billingPhoneNumberRequired
+            ? ['postalAddress', 'name', 'email', 'phone']
+            : ['postalAddress', 'name', 'email'],
         shippingMethods: paymentConfig.shippingMethods.map((method) => ({
           amount: method.price.toString(),
           detail: '',
