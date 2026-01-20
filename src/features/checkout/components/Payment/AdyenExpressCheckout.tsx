@@ -640,17 +640,14 @@ export const AdyenExpressCheckoutInner = ({
         if (shippingAddress.countryCode !== paymentConfig.country) {
           const ret: ApplePayJS.ApplePayShippingContactUpdate = {
             errors: [
-              new (window as unknown as { ApplePayError: typeof ApplePayError }).ApplePayError(
-                'shippingContactInvalid',
-                'countryCode',
-                'Cannot ship to the selected address',
-              ),
+              new ApplePayError('shippingContactInvalid', 'countryCode', 'Cannot ship to the selected address')
             ],
             newTotal: {
               amount: paymentConfig.paymentAmount.amount.toString(),
               label: 'Total',
             },
           };
+          
           debugLog('applePay:onShippingContactSelected:resolve', ret);
           resolve(ret);
           return;
@@ -839,6 +836,8 @@ export const AdyenExpressCheckoutInner = ({
           label: item.name,
           type: 'final' as const,
         })),
+        supportedCountries: [paymentConfig.country],
+        
         onAuthorized: (payload, actions) => {
           debugLog('applePay:onAuthorized:input', payload);
           const paymentData = payload.authorizedEvent.payment;
