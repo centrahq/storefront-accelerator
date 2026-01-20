@@ -83,6 +83,8 @@ const debugLog = (event: string, payload: unknown) => {
   }
 };
 
+const formatMinorToMajor = (amountMinor: number) => (amountMinor / 100).toFixed(2);
+
 const mapApplePayAddressToCentra = (
   appleAddress: ApplePayJS.ApplePayPaymentContact,
   email: string | undefined,
@@ -643,7 +645,7 @@ export const AdyenExpressCheckoutInner = ({
               new ApplePayError('shippingContactInvalid', 'countryCode', 'Cannot ship to the selected address')
             ],
             newTotal: {
-              amount: paymentConfig.paymentAmount.amount.toString(),
+            amount: formatMinorToMajor(paymentConfig.paymentAmount.amount),
               label: 'Total',
             },
           };
@@ -818,7 +820,7 @@ export const AdyenExpressCheckoutInner = ({
             price: item.price,
             type: 'LINE_ITEM' as const,
           })),
-          totalPrice: paymentConfig.paymentAmount.amount.toFixed(2),
+          totalPrice: formatMinorToMajor(paymentConfig.paymentAmount.amount),
           totalPriceLabel: 'Total',
           totalPriceStatus: 'FINAL',
         },

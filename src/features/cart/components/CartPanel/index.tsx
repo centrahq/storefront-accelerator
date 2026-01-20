@@ -3,7 +3,7 @@ import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/centra/storefront-api/queryClient';
 
 import { selectionQuery } from '../../queries';
-import { CartPanel } from './Panel';
+import { CartPanel } from './CartPanel';
 
 interface Props {
   language: string;
