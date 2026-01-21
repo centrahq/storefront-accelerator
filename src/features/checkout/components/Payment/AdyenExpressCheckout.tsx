@@ -837,9 +837,7 @@ export const AdyenExpressCheckoutInner = ({
           amount: item.price,
           label: item.name,
           type: 'final' as const,
-        })),
-        supportedCountries: [paymentConfig.country],
-        
+        })),        
         onAuthorized: (payload, actions) => {
           debugLog('applePay:onAuthorized:input', payload);
           const paymentData = payload.authorizedEvent.payment;
