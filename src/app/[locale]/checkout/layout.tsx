@@ -7,7 +7,7 @@ import { Trans } from 'react-i18next/TransWithoutContext';
 import { Logo } from '@/components/layout/Logo';
 import { CheckoutItems } from '@/features/checkout/components/CheckoutItems';
 import { CheckoutScript } from '@/features/checkout/components/CheckoutScript';
-import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/AdyenExpressCheckout';
+import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/AdyenExpressCheckout/AdyenExpressCheckout';
 import { InitiateOnlyPayments } from '@/features/checkout/components/Payment/InitiateOnlyPayments';
 import { Totals } from '@/features/checkout/components/Totals/Totals';
 import { checkoutQuery } from '@/features/checkout/queries';

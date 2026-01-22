@@ -6,7 +6,7 @@ import { parseAsString, useQueryState } from 'nuqs';
 import { useContext, useMemo } from 'react';
 import { toast } from 'sonner';
 
-import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/AdyenExpressCheckout';
+import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/AdyenExpressCheckout/AdyenExpressCheckout';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
 import { parseAsBundledItems } from '@/features/product-details/bundle/components/bundledItemsSearchParam';
 
