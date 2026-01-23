@@ -12,6 +12,8 @@ import { useTranslation } from '@/features/i18n/useTranslation/client';
 import { REMOVED_ITEMS_PARAM } from '@/lib/utils/unavailableItems';
 
 import { changeLocale } from './actions';
+import { useQueryClient } from '@tanstack/react-query';
+import { checkoutPaymentMethodsQuery } from '@/features/checkout/queries';
 
 interface Props {
   countries: {
@@ -28,6 +30,7 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const { country, language } = useLocale();
   const languageName = languages.find((lang) => lang.code === language)?.name ?? '?';
+  const queryClient = useQueryClient();
   const { t } = useTranslation(['shop']);
   const router = useRouter();
   const { locale } = useParams<{ locale: string }>();
@@ -62,11 +65,10 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
         toast.error(result.message);
         return;
       }
-
       // If there is an alternate, redirect to it. Otherwise replace the locale in the current URL.
       const newUrl = new URL(
         document.querySelector<HTMLLinkElement>(`link[rel="alternate"][hreflang="${result.locale}"]`)?.href ??
-          location.pathname.replace(`/${locale}`, `/${result.locale}`),
+        location.pathname.replace(`/${locale}`, `/${result.locale}`),
         window.location.origin,
       );
 
@@ -76,6 +78,7 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
       }
 
       router.push(newUrl.href);
+      void queryClient.invalidateQueries(checkoutPaymentMethodsQuery);
     });
   };
 

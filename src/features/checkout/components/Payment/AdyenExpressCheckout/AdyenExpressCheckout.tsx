@@ -199,6 +199,10 @@ export const AdyenExpressCheckoutInner = ({
         environment: paymentConfig.context,
         locale: paymentConfig.languageCode,
         paymentMethodsResponse: paymentConfig.paymentMethodsResponse,
+        onPaymentCompleted: () => {
+          debugLog('adyenCheckout:onPaymentCompleted', {});
+          window.location.href = `${window.location.origin}/confirmation`;
+        },
         onError: (error: AdyenCheckoutError) => {
           debugLog('adyenCheckout:onError', error);
           const isCancellationError =
@@ -214,20 +218,6 @@ export const AdyenExpressCheckoutInner = ({
               .catch((removeError: unknown) => {
                 console.error('Failed to remove item from cart:', removeError);
               });
-            submitPaymentInstructions({
-              shippingAddress: {
-                country: paymentConfig.country,
-              },
-              paymentReturnPage: `${window.location.origin}/confirmation`,
-              paymentFailedPage: `${window.location.origin}/failed`,
-              paymentInitiateOnly: true,
-              paymentMethodSpecificFields: { express: false },
-            }).then(() => {
-              console.log('Disabled express checkout');
-              addedItemLineRef.current = null;
-            }).catch((removeError: unknown) => {
-              console.error('Failed to disable express checkout', removeError);
-            });
           }
         },
         onAdditionalDetails: (state) => {

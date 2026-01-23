@@ -133,3 +133,41 @@ export async function submitPaymentInstructions(variables: Omit<PaymentInstructi
   };
 }
 
+export async function sendWidgetData(payload: Record<string, unknown>) {
+  const response = await mutationMutex.runExclusive(() =>
+    centraFetch(
+      graphql(`
+        mutation widgetEvent($payload: Map!) {
+          handleWidgetEvent(payload: $payload) {
+            selection {
+              ...checkout
+            }
+            userErrors {
+              message
+              path
+            }
+          }
+        }
+      `),
+      {
+        variables: {
+          payload,
+        },
+      },
+    ),
+  );
+
+  if (response.data.handleWidgetEvent.userErrors.length > 0) {
+    throw new UserError(response.data.handleWidgetEvent.userErrors, response.extensions.traceId);
+  }
+
+  if (!response.data.handleWidgetEvent.selection?.checkout) {
+    throw new Error('No selection');
+  }
+
+  return {
+    ...response.data.handleWidgetEvent.selection,
+    checkout: response.data.handleWidgetEvent.selection.checkout,
+  };
+}
+

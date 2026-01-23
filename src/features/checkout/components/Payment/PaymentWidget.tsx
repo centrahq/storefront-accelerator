@@ -142,6 +142,7 @@ export const PaymentWidget = ({ id, uri }: { id: number; uri: string }) => {
           }
         },
         onError: (error) => {
+          console.error('Error finalizing payment', error);
           if (detail.responseEventRequired) {
             document.dispatchEvent(new CentraPaymentResponseEvent(CentraPaymentResponseEvent.ERROR_PAYLOAD));
           }

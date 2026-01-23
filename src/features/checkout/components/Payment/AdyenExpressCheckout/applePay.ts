@@ -13,7 +13,6 @@ import { PaymentConfigResponse } from '../../../queries';
 import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
 import { AdyenAddress } from '../types';
 import { debugLog } from './debug';
-import { formatMinorToMajor } from './helpers';
 
 
 const mapApplePayAddressToCentra = (
@@ -138,22 +137,6 @@ export const getApplePay = ({
     debugLog('applePay:onShippingContactSelected:input', { event, paymentConfig });
     const shippingAddress = event.shippingContact;
 
-    if (shippingAddress.countryCode !== paymentConfig.country) {
-      const ret: ApplePayJS.ApplePayShippingContactUpdate = {
-        errors: [
-          new ApplePayError('shippingContactInvalid', 'countryCode', 'Cannot ship to the selected address')
-        ],
-        newTotal: {
-          amount: formatMinorToMajor(paymentConfig.paymentAmount.amount),
-          label: 'Total',
-        },
-      };
-
-      debugLog('applePay:onShippingContactSelected:resolve', ret);
-      resolve(ret);
-      return;
-    }
-
     const address = {
       city: shippingAddress.locality ?? '',
       country: shippingAddress.countryCode ?? '',
@@ -182,6 +165,24 @@ export const getApplePay = ({
           identifier: String(method.id),
           label: method.name,
         }));
+
+        if (shippingAddress.countryCode !== paymentConfig.country) {
+          const ret: ApplePayJS.ApplePayShippingContactUpdate = {
+            errors: [
+              new ApplePayError('shippingContactInvalid', 'countryCode', 'Cannot ship to the selected address')
+            ],
+            newLineItems: createApplePayLineItems(data.selection.checkout.totals, data.selection.lines),
+            newShippingMethods: shippingMethods,
+            newTotal: {
+              amount: grandTotal.toFixed(2),
+              label: 'Total',
+            },
+          };
+
+          debugLog('applePay:onShippingContactSelected:resolve', ret);
+          resolve(ret);
+          return;
+        }
 
         const ret: ApplePayJS.ApplePayShippingContactUpdate = {
           newLineItems: createApplePayLineItems(data.selection.checkout.totals, data.selection.lines),
@@ -279,10 +280,6 @@ export const getApplePay = ({
     onSubmit: (state: SubmitData, _component: UIElement, actions: SubmitActions) => {
       debugLog('applePay:onSubmit:called', { stateData: state.data });
       void onSubmit(state, actions, currentBillingAddress, currentShippingAddress);
-    },
-    onPaymentCompleted: () => {
-      debugLog('applePay:onPaymentCompleted', {});
-      window.location.href = `${window.location.origin}/confirmation`;
     },
     requiredBillingContactFields: ['postalAddress'],
     requiredShippingContactFields:

@@ -10,8 +10,8 @@ import {
 import { addToCart } from '@/features/cart/service';
 import { CheckoutQuery, SelectionTotalRowType } from '@gql/graphql';
 
-import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
 import { PaymentConfigResponse } from '../../../queries';
+import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
 
 import { AdyenAddress } from "../types";
 import { debugLog } from './debug';
@@ -338,10 +338,6 @@ export const getGooglePay = ({
     isExpress: true,
     onAuthorized: (payload, actions) => {
       onAuthorizedHandler(payload, actions, onAddressResolved);
-    },
-    onPaymentCompleted: () => {
-      debugLog('googlePay:onPaymentCompleted', {});
-      window.location.href = `${window.location.origin}/confirmation`;
     },
     onSubmit: (state: SubmitData, _component: UIElement, actions: SubmitActions) => {
       debugLog('googlePay:onSubmit:called', { stateData: state.data });
