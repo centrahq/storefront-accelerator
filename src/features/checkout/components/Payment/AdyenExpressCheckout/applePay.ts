@@ -128,7 +128,7 @@ export const getApplePay = ({
 }) => {
   let currentBillingAddress: AdyenAddress | undefined;
   let currentShippingAddress: AdyenAddress | undefined;
-  const onShippingContactSelected = (
+  const onShippingContactSelected = async (
     resolve: (data: ApplePayJS.ApplePayShippingContactUpdate) => void,
     reject: (error?: Error) => void,
     event: ApplePayJS.ApplePayShippingContactSelectedEvent,
@@ -143,6 +143,32 @@ export const getApplePay = ({
       state: shippingAddress.administrativeArea ?? '',
       zipCode: shippingAddress.postalCode ?? '',
     };
+    if (shippingAddress.countryCode !== paymentConfig.country) {
+      const data = await fetchCheckout();
+      const shippingMethods = (data.checkout.shippingMethods ?? []).map((method) => ({
+        amount: method.price.value.toString(),
+        detail: '',
+        identifier: String(method.id),
+        label: method.name,
+      }));
+      const grandTotal =
+        data.checkout.totals.find((t) => t.type === SelectionTotalRowType.GrandTotal)?.price.value ?? 0;
+      const ret: ApplePayJS.ApplePayShippingContactUpdate = {
+        errors: [
+          new ApplePayError('shippingContactInvalid', 'countryCode', 'Cannot ship to the selected address')
+        ],
+        newLineItems: createApplePayLineItems(data.checkout.totals, data.lines),
+        newShippingMethods: shippingMethods,
+        newTotal: {
+          amount: grandTotal.toFixed(2),
+          label: 'Total',
+        },
+      };
+
+      debugLog('applePay:onShippingContactSelected:resolve', ret);
+      resolve(ret);
+      return;
+    }
     debugLog('applePay:onShippingContactSelected:centraAddress', address);
     submitPaymentInstructions({
       shippingAddress: {
@@ -165,24 +191,6 @@ export const getApplePay = ({
           identifier: String(method.id),
           label: method.name,
         }));
-
-        if (shippingAddress.countryCode !== paymentConfig.country) {
-          const ret: ApplePayJS.ApplePayShippingContactUpdate = {
-            errors: [
-              new ApplePayError('shippingContactInvalid', 'countryCode', 'Cannot ship to the selected address')
-            ],
-            newLineItems: createApplePayLineItems(data.selection.checkout.totals, data.selection.lines),
-            newShippingMethods: shippingMethods,
-            newTotal: {
-              amount: grandTotal.toFixed(2),
-              label: 'Total',
-            },
-          };
-
-          debugLog('applePay:onShippingContactSelected:resolve', ret);
-          resolve(ret);
-          return;
-        }
 
         const ret: ApplePayJS.ApplePayShippingContactUpdate = {
           newLineItems: createApplePayLineItems(data.selection.checkout.totals, data.selection.lines),
