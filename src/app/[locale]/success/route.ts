@@ -28,6 +28,9 @@ const resolveBrackets = (input: Record<string, unknown>) => {
 };
 
 const getPaymentResult = (fields: Record<string, unknown>) => {
+  const { express, ...restFields } = fields;
+  const isExpress = express === 'true';
+
   return centraFetch(
     graphql(`
       mutation paymentResult($paymentMethodFields: Map!) {
@@ -42,7 +45,7 @@ const getPaymentResult = (fields: Record<string, unknown>) => {
     `),
     {
       variables: {
-        paymentMethodFields: fields,
+        paymentMethodFields: isExpress ? { ...restFields, express: true } : restFields,
       },
     },
   )

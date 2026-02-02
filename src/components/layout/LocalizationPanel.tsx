@@ -78,7 +78,6 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
       }
 
       router.push(newUrl.href);
-      void queryClient.invalidateQueries(checkoutPaymentMethodsQuery);
     });
   };
 

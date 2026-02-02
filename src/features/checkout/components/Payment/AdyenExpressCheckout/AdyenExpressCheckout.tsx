@@ -66,7 +66,7 @@ export const AdyenExpressCheckoutInner = ({
   const { data: paymentConfig } = useQuery(
     expressCheckoutWidgetsQuery({
       pluginUri: adyenPaymentMethod?.uri,
-      returnUrl: `${window.location.origin}/confirmation`,
+      returnUrl: `${window.location.origin}/success?express=true`,
       amount: cartTotalInMinor,
       lineItems: initialLineItems,
       language,
@@ -150,14 +150,14 @@ export const AdyenExpressCheckoutInner = ({
               lastName: billingAddress.lastName,
               phoneNumber: billingAddress.phoneNumber,
             },
-            paymentReturnPage: `${window.location.origin}/confirmation`,
+            paymentReturnPage: `${window.location.origin}/success?express=true`,
             paymentFailedPage: `${window.location.origin}/failed`,
             paymentMethodSpecificFields: { ...(state.data as unknown as Record<string, unknown>), express: true },
           });
           debugLog('handleOnSubmit:submitPaymentInstructions:response', response);
           const formFields: Record<string, string> | null =
             response.action?.__typename === 'JavascriptPaymentAction'
-              ? ((response.action.formFields as Record<string, string> | undefined) ?? {})
+              ? ((response.action.formFields as Record<string, string> | undefined) ?? null)
               : null;
           if (formFields) {
             const resolved = {
@@ -165,6 +165,14 @@ export const AdyenExpressCheckoutInner = ({
             };
             debugLog('handleOnSubmit:resolve', resolved);
             actions.resolve(resolved);
+          } else if (response.action?.__typename === 'RedirectPaymentAction') {
+            debugLog('handleOnSubmit:redirect', { url: response.action.url });
+            window.location.href = response.action.url;
+          } else if (response.action?.__typename === 'FormPaymentAction') {
+            debugLog('handleOnSubmit:form-action', { formType: response.action.formType });
+            const formContainer = document.createElement('div');
+            formContainer.innerHTML = response.action.html;
+            document.body.appendChild(formContainer);
           } else {
             const resolved = {
               resultCode: 'Authorised',
@@ -248,6 +256,7 @@ export const AdyenExpressCheckoutInner = ({
           form.action = `${window.location.origin}/success`;
 
           const flattenedItems = flattenForPost(state.data as Record<string, unknown>, '');
+          flattenedItems.express = 'true';
           debugLog('adyenCheckout:onAdditionalDetails:flattenedForPost', flattenedItems);
 
           Object.entries(flattenedItems).forEach(([name, value]) => {

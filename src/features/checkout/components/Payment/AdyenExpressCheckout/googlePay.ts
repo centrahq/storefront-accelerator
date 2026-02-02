@@ -182,7 +182,7 @@ export const getGooglePay = ({
           address1: '',
           ...address,
         },
-        paymentReturnPage: `${window.location.origin}/confirmation`,
+        paymentReturnPage: `${window.location.origin}/success?express=true`,
         paymentFailedPage: `${window.location.origin}/failed`,
         paymentInitiateOnly: true,
         paymentMethodSpecificFields: { express: true },
