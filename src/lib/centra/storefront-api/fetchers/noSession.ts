@@ -77,10 +77,17 @@ export async function centraFetchNoSession<T>(
  */
 export const lookupProduct = async (variables: LookupProductMutationVariables) => {
   'use cache: remote';
+  const imageSizeName = process.env.MEDIA_SIZE_NAME ?? 'standard';
 
   const result = await centraFetchNoSession(
     graphql(`
-      mutation lookupProduct($uri: String!, $language: String!, $market: Int!, $pricelist: Int!) {
+      mutation lookupProduct(
+        $uri: String!
+        $language: String!
+        $market: Int!
+        $pricelist: Int!
+        $imageSizeName: String
+      ) {
         lookupUri(
           uri: $uri
           for: [DISPLAY_ITEM]
@@ -98,7 +105,10 @@ export const lookupProduct = async (variables: LookupProductMutationVariables) =
       }
     `),
     {
-      variables,
+      variables: {
+        ...variables,
+        imageSizeName,
+      },
     },
   );
 
@@ -114,10 +124,11 @@ export const lookupProduct = async (variables: LookupProductMutationVariables) =
 
 export const getRelatedProducts = async (variables: RelatedProductsQueryVariables) => {
   'use cache: remote';
+  const imageSizeName = process.env.MEDIA_SIZE_NAME ?? '1350x0';
 
   const result = await centraFetchNoSession(
     graphql(`
-      query relatedProducts($id: Int!, $language: String!, $market: Int!, $pricelist: Int!) {
+      query relatedProducts($id: Int!, $language: String!, $market: Int!, $pricelist: Int!, $imageSizeName: String) {
         displayItem(id: $id, languageCode: [$language], market: [$market], pricelist: [$pricelist]) {
           relatedDisplayItems(relationType: "standard") {
             relation
@@ -129,7 +140,10 @@ export const getRelatedProducts = async (variables: RelatedProductsQueryVariable
       }
     `),
     {
-      variables,
+      variables: {
+        ...variables,
+        imageSizeName,
+      },
     },
   );
 
@@ -146,6 +160,7 @@ export const getRelatedProducts = async (variables: RelatedProductsQueryVariable
 };
 
 export const filterProducts = async (variables: ProductsQueryVariables) => {
+  const imageSizeName = process.env.MEDIA_SIZE_NAME ?? '1350x0';
   const res = await centraFetchNoSession(
     graphql(`
       query products(
@@ -157,6 +172,7 @@ export const filterProducts = async (variables: ProductsQueryVariables) => {
         $pricelist: Int!
         $language: String!
         $withFilters: Boolean = true
+        $imageSizeName: String
       ) {
         displayItems(
           limit: $limit
@@ -192,7 +208,10 @@ export const filterProducts = async (variables: ProductsQueryVariables) => {
       }
     `),
     {
-      variables,
+      variables: {
+        ...variables,
+        imageSizeName,
+      },
     },
   );
 
