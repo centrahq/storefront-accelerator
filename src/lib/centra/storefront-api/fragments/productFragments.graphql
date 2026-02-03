@@ -27,7 +27,7 @@ fragment bundle on Bundle {
       uri
       media {
         altText
-        source {
+        source(sizeName: $imageSizeName) {
           url
         }
       }

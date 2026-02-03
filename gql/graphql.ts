@@ -5259,7 +5259,7 @@ export const BundleFragmentDoc = new TypedDocumentString(`
       uri
       media {
         altText
-        source {
+        source(sizeName: $imageSizeName) {
           url
         }
       }
@@ -5408,7 +5408,7 @@ fragment bundle on Bundle {
       uri
       media {
         altText
-        source {
+        source(sizeName: $imageSizeName) {
           url
         }
       }
@@ -8933,7 +8933,7 @@ fragment bundle on Bundle {
       uri
       media {
         altText
-        source {
+        source(sizeName: $imageSizeName) {
           url
         }
       }
