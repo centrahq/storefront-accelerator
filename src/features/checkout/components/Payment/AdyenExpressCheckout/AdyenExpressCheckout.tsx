@@ -15,7 +15,7 @@ import { updateLine } from '@/features/cart/service';
 import { PaymentMethodKind } from '@gql/graphql';
 
 import { checkoutPaymentMethodsQuery, expressCheckoutWidgetsQuery } from '../../../queries';
-import { submitPaymentInstructions } from '../../../service';
+import { initializeCheckoutWithExpress, submitPaymentInstructions } from '../../../service';
 import { AdyenExpressCheckoutErrorBoundary } from '../AdyenExpressCheckoutErrorBoundary';
 import { AdyenAddress } from '../types';
 import { getApplePay } from './applePay';
@@ -213,6 +213,7 @@ export const AdyenExpressCheckoutInner = ({
         },
         onError: (error: AdyenCheckoutError) => {
           debugLog('adyenCheckout:onError', error);
+          void initializeCheckoutWithExpress(false);
           const isCancellationError =
             error.name === 'CANCEL' ||
             (error as unknown as { cause?: { statusCode?: string } }).cause?.statusCode === 'CANCELED';

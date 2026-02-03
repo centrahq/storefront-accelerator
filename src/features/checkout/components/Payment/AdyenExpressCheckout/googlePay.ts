@@ -8,9 +8,10 @@ import {
 } from '@adyen/adyen-web';
 
 import { addToCart } from '@/features/cart/service';
-import { CheckoutQuery, SelectionTotalRowType } from '@gql/graphql';
+import { SelectionTotalRowType } from '@gql/graphql';
 
 import { PaymentConfigResponse } from '../../../queries';
+import type { CheckoutSelection } from '../../../service';
 import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
 
 import { AdyenAddress } from "../types";
@@ -33,8 +34,8 @@ const mapAdyenAddressToCentra = (adyenAddress: Partial<google.payments.api.Addre
 
 
 const createGooglePayLineItems = (
-  totals: NonNullable<CheckoutQuery['selection']['checkout']>['totals'],
-  lines: CheckoutQuery['selection']['lines'],
+  totals: CheckoutSelection['checkout']['totals'],
+  lines: CheckoutSelection['lines'],
 ): google.payments.api.DisplayItem[] => {
   const itemsTotal = totals.find((t) => t.type === SelectionTotalRowType.ItemsSubtotal)?.price.value ?? 0;
   const tax = totals.find((t) => t.type === SelectionTotalRowType.IncludingTaxTotal)?.price.value ?? 0;
@@ -245,7 +246,7 @@ export const getGooglePay = ({
       const currentItemId = getItemId();
       if (currentItemId) {
         try {
-          const checkout = await fetchCheckout();
+          const checkout = await fetchCheckout(true);
           debugLog('googlePayPaymentDataChangedHandler:INITIALIZE:fetchCheckout', checkout);
           const hasProductInSelection = checkout.lines.some((line) => line?.item.id === currentItemId);
 

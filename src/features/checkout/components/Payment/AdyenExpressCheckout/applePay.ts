@@ -7,9 +7,10 @@ import {
 } from '@adyen/adyen-web';
 
 import { addToCart } from '@/features/cart/service';
-import { CheckoutQuery, SelectionTotalRowType } from '@gql/graphql';
+import { SelectionTotalRowType } from '@gql/graphql';
 
 import { PaymentConfigResponse } from '../../../queries';
+import type { CheckoutSelection } from '../../../service';
 import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
 import { AdyenAddress } from '../types';
 import { debugLog } from './debug';
@@ -34,8 +35,8 @@ const mapApplePayAddressToCentra = (
 };
 
 const createApplePayLineItems = (
-  totals: NonNullable<CheckoutQuery['selection']['checkout']>['totals'],
-  lines: CheckoutQuery['selection']['lines'],
+  totals: CheckoutSelection['checkout']['totals'],
+  lines: CheckoutSelection['lines'],
 ): ApplePayJS.ApplePayLineItem[] => {
   const itemsTotal = totals.find((t) => t.type === SelectionTotalRowType.ItemsSubtotal)?.price.value ?? 0;
   const tax = totals.find((t) => t.type === SelectionTotalRowType.IncludingTaxTotal)?.price.value ?? 0;
@@ -75,7 +76,7 @@ const onApplePayClick = async (
   debugLog('applePay:onClick:input', { itemId });
   if (itemId) {
     try {
-      const checkout = await fetchCheckout();
+      const checkout = await fetchCheckout(true);
       debugLog('applePay:onClick:fetchCheckout', checkout);
       const hasProductInSelection = checkout.lines.some((line) => line?.item.id === itemId);
 
@@ -144,7 +145,7 @@ export const getApplePay = ({
       zipCode: shippingAddress.postalCode ?? '',
     };
     if (shippingAddress.countryCode !== paymentConfig.country) {
-      const data = await fetchCheckout();
+      const data = await fetchCheckout(true);
       const shippingMethods = (data.checkout.shippingMethods ?? []).map((method) => ({
         amount: method.price.value.toString(),
         detail: '',
@@ -276,7 +277,7 @@ export const getApplePay = ({
       reject: (error?: Error) => void,
       event,
     ) => {
-      onShippingContactSelected(resolve, reject, event, paymentConfig);
+      void onShippingContactSelected(resolve, reject, event, paymentConfig);
     },
     onShippingMethodSelected: (
       resolve: (data: ApplePayJS.ApplePayShippingMethodUpdate) => void,
