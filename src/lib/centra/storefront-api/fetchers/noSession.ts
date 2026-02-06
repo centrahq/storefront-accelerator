@@ -16,6 +16,8 @@ import { TAGS } from '../../constants';
 import { CentraError } from '../../errors';
 import { CentraResponse } from '../../types/api';
 
+const imageSizeName = process.env.MEDIA_SIZE_NAME ?? 'standard';
+
 type BaseRequest = Omit<RequestInit, 'body' | 'method' | 'headers'> & {
   headers?: Record<string, string>;
 };
@@ -80,7 +82,13 @@ export const lookupProduct = async (variables: LookupProductMutationVariables) =
 
   const result = await centraFetchNoSession(
     graphql(`
-      mutation lookupProduct($uri: String!, $language: String!, $market: Int!, $pricelist: Int!) {
+      mutation lookupProduct(
+        $uri: String!
+        $language: String!
+        $market: Int!
+        $pricelist: Int!
+        $imageSizeName: String
+      ) {
         lookupUri(
           uri: $uri
           for: [DISPLAY_ITEM]
@@ -98,7 +106,10 @@ export const lookupProduct = async (variables: LookupProductMutationVariables) =
       }
     `),
     {
-      variables,
+      variables: {
+        ...variables,
+        imageSizeName,
+      },
     },
   );
 
@@ -117,7 +128,7 @@ export const getRelatedProducts = async (variables: RelatedProductsQueryVariable
 
   const result = await centraFetchNoSession(
     graphql(`
-      query relatedProducts($id: Int!, $language: String!, $market: Int!, $pricelist: Int!) {
+      query relatedProducts($id: Int!, $language: String!, $market: Int!, $pricelist: Int!, $imageSizeName: String) {
         displayItem(id: $id, languageCode: [$language], market: [$market], pricelist: [$pricelist]) {
           relatedDisplayItems(relationType: "standard") {
             relation
@@ -129,7 +140,10 @@ export const getRelatedProducts = async (variables: RelatedProductsQueryVariable
       }
     `),
     {
-      variables,
+      variables: {
+        ...variables,
+        imageSizeName,
+      },
     },
   );
 
@@ -157,6 +171,7 @@ export const filterProducts = async (variables: ProductsQueryVariables) => {
         $pricelist: Int!
         $language: String!
         $withFilters: Boolean = true
+        $imageSizeName: String
       ) {
         displayItems(
           limit: $limit
@@ -192,7 +207,10 @@ export const filterProducts = async (variables: ProductsQueryVariables) => {
       }
     `),
     {
-      variables,
+      variables: {
+        ...variables,
+        imageSizeName,
+      },
     },
   );
 

@@ -85,7 +85,7 @@ fragment listProduct on DisplayItem {
   name
   media {
     altText
-    source(sizeName: "1350x0") {
+    source(sizeName: $imageSizeName) {
       url
     }
   }
@@ -152,7 +152,7 @@ fragment productDetails on DisplayItem {
   media {
     id
     altText
-    source(sizeName: "1350x0") {
+    source(sizeName: $imageSizeName) {
       url
     }
   }

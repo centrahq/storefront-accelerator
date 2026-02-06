@@ -1109,6 +1109,47 @@ type GiftCard {
   lastFourDigits: String!
 }
 
+type GiftCertificate {
+  """Required [operating mode](#operating-mode): `SESSION`"""
+  amount: MonetaryValue
+
+  """Required [operating mode](#operating-mode): `NO_SESSION`"""
+  amountByCurrency: [MonetaryValue!]
+
+  """
+  If true, the generated voucher will only contain the currency of the selection
+  that purchased it (e.g., SEK -> SEK).
+  
+  If false, the voucher will be generated for all available
+  currencies from the underlying gift certificate.
+  
+  Required [operating mode](#operating-mode): `SHARED_SECRET`
+  """
+  currencyOfSaleOnly: Boolean!
+  id: Int!
+  name: String!
+
+  """Required [operating mode](#operating-mode): `SHARED_SECRET`"""
+  showGiftAmount: Boolean!
+  translations: [GiftCertificateTranslation!]!
+  type: GiftCertificateType!
+}
+
+type GiftCertificateList {
+  list: [GiftCertificate!]!
+  pagination: PaginationInfo!
+}
+
+type GiftCertificateTranslation {
+  language: Language!
+  name: String!
+}
+
+enum GiftCertificateType {
+  ANY_AMOUNT
+  PREDETERMINED_AMOUNT
+}
+
 type IngridWidget implements Widget {
   deliveryOptionsAvailable: Boolean!
   ingridAttributes: [String!]
@@ -1225,6 +1266,12 @@ input LoginOptions {
   The market will only be changed if the customer has a non-geolocated market assigned.
   """
   applyCustomerMarket: Boolean! = false
+
+  """
+  If set to `true`, `applyCustomPricelist` will change the current `Selection` and `Session` to use the pricelist specified on the customer.
+  The market will only be changed if the customer has a non-geolocated pricelist assigned.
+  """
+  applyCustomerPricelist: Boolean! = false
 }
 
 type LoginPayload implements Payload {
@@ -1480,7 +1527,7 @@ type Mutation {
     """
     Controls how the login should affect the selection and session on successful login.
     """
-    loginOptions: LoginOptions! = {applyCustomerMarket: false}
+    loginOptions: LoginOptions! = {applyCustomerMarket: false, applyCustomerPricelist: false}
     password: String!
   ): LoginPayload!
 
@@ -1672,6 +1719,13 @@ type Mutation {
   Required [operating mode](#operating-mode): `SESSION`
   """
   setPaymentMethod(id: Int!): SelectionMutationPayload!
+
+  """
+  Set the pricelist on the current selection.
+  
+  Required [operating mode](#operating-mode): `SHARED_SECRET`
+  """
+  setPricelist(id: Int!): SessionPayload!
 
   """
   Attach open selection to the token, it now becomes the current selection for the session.
@@ -2305,6 +2359,20 @@ type Query {
 
   """Check which brick and mortars can fulfill the current selection."""
   fulfillmentCheck(brickAndMortarIds: [Int!]!): FulfillmentCheckPayload!
+  giftCertificate(id: Int!): GiftCertificate
+  giftCertificates(
+    ids: [Int!] = []
+
+    """
+    Max limits depend on your session mode.
+    
+    `SESSION`: 40
+    
+    `NO_SESSION`: 100
+    """
+    limit: Int! = 20
+    page: Int! = 1
+  ): GiftCertificateList!
 
   """Get a list of languages."""
   languages: [Language!]!

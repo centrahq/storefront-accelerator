@@ -1174,6 +1174,44 @@ export type GiftCard = {
   lastFourDigits: Scalars['String']['output'];
 };
 
+export type GiftCertificate = {
+  /** Required [operating mode](#operating-mode): `SESSION` */
+  amount?: Maybe<MonetaryValue>;
+  /** Required [operating mode](#operating-mode): `NO_SESSION` */
+  amountByCurrency?: Maybe<Array<MonetaryValue>>;
+  /**
+   * If true, the generated voucher will only contain the currency of the selection
+   * that purchased it (e.g., SEK -> SEK).
+   *
+   * If false, the voucher will be generated for all available
+   * currencies from the underlying gift certificate.
+   *
+   * Required [operating mode](#operating-mode): `SHARED_SECRET`
+   */
+  currencyOfSaleOnly: Scalars['Boolean']['output'];
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  /** Required [operating mode](#operating-mode): `SHARED_SECRET` */
+  showGiftAmount: Scalars['Boolean']['output'];
+  translations: Array<GiftCertificateTranslation>;
+  type: GiftCertificateType;
+};
+
+export type GiftCertificateList = {
+  list: Array<GiftCertificate>;
+  pagination: PaginationInfo;
+};
+
+export type GiftCertificateTranslation = {
+  language: Language;
+  name: Scalars['String']['output'];
+};
+
+export enum GiftCertificateType {
+  AnyAmount = 'ANY_AMOUNT',
+  PredeterminedAmount = 'PREDETERMINED_AMOUNT'
+}
+
 export type IngridWidget = Widget & {
   deliveryOptionsAvailable: Scalars['Boolean']['output'];
   ingridAttributes?: Maybe<Array<Scalars['String']['output']>>;
@@ -1314,6 +1352,11 @@ export type LoginOptions = {
    * The market will only be changed if the customer has a non-geolocated market assigned.
    */
   applyCustomerMarket?: Scalars['Boolean']['input'];
+  /**
+   * If set to `true`, `applyCustomPricelist` will change the current `Selection` and `Session` to use the pricelist specified on the customer.
+   * The market will only be changed if the customer has a non-geolocated pricelist assigned.
+   */
+  applyCustomerPricelist?: Scalars['Boolean']['input'];
 };
 
 export type LoginPayload = Payload & {
@@ -1685,6 +1728,12 @@ export type Mutation = {
    */
   setPaymentMethod: SelectionMutationPayload;
   /**
+   * Set the pricelist on the current selection.
+   *
+   * Required [operating mode](#operating-mode): `SHARED_SECRET`
+   */
+  setPricelist: SessionPayload;
+  /**
    * Attach open selection to the token, it now becomes the current selection for the session.
    *
    * Required [operating mode](#operating-mode): `SESSION`
@@ -1967,6 +2016,11 @@ export type MutationSetMarketArgs = {
 
 
 export type MutationSetPaymentMethodArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationSetPricelistArgs = {
   id: Scalars['Int']['input'];
 };
 
@@ -2505,6 +2559,8 @@ export type Query = {
   expressCheckoutWidgets: ExpressCheckoutWidgetsPayload;
   /** Check which brick and mortars can fulfill the current selection. */
   fulfillmentCheck: FulfillmentCheckPayload;
+  giftCertificate?: Maybe<GiftCertificate>;
+  giftCertificates: GiftCertificateList;
   /** Get a list of languages. */
   languages: Array<Language>;
   /**
@@ -2656,6 +2712,18 @@ export type QueryExpressCheckoutWidgetsArgs = {
 
 export type QueryFulfillmentCheckArgs = {
   brickAndMortarIds: Array<Scalars['Int']['input']>;
+};
+
+
+export type QueryGiftCertificateArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryGiftCertificatesArgs = {
+  ids?: InputMaybe<Array<Scalars['Int']['input']>>;
+  limit?: Scalars['Int']['input'];
+  page?: Scalars['Int']['input'];
 };
 
 
@@ -4176,6 +4244,7 @@ export type LookupProductMutationVariables = Exact<{
   language: Scalars['String']['input'];
   market: Scalars['Int']['input'];
   pricelist: Scalars['Int']['input'];
+  imageSizeName?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -4225,6 +4294,7 @@ export type RelatedProductsQueryVariables = Exact<{
   language: Scalars['String']['input'];
   market: Scalars['Int']['input'];
   pricelist: Scalars['Int']['input'];
+  imageSizeName?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -4255,6 +4325,7 @@ export type ProductsQueryVariables = Exact<{
   pricelist: Scalars['Int']['input'];
   language: Scalars['String']['input'];
   withFilters?: InputMaybe<Scalars['Boolean']['input']>;
+  imageSizeName?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -4960,7 +5031,7 @@ export const ListProductFragmentDoc = new TypedDocumentString(`
   name
   media {
     altText
-    source(sizeName: "1350x0") {
+    source(sizeName: $imageSizeName) {
       url
     }
   }
@@ -5038,7 +5109,7 @@ export const BundleFragmentDoc = new TypedDocumentString(`
       uri
       media {
         altText
-        source {
+        source(sizeName: $imageSizeName) {
           url
         }
       }
@@ -5112,7 +5183,7 @@ export const ProductDetailsFragmentDoc = new TypedDocumentString(`
   media {
     id
     altText
-    source(sizeName: "1350x0") {
+    source(sizeName: $imageSizeName) {
       url
     }
   }
@@ -5187,7 +5258,7 @@ fragment bundle on Bundle {
       uri
       media {
         altText
-        source {
+        source(sizeName: $imageSizeName) {
           url
         }
       }
@@ -8601,7 +8672,7 @@ fragment subscriptionContract on SubscriptionContract {
   }
 }`) as unknown as TypedDocumentString<SubscriptionContractsQuery, SubscriptionContractsQueryVariables>;
 export const LookupProductDocument = new TypedDocumentString(`
-    mutation lookupProduct($uri: String!, $language: String!, $market: Int!, $pricelist: Int!) {
+    mutation lookupProduct($uri: String!, $language: String!, $market: Int!, $pricelist: Int!, $imageSizeName: String) {
   lookupUri(
     uri: $uri
     for: [DISPLAY_ITEM]
@@ -8645,7 +8716,7 @@ fragment bundle on Bundle {
       uri
       media {
         altText
-        source {
+        source(sizeName: $imageSizeName) {
           url
         }
       }
@@ -8730,7 +8801,7 @@ fragment productDetails on DisplayItem {
   media {
     id
     altText
-    source(sizeName: "1350x0") {
+    source(sizeName: $imageSizeName) {
       url
     }
   }
@@ -8778,7 +8849,7 @@ fragment productDetails on DisplayItem {
   }
 }`) as unknown as TypedDocumentString<LookupProductMutation, LookupProductMutationVariables>;
 export const RelatedProductsDocument = new TypedDocumentString(`
-    query relatedProducts($id: Int!, $language: String!, $market: Int!, $pricelist: Int!) {
+    query relatedProducts($id: Int!, $language: String!, $market: Int!, $pricelist: Int!, $imageSizeName: String) {
   displayItem(
     id: $id
     languageCode: [$language]
@@ -8813,7 +8884,7 @@ fragment listProduct on DisplayItem {
   name
   media {
     altText
-    source(sizeName: "1350x0") {
+    source(sizeName: $imageSizeName) {
       url
     }
   }
@@ -8843,7 +8914,7 @@ fragment listProduct on DisplayItem {
   }
 }`) as unknown as TypedDocumentString<RelatedProductsQuery, RelatedProductsQueryVariables>;
 export const ProductsDocument = new TypedDocumentString(`
-    query products($page: Int!, $where: DisplayItemFilter, $sort: [CustomSortInput!] = [], $limit: Int = 40, $market: Int!, $pricelist: Int!, $language: String!, $withFilters: Boolean = true) {
+    query products($page: Int!, $where: DisplayItemFilter, $sort: [CustomSortInput!] = [], $limit: Int = 40, $market: Int!, $pricelist: Int!, $language: String!, $withFilters: Boolean = true, $imageSizeName: String) {
   displayItems(
     limit: $limit
     page: $page
@@ -8896,7 +8967,7 @@ fragment listProduct on DisplayItem {
   name
   media {
     altText
-    source(sizeName: "1350x0") {
+    source(sizeName: $imageSizeName) {
       url
     }
   }
