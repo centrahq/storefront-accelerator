@@ -12,6 +12,8 @@ import { useTranslation } from '@/features/i18n/useTranslation/client';
 import { REMOVED_ITEMS_PARAM } from '@/lib/utils/unavailableItems';
 
 import { changeLocale } from './actions';
+import { useQueryClient } from '@tanstack/react-query';
+import { checkoutPaymentMethodsQuery } from '@/features/checkout/queries';
 
 interface Props {
   countries: {
@@ -28,6 +30,7 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const { country, language } = useLocale();
   const languageName = languages.find((lang) => lang.code === language)?.name ?? '?';
+  const queryClient = useQueryClient();
   const { t } = useTranslation(['shop']);
   const router = useRouter();
   const { locale } = useParams<{ locale: string }>();
@@ -73,7 +76,7 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
       if (result.hasRemovedItems) {
         newUrl.searchParams.set(REMOVED_ITEMS_PARAM, 'true');
       }
-
+      void queryClient.invalidateQueries(checkoutPaymentMethodsQuery);
       router.push(newUrl.href);
     });
   };
