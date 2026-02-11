@@ -131,7 +131,6 @@ export const getGooglePay = ({
   initialLineItems,
   handleOnSubmit,
   getItemId,
-  shippingMethods,
   onAddedItemLineChange,
 }: {
   checkout: Core,
@@ -147,28 +146,14 @@ export const getGooglePay = ({
     shippingAddress?: AdyenAddress,
   ) => Promise<void>,
   getItemId: () => string | undefined,
-  shippingMethods: { id: number; }[],
   onAddedItemLineChange?: (lineId: string | null) => void,
 }) => {
   let currentBillingAddress: AdyenAddress | undefined;
   let currentShippingAddress: AdyenAddress | undefined;
 
-  const setDefaultShippingMethod = async () => {
-    if (shippingMethods.length === 0) {
-      throw new Error('No shipping methods available');
-    }
-
-    const defaultMethod = shippingMethods[0];
-    if (defaultMethod) {
-      debugLog('setDefaultShippingMethod:choose', defaultMethod);
-      await setShippingMethod(defaultMethod.id);
-    }
-  };
-
   const addressUpdateHandler = async (shippingAddress: google.payments.api.IntermediateAddress) => {
     try {
       debugLog('addressUpdateHandler:input', { shippingAddress });
-      await setDefaultShippingMethod();
 
       const address = {
         city: shippingAddress.locality,
@@ -246,9 +231,9 @@ export const getGooglePay = ({
       const currentItemId = getItemId();
       if (currentItemId) {
         try {
-          const checkout = await fetchCheckout(true);
-          debugLog('googlePayPaymentDataChangedHandler:INITIALIZE:fetchCheckout', checkout);
-          const hasProductInSelection = checkout.lines.some((line) => line?.item.id === currentItemId);
+          const data = await fetchCheckout(true);
+          debugLog('googlePayPaymentDataChangedHandler:INITIALIZE:fetchCheckout', data);
+          const hasProductInSelection = data.lines.some((line) => line?.item.id === currentItemId);
 
           if (!hasProductInSelection) {
             const addedSelection = await addToCart({ item: currentItemId });

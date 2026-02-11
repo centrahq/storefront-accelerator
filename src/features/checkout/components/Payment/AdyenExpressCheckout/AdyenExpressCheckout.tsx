@@ -9,7 +9,7 @@ import {
 } from '@adyen/adyen-web';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { updateLine } from '@/features/cart/service';
 import { PaymentMethodKind } from '@gql/graphql';
@@ -21,8 +21,6 @@ import { AdyenAddress } from '../types';
 import { getApplePay } from './applePay';
 import { debugLog } from './debug';
 import { getGooglePay } from './googlePay';
-
-
 
 interface Props {
   itemId?: string;
@@ -52,10 +50,6 @@ export const AdyenExpressCheckoutInner = ({
   const addedItemLineRef = useRef<string | null>(null);
   const adyenPaymentMethod = checkoutPaymentMethodsData?.paymentMethods.find(
     (method) => method.kind === PaymentMethodKind.AdyenDropin,
-  );
-  const shippingMethods = useMemo(
-    () => checkoutPaymentMethodsData?.shippingMethods ?? [],
-    [checkoutPaymentMethodsData],
   );
   const grandTotal = cartTotal;
   const cartTotalInMinor = Math.round(grandTotal * 100);
@@ -281,7 +275,6 @@ export const AdyenExpressCheckoutInner = ({
         initialLineItems,
         handleOnSubmit,
         getItemId: () => itemRef.current,
-        shippingMethods,
         onAddedItemLineChange: (lineId) => {
           addedItemLineRef.current = lineId;
         },
@@ -323,7 +316,7 @@ export const AdyenExpressCheckoutInner = ({
     };
 
     void init();
-  }, [initialLineItems, paymentConfig, shippingMethods, disabled, cartTotal, cartTotalInMinor]);
+  }, [initialLineItems, paymentConfig, disabled, cartTotal, cartTotalInMinor]);
 
   return (
     <>
