@@ -2,11 +2,10 @@ import { PaymentMethodsResponse } from '@adyen/adyen-web';
 import { queryOptions } from '@tanstack/react-query';
 
 import { fetchCheckout, fetchCheckoutPaymentMethods } from './service';
-import type { CheckoutSelection } from './service';
 
-export const checkoutQuery = queryOptions<CheckoutSelection>({
+export const checkoutQuery = queryOptions({
   queryKey: ['checkout'],
-  queryFn: () => fetchCheckout(false),
+  queryFn: fetchCheckout,
 });
 
 export const checkoutPaymentMethodsQuery = queryOptions({

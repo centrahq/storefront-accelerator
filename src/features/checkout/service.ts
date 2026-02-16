@@ -2,14 +2,27 @@ import { UserError } from '@/lib/centra/errors';
 import { centraFetch } from '@/lib/centra/storefront-api/fetchers/session';
 import { mutationMutex } from '@/lib/centra/storefront-api/mutationLock';
 import { graphql } from '@gql/gql';
-import type { CheckoutFragment, PaymentInstructionsInput } from '@gql/graphql';
+import { PaymentInstructionsInput } from '@gql/graphql';
 
-export type CheckoutSelection = CheckoutFragment & {
-  checkout: NonNullable<CheckoutFragment['checkout']>;
-};
+export async function fetchCheckout() {
+  const response = await centraFetch(
+    graphql(`
+      query checkout {
+        selection {
+          ...checkout
+        }
+      }
+    `),
+  );
 
-export async function fetchCheckout(expressCheckout = false): Promise<CheckoutSelection> {
-  return initializeCheckoutWithExpress(expressCheckout);
+  if (!response.data.selection.checkout) {
+    throw new Error('Checkout not found');
+  }
+
+  return {
+    ...response.data.selection,
+    checkout: response.data.selection.checkout,
+  };
 }
 
 export async function fetchCheckoutPaymentMethods() {
@@ -34,7 +47,7 @@ export async function fetchCheckoutPaymentMethods() {
   return response.data.selection.checkout;
 }
 
-export async function setShippingMethod(id: number): Promise<CheckoutSelection> {
+export async function setShippingMethod(id: number) {
   const response = await mutationMutex.runExclusive(() =>
     centraFetch(
       graphql(`
@@ -120,7 +133,7 @@ export async function submitPaymentInstructions(variables: Omit<PaymentInstructi
   };
 }
 
-export async function sendWidgetData(payload: Record<string, unknown>): Promise<CheckoutSelection> {
+export async function sendWidgetData(payload: Record<string, unknown>) {
   const response = await mutationMutex.runExclusive(() =>
     centraFetch(
       graphql(`
@@ -158,42 +171,3 @@ export async function sendWidgetData(payload: Record<string, unknown>): Promise<
   };
 }
 
-export async function initializeCheckoutWithExpress(expressCheckout: boolean): Promise<CheckoutSelection> {
-  const response = await mutationMutex.runExclusive(() =>
-    centraFetch(
-      graphql(`
-        mutation InitializeCheckoutWithExpress($payload: Map!) {
-          handleWidgetEvent(payload: $payload) {
-            selection {
-              ...checkout
-            }
-            userErrors {
-              message
-              path
-            }
-          }
-        }
-      `),
-      {
-        variables: {
-          payload: {
-            expressCheckout,
-          },
-        },
-      },
-    ),
-  );
-
-  if (response.data.handleWidgetEvent.userErrors.length > 0) {
-    throw new UserError(response.data.handleWidgetEvent.userErrors, response.extensions.traceId);
-  }
-
-  if (!response.data.handleWidgetEvent.selection?.checkout) {
-    throw new Error('No selection');
-  }
-
-  return {
-    ...response.data.handleWidgetEvent.selection,
-    checkout: response.data.handleWidgetEvent.selection.checkout,
-  };
-}
