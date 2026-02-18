@@ -14,9 +14,9 @@ export const AddVoucherForm = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const { t } = useTranslation(['checkout']);
 
-  const addVoucher = (event: React.FormEvent<HTMLFormElement>) => {
+  const addVoucher = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.target as HTMLFormElement);
+    const formData = new FormData(event.target);
     addVoucherMutation.mutate(formData.get('voucher') as string, {
       onSuccess: () => {
         formRef.current?.reset();

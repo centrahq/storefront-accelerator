@@ -73,9 +73,9 @@ const GiftCardForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const { t } = useTranslation(['checkout']);
   const applyGiftCardMutation = useApplyGiftCard();
 
-  const addVoucher = (event: React.FormEvent<HTMLFormElement>) => {
+  const addVoucher = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.target as HTMLFormElement);
+    const formData = new FormData(event.target);
     applyGiftCardMutation.mutate(
       { cardNumber: formData.get('cardNumber') as string, pin: formData.get('pin') as string },
       {

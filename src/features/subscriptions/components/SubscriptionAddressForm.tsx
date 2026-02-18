@@ -1,6 +1,6 @@
 import { Field, Input, Label } from '@headlessui/react';
 import clsx from 'clsx';
-import { FormEvent } from 'react';
+import { SubmitEvent } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -29,9 +29,9 @@ export const SubscriptionAddressForm = ({ contract, closeForm }: SubscriptionAdd
   const { t } = useTranslation(['shop']);
   const changeAddressMutation = useChangeSubscriptionContractAddress();
 
-  const updateAddress = (event: FormEvent) => {
+  const updateAddress = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.target as HTMLFormElement);
+    const formData = new FormData(event.target);
 
     const address = {
       address1: formData.get('address1'),

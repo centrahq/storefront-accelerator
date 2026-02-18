@@ -26,7 +26,7 @@ export const DeliveryForm = () => {
 
   const selectedShippingMethod = data.checkout.shippingMethod?.id;
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const shippingMethod = formData.get('shippingMethod');
