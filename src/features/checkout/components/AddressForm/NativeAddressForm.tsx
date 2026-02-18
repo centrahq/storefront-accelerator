@@ -6,7 +6,7 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
-import { FormEvent, useState } from 'react';
+import { SubmitEvent, useState } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -16,12 +16,6 @@ import { checkUnavailableItems, REMOVED_ITEMS_PARAM } from '@/lib/utils/unavaila
 
 import { useSetAddress } from '../../mutations';
 import { checkoutQuery } from '../../queries';
-
-/**
- * TODO: Address fields from Centra are unreliable
- * https://centracommerce.atlassian.net/browse/DT-687
- * https://centracommerce.atlassian.net/browse/DT-688
- */
 
 interface AddressFormProps {
   countries: Array<{
@@ -81,9 +75,9 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
   const shippingStates = countries.find((country) => country.code === shippingCountry)?.states ?? [];
   const billingStates = countries.find((country) => country.code === billingCountry)?.states ?? [];
 
-  const changeAddress = (event: FormEvent) => {
+  const changeAddress = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.target as HTMLFormElement);
+    const formData = new FormData(event.target);
 
     const shippingAddress = {
       address1: formData.get('shipping.address1'),

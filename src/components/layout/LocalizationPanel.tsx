@@ -49,7 +49,7 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
     }))
     .toSorted((a, b) => a.label.localeCompare(b.label));
 
-  const handleSave = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSave = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     startTransition(async () => {
