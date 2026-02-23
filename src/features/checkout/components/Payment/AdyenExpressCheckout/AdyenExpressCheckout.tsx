@@ -301,7 +301,15 @@ export const AdyenExpressCheckoutInner = ({
           debugLog('applePay:isAvailable:resolved', {});
           if (applePayContainerRef.current) {
             debugLog('applePay:mount', { container: 'applePayContainerRef' });
-            applePay.mount(applePayContainerRef.current);
+            const applePayContainer = applePayContainerRef.current;
+            applePay.mount(applePayContainer);
+
+            requestAnimationFrame(() => {
+              const applePayButton = applePayContainer.querySelector('apple-pay-button');
+              if (applePayButton instanceof HTMLElement) {
+                applePayButton.setAttribute('style', 'display:block;width:100%;--apple-pay-button-height:40px;');
+              }
+            });
           }
         })
         .catch((error: unknown) => {
@@ -320,7 +328,14 @@ export const AdyenExpressCheckoutInner = ({
   return (
     <>
       <div ref={googlePayContainerRef} style={{ display: disabled ? 'none' : 'block' }} />
-      <div ref={applePayContainerRef} style={{ display: disabled ? 'none' : 'block' }} />
+      <div
+        ref={applePayContainerRef}
+        style={{
+          display: disabled ? 'none' : 'block',
+          marginTop: '0.5rem',
+          width: '100%',
+        }}
+      />
     </>
   );
 };

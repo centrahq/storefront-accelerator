@@ -6,6 +6,6 @@ export interface AdyenAddress {
   firstName: string;
   lastName: string;
   phoneNumber?: string;
-  state: string;
+  state?: string;
   zipCode: string;
 }

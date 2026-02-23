@@ -77,13 +77,13 @@ export const PaymentWidget = ({ id, uri }: { id: number; uri: string }) => {
         shippingAddress: {
           ...shippingAddress,
           country: shippingAddress.country?.code ?? '',
-          state: shippingAddress.state?.code ?? '',
+          state: shippingAddress.state?.code,
         },
         separateBillingAddress: billingAddress
           ? {
               ...billingAddress,
               country: billingAddress.country?.code ?? '',
-              state: billingAddress.state?.code ?? '',
+              state: billingAddress.state?.code,
             }
           : null,
       },

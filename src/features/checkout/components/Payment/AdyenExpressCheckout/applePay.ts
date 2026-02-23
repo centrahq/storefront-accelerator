@@ -241,6 +241,7 @@ export const getApplePay = ({
   };
 
   return new ApplePay(checkout, {
+    buttonColor: 'black',
     isExpress: true,
     lineItems: initialLineItems.map((item) => ({
       amount: item.price,
