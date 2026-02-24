@@ -39,6 +39,7 @@ const createGooglePayLineItems = (
   const itemsTotal = totals.find((t) => t.type === SelectionTotalRowType.ItemsSubtotal)?.price.value ?? 0;
   const tax = totals.find((t) => t.type === SelectionTotalRowType.IncludingTaxTotal)?.price.value ?? 0;
   const shipping = totals.find((t) => t.type === SelectionTotalRowType.Shipping)?.price.value ?? 0;
+  const discount = totals.find((t) => t.type === SelectionTotalRowType.Discount)?.price.value ?? 0;
 
   return [
     ...lines.map((line) => ({
@@ -49,6 +50,11 @@ const createGooglePayLineItems = (
     {
       label: 'Subtotal',
       price: itemsTotal.toFixed(2),
+      type: 'SUBTOTAL' as const,
+    },
+    {
+      label: 'Discount',
+      price: discount.toFixed(2),
       type: 'SUBTOTAL' as const,
     },
     {

@@ -40,6 +40,7 @@ const createApplePayLineItems = (
   const itemsTotal = totals.find((t) => t.type === SelectionTotalRowType.ItemsSubtotal)?.price.value ?? 0;
   const tax = totals.find((t) => t.type === SelectionTotalRowType.IncludingTaxTotal)?.price.value ?? 0;
   const shipping = totals.find((t) => t.type === SelectionTotalRowType.Shipping)?.price.value ?? 0;
+  const discount = totals.find((t) => t.type === SelectionTotalRowType.Discount)?.price.value ?? 0;
 
   return [
     ...lines.map((line) => ({
@@ -50,6 +51,11 @@ const createApplePayLineItems = (
     {
       amount: itemsTotal.toFixed(2),
       label: 'Subtotal',
+      type: 'final' as const,
+    },
+    {
+      amount: discount.toFixed(2),
+      label: 'Discount',
       type: 'final' as const,
     },
     {
@@ -277,7 +283,7 @@ export const getApplePay = ({
       reject: (error?: Error) => void,
       event,
     ) => {
-      onShippingContactSelected(resolve, reject, event, paymentConfig);
+      void onShippingContactSelected(resolve, reject, event, paymentConfig);
     },
     onShippingMethodSelected: (
       resolve: (data: ApplePayJS.ApplePayShippingMethodUpdate) => void,
