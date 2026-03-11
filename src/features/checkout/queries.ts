@@ -19,7 +19,7 @@ interface LineItem {
 }
 
 interface ExpressCheckoutWidgetsParams {
-  pluginUri: string | undefined;
+  type: 'express_checkout_adyen';
   returnUrl: string;
   amount: number;
   lineItems: LineItem[];
@@ -71,10 +71,16 @@ interface ExpressCheckoutWidgetsData {
   };
 }
 
-export function expressCheckoutWidgetsQuery({ pluginUri, returnUrl, amount, lineItems, language, market }: ExpressCheckoutWidgetsParams) {
+export function expressCheckoutWidgetsQuery({
+  type,
+  returnUrl,
+  amount,
+  lineItems,
+  language,
+  market,
+}: ExpressCheckoutWidgetsParams) {
   return queryOptions({
-    queryKey: ['express-checkout-widgets', pluginUri, returnUrl, amount, lineItems, language, market],
-    enabled: !!pluginUri,
+    queryKey: ['payment-configuration', language, market, { amount, lineItems, returnUrl, type }],
     queryFn: async () => {
       const response = await fetch('/api/express-checkout-widgets', {
         method: 'POST',
@@ -89,7 +95,7 @@ export function expressCheckoutWidgetsQuery({ pluginUri, returnUrl, amount, line
                 lineItems,
                 returnUrl,
               },
-              uri: pluginUri,
+              type,
             },
           ],
         }),
@@ -97,14 +103,13 @@ export function expressCheckoutWidgetsQuery({ pluginUri, returnUrl, amount, line
 
       if (!response.ok) {
         const error = (await response.json().catch(() => null)) as { error?: string } | null;
+        console.error('Express checkout widgets error:', error);
         throw new Error(error?.error ?? 'Failed to fetch express checkout widgets');
       }
 
       const data = (await response.json()) as ExpressCheckoutWidgetsData;
-      const pluginList = data.expressCheckoutWidgets.list?.find((list) => list.name === pluginUri);
-      const widget = pluginList?.widgets[0];
-
-      return widget?.contents ? (JSON.parse(widget.contents) as PaymentConfigResponse) : undefined;
+      const widget = data.expressCheckoutWidgets.list?.flatMap((list) => list.widgets).find((entry) => entry.name === type);
+      return widget?.contents ? (JSON.parse(widget.contents) as PaymentConfigResponse) : null;
     },
   });
 }
