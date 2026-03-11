@@ -20,6 +20,7 @@ import { AdyenAddress } from '../types';
 import { getApplePay } from './applePay';
 import { debugLog } from './debug';
 import { getGooglePay } from './googlePay';
+import { postAdditionalDetailsToSuccess } from './helpers';
 
 interface Props {
   itemId?: string;
@@ -85,15 +86,12 @@ export const AdyenExpressCheckoutInner = ({
         paymentConfig,
       });
 
-
-
       const handleOnSubmit = async (
         state: SubmitData,
         actions: SubmitActions,
         billingAddress?: AdyenAddress,
         shippingAddress?: AdyenAddress,
       ) => {
-
         debugLog('handleOnSubmit:input', {
           hasShippingAddress: Boolean(shippingAddress),
           hasBillingAddress: Boolean(billingAddress),
@@ -219,42 +217,8 @@ export const AdyenExpressCheckoutInner = ({
         },
         onAdditionalDetails: (state) => {
           debugLog('adyenCheckout:onAdditionalDetails:input', { stateData: state.data });
-          function flattenForPost(data: Record<string, unknown>, prefix: string): Record<string, string> {
-            return Object.entries(data).reduce<Record<string, string>>((acc, [key, value]) => {
-              const flatKey = prefix.length ? `${prefix}[${key}]` : key;
-
-              if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-                return {
-                  ...acc,
-                  ...flattenForPost(value as Record<string, unknown>, flatKey),
-                };
-              }
-
-              return {
-                ...acc,
-                [flatKey]: String(value),
-              };
-            }, {});
-          }
-
-          const form = document.createElement('form');
-          form.setAttribute('action', `${window.location.origin}/success`);
-          form.setAttribute('method', 'post');
-
-          const flattenedItems = flattenForPost(state.data as Record<string, unknown>, '');
-          const postData = { ...flattenedItems, express: 'true' };
+          const { form, flattenedItems } = postAdditionalDetailsToSuccess(state.data as Record<string, unknown>);
           debugLog('adyenCheckout:onAdditionalDetails:flattenedForPost', flattenedItems);
-
-          Object.entries(postData).forEach(([name, value]) => {
-            const input = document.createElement('input');
-            input.setAttribute('type', 'hidden');
-            input.setAttribute('name', name);
-            input.setAttribute('value', value);
-            form.appendChild(input);
-          });
-
-          form.setAttribute('style', 'position:absolute;left:-100px;top:-100px;');
-          document.body.appendChild(form);
           debugLog('adyenCheckout:onAdditionalDetails:submit', { action: form.action, method: form.method });
           form.submit();
         },
