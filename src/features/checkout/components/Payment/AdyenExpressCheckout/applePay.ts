@@ -1,10 +1,4 @@
-import {
-  ApplePay,
-  Core,
-  SubmitActions,
-  SubmitData,
-  UIElement
-} from '@adyen/adyen-web';
+import { ApplePay, Core, SubmitActions, SubmitData, UIElement } from '@adyen/adyen-web';
 
 import { addToCart } from '@/features/cart/service';
 import { CheckoutQuery, SelectionTotalRowType } from '@gql/graphql';
@@ -13,7 +7,6 @@ import { PaymentConfigResponse } from '../../../queries';
 import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
 import { AdyenAddress } from '../types';
 import { debugLog } from './debug';
-
 
 const mapApplePayAddressToCentra = (
   appleAddress: ApplePayJS.ApplePayPaymentContact,
@@ -117,20 +110,20 @@ export const getApplePay = ({
   onSubmit,
   paymentConfig,
 }: {
-  checkout: Core,
+  checkout: Core;
   initialLineItems: {
     name: string;
     price: string;
-  }[],
-  getItemId: () => string | undefined,
-  onAddedItemLineChange: ((lineId: string | null) => void) | undefined,
+  }[];
+  getItemId: () => string | undefined;
+  onAddedItemLineChange: ((lineId: string | null) => void) | undefined;
   onSubmit: (
     state: SubmitData,
     actions: SubmitActions,
     billingAddress?: AdyenAddress,
     shippingAddress?: AdyenAddress,
-  ) => Promise<void>,
-  paymentConfig: PaymentConfigResponse,
+  ) => Promise<void>;
+  paymentConfig: PaymentConfigResponse;
 }) => {
   let currentBillingAddress: AdyenAddress | undefined;
   let currentShippingAddress: AdyenAddress | undefined;
@@ -160,9 +153,7 @@ export const getApplePay = ({
       const grandTotal =
         data.checkout.totals.find((t) => t.type === SelectionTotalRowType.GrandTotal)?.price.value ?? 0;
       const ret: ApplePayJS.ApplePayShippingContactUpdate = {
-        errors: [
-          new ApplePayError('shippingContactInvalid', 'countryCode', 'Cannot ship to the selected address')
-        ],
+        errors: [new ApplePayError('shippingContactInvalid', 'countryCode', 'Cannot ship to the selected address')],
         newLineItems: createApplePayLineItems(data.checkout.totals, data.lines),
         newShippingMethods: shippingMethods,
         newTotal: {

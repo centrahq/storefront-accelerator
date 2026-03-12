@@ -5,14 +5,15 @@ import {
   AdyenCheckoutError,
   CheckoutAdvancedFlowResponse,
   SubmitActions,
-  SubmitData
+  SubmitData,
 } from '@adyen/adyen-web';
-import { ExpressCheckoutWidgetType } from '@gql/graphql';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 
+import { selectionQuery } from '@/features/cart/queries';
 import { updateLine } from '@/features/cart/service';
+import { ExpressCheckoutWidgetType } from '@gql/graphql';
 
 import { expressCheckoutWidgetsQuery } from '../../../queries';
 import { submitPaymentInstructions } from '../../../service';
@@ -22,7 +23,6 @@ import { getApplePay } from './applePay';
 import { debugLog } from './debug';
 import { getGooglePay } from './googlePay';
 import { postAdditionalDetailsToSuccess } from './helpers';
-import { selectionQuery } from '@/features/cart/queries';
 
 interface Props {
   itemId?: string;
@@ -54,7 +54,7 @@ export const AdyenExpressCheckoutInner = ({
   const addedItemLineRef = useRef<string | null>(null);
   const grandTotal = cartTotal;
   const cartTotalInMinor = Math.round(grandTotal * 100);
-  
+
   useEffect(() => {
     itemRef.current = itemId;
   }, [itemId]);

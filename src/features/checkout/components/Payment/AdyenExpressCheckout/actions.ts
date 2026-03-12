@@ -12,7 +12,9 @@ export type GetExpressCheckoutWidgetsParams = {
   plugins: ExpressCheckoutWidgetsPluginItem[];
 };
 
-export async function getExpressCheckoutWidgets(params: GetExpressCheckoutWidgetsParams): Promise<ExpressCheckoutWidgetsQuery> {
+export async function getExpressCheckoutWidgets(
+  params: GetExpressCheckoutWidgetsParams,
+): Promise<ExpressCheckoutWidgetsQuery> {
   const { plugins } = params;
 
   const cookieStore = await cookies();
@@ -52,7 +54,7 @@ export async function getExpressCheckoutWidgets(params: GetExpressCheckoutWidget
         plugins,
       },
       headers: {
-        Authorization: `Bearer ${apiToken}`,
+        'Authorization': `Bearer ${apiToken}`,
         'X-Shared-Secret': sharedSecret,
       },
     },

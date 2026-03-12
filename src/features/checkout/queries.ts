@@ -1,6 +1,7 @@
 import { PaymentMethodsResponse } from '@adyen/adyen-web';
 import { queryOptions } from '@tanstack/react-query';
-import { ExpressCheckoutWidgetType, ExpressCheckoutWidgetsQuery } from '@gql/graphql';
+
+import { ExpressCheckoutWidgetsQuery, ExpressCheckoutWidgetType } from '@gql/graphql';
 
 import { getExpressCheckoutWidgets } from './components/Payment/AdyenExpressCheckout/actions';
 import { fetchCheckout, fetchCheckoutPaymentMethods } from './service';
@@ -76,7 +77,9 @@ export function expressCheckoutWidgetsQuery({
           },
         ],
       });
-      const widget = data.expressCheckoutWidgets.list?.flatMap((list) => list.widgets).find((entry) => entry.name === type);
+      const widget = data.expressCheckoutWidgets.list
+        ?.flatMap((list) => list.widgets)
+        .find((entry) => entry.name === type);
       return widget?.contents ? (JSON.parse(widget.contents) as PaymentConfigResponse) : null;
     },
   });

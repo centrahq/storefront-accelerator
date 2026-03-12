@@ -8,7 +8,7 @@ import { graphql } from '@gql/gql';
 import {
   ApplyGiftCardMutationVariables,
   SetAddressMutationVariables,
-  UpdateLineCheckoutMutationVariables
+  UpdateLineCheckoutMutationVariables,
 } from '@gql/graphql';
 
 import { checkoutQuery } from './queries';

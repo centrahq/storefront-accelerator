@@ -69,4 +69,3 @@ export async function addToCart(variables: AddItemMutationVariables) {
 
   return response.data.addItem.selection;
 }
-

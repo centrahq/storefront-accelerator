@@ -1,19 +1,11 @@
-import {
-  AddressData,
-  Core,
-  GooglePay,
-  SubmitActions,
-  SubmitData,
-  UIElement
-} from '@adyen/adyen-web';
+import { AddressData, Core, GooglePay, SubmitActions, SubmitData, UIElement } from '@adyen/adyen-web';
 
 import { addToCart } from '@/features/cart/service';
 import { CheckoutQuery, SelectionTotalRowType } from '@gql/graphql';
 
 import { PaymentConfigResponse } from '../../../queries';
 import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
-
-import { AdyenAddress } from "../types";
+import { AdyenAddress } from '../types';
 import { debugLog } from './debug';
 import { formatMinorToMajor } from './helpers';
 
@@ -30,7 +22,6 @@ const mapAdyenAddressToCentra = (adyenAddress: Partial<google.payments.api.Addre
     zipCode: adyenAddress.postalCode ?? '',
   };
 };
-
 
 const createGooglePayLineItems = (
   totals: NonNullable<CheckoutQuery['selection']['checkout']>['totals'],
@@ -138,20 +129,20 @@ export const getGooglePay = ({
   getItemId,
   onAddedItemLineChange,
 }: {
-  checkout: Core,
-  paymentConfig: PaymentConfigResponse,
+  checkout: Core;
+  paymentConfig: PaymentConfigResponse;
   initialLineItems: {
     name: string;
     price: string;
-  }[],
+  }[];
   handleOnSubmit: (
     state: SubmitData,
     actions: SubmitActions,
     billingAddress?: AdyenAddress,
     shippingAddress?: AdyenAddress,
-  ) => Promise<void>,
-  getItemId: () => string | undefined,
-  onAddedItemLineChange?: (lineId: string | null) => void,
+  ) => Promise<void>;
+  getItemId: () => string | undefined;
+  onAddedItemLineChange?: (lineId: string | null) => void;
 }) => {
   let currentBillingAddress: AdyenAddress | undefined;
   let currentShippingAddress: AdyenAddress | undefined;

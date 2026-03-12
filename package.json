@@ -11,6 +11,7 @@
     "lint": "eslint .",
     "prettier": "prettier --write --ignore-unknown .",
     "prettier:check": "prettier --check --ignore-unknown .",
+    "precommit": "npm run prettier && npm run lint",
     "tsc": "tsc",
     "gql-gen": "gql-gen",
     "gql-gen:watch": "gql-gen --watch"

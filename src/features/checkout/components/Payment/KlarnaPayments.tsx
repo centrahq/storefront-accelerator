@@ -11,11 +11,7 @@ const KLARNA_SDK_SRC = 'https://x.klarnacdn.net/kp/lib/v1/api.js';
 
 interface KlarnaPayments {
   init: (payload: { client_token: string }) => KlarnaPayments;
-  load: (
-    payload: { container: string; payment_method_category: string },
-    _: unknown,
-    onLoad: VoidFunction,
-  ) => void;
+  load: (payload: { container: string; payment_method_category: string }, _: unknown, onLoad: VoidFunction) => void;
   authorize: (
     payload: { payment_method_category: string },
     authorizePayload: unknown,

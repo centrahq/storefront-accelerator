@@ -170,4 +170,3 @@ export async function sendWidgetData(payload: Record<string, unknown>) {
     checkout: response.data.handleWidgetEvent.selection.checkout,
   };
 }
-
