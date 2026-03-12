@@ -1,6 +1,8 @@
 import { PaymentMethodsResponse } from '@adyen/adyen-web';
 import { queryOptions } from '@tanstack/react-query';
+import { ExpressCheckoutWidgetType, ExpressCheckoutWidgetsQuery } from '@gql/graphql';
 
+import { getExpressCheckoutWidgets } from './components/Payment/AdyenExpressCheckout/actions';
 import { fetchCheckout, fetchCheckoutPaymentMethods } from './service';
 
 export const checkoutQuery = queryOptions({
@@ -19,7 +21,7 @@ interface LineItem {
 }
 
 interface ExpressCheckoutWidgetsParams {
-  type: 'express_checkout_adyen';
+  type: ExpressCheckoutWidgetType.ExpressCheckoutAdyen;
   returnUrl: string;
   amount: number;
   lineItems: LineItem[];
@@ -51,26 +53,6 @@ export interface PaymentConfigResponse {
   shippingMethods: ShippingMethod[];
 }
 
-interface ExpressCheckoutWidget {
-  id?: string | null;
-  name: string;
-  contents?: string | null;
-  error?: string | null;
-}
-
-interface ExpressCheckoutWidgetsData {
-  expressCheckoutWidgets: {
-    list?: Array<{
-      name: string;
-      widgets: ExpressCheckoutWidget[];
-    }> | null;
-    userErrors: Array<{
-      message: string;
-      path?: string[] | null;
-    }>;
-  };
-}
-
 export function expressCheckoutWidgetsQuery({
   type,
   returnUrl,
@@ -82,32 +64,18 @@ export function expressCheckoutWidgetsQuery({
   return queryOptions({
     queryKey: ['payment-configuration', language, market, { amount, lineItems, returnUrl, type }],
     queryFn: async () => {
-      const response = await fetch('/api/express-checkout-widgets', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          plugins: [
-            {
-              additionalData: {
-                amount,
-                lineItems,
-                returnUrl,
-              },
-              type,
+      const data: ExpressCheckoutWidgetsQuery = await getExpressCheckoutWidgets({
+        plugins: [
+          {
+            additionalData: {
+              amount,
+              lineItems,
+              returnUrl,
             },
-          ],
-        }),
+            type,
+          },
+        ],
       });
-
-      if (!response.ok) {
-        const error = (await response.json().catch(() => null)) as { error?: string } | null;
-        console.error('Express checkout widgets error:', error);
-        throw new Error(error?.error ?? 'Failed to fetch express checkout widgets');
-      }
-
-      const data = (await response.json()) as ExpressCheckoutWidgetsData;
       const widget = data.expressCheckoutWidgets.list?.flatMap((list) => list.widgets).find((entry) => entry.name === type);
       return widget?.contents ? (JSON.parse(widget.contents) as PaymentConfigResponse) : null;
     },

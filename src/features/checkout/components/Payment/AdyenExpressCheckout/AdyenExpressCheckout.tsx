@@ -7,6 +7,7 @@ import {
   SubmitActions,
   SubmitData
 } from '@adyen/adyen-web';
+import { ExpressCheckoutWidgetType } from '@gql/graphql';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
 import { Suspense, useEffect, useMemo, useRef } from 'react';
@@ -60,7 +61,7 @@ export const AdyenExpressCheckoutInner = ({
 
   const { data: paymentConfig } = useQuery(
     expressCheckoutWidgetsQuery({
-      type: 'express_checkout_adyen',
+      type: ExpressCheckoutWidgetType.ExpressCheckoutAdyen,
       returnUrl: `${window.location.origin}/success`,
       amount: cartTotalInMinor,
       lineItems: initialLineItems,

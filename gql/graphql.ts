@@ -3436,16 +3436,6 @@ export type PaymentResultMutation = { paymentResult:
       > }
    };
 
-export type ExpressCheckoutWidgetsQueryVariables = Exact<{
-  plugins: Array<ExpressCheckoutWidgetsPluginItem> | ExpressCheckoutWidgetsPluginItem;
-}>;
-
-
-export type ExpressCheckoutWidgetsQuery = { expressCheckoutWidgets: { list?: Array<{ name: string, widgets: Array<{ id?: string | null, name: string, contents?: string | null, error?: string | null }> }> | null, userErrors: Array<
-      | { message: string, path?: Array<string> | null }
-      | { message: string, path?: Array<string> | null }
-    > } };
-
 export type ChangeLocaleMutationVariables = Exact<{
   country: Scalars['String']['input'];
   language: Scalars['String']['input'];
@@ -3547,6 +3537,16 @@ export type AddItemMutation = { addItem: { userErrors: Array<
         | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
        | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null } };
+
+export type ExpressCheckoutWidgetsQueryVariables = Exact<{
+  plugins: Array<ExpressCheckoutWidgetsPluginItem> | ExpressCheckoutWidgetsPluginItem;
+}>;
+
+
+export type ExpressCheckoutWidgetsQuery = { expressCheckoutWidgets: { list?: Array<{ name: string, widgets: Array<{ id?: string | null, name: string, contents?: string | null, error?: string | null }> }> | null, userErrors: Array<
+      | { message: string, path?: Array<string> | null }
+      | { message: string, path?: Array<string> | null }
+    > } };
 
 export type SetAddressMutationVariables = Exact<{
   billingAddress?: InputMaybe<AddressInput>;
@@ -5827,25 +5827,6 @@ export const PaymentResultDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<PaymentResultMutation, PaymentResultMutationVariables>;
-export const ExpressCheckoutWidgetsDocument = new TypedDocumentString(`
-    query expressCheckoutWidgets($plugins: [ExpressCheckoutWidgetsPluginItem!]!) {
-  expressCheckoutWidgets(configurationOnly: true, plugins: $plugins) {
-    list {
-      name
-      widgets {
-        id
-        name
-        contents
-        error
-      }
-    }
-    userErrors {
-      message
-      path
-    }
-  }
-}
-    `) as unknown as TypedDocumentString<ExpressCheckoutWidgetsQuery, ExpressCheckoutWidgetsQueryVariables>;
 export const ChangeLocaleDocument = new TypedDocumentString(`
     mutation changeLocale($country: String!, $language: String!) {
   setCountryState(countryCode: $country) {
@@ -6228,6 +6209,25 @@ fragment line on Line {
     }
   }
 }`) as unknown as TypedDocumentString<AddItemMutation, AddItemMutationVariables>;
+export const ExpressCheckoutWidgetsDocument = new TypedDocumentString(`
+    query expressCheckoutWidgets($plugins: [ExpressCheckoutWidgetsPluginItem!]!) {
+  expressCheckoutWidgets(configurationOnly: true, plugins: $plugins) {
+    list {
+      name
+      widgets {
+        id
+        name
+        contents
+        error
+      }
+    }
+    userErrors {
+      message
+      path
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<ExpressCheckoutWidgetsQuery, ExpressCheckoutWidgetsQueryVariables>;
 export const SetAddressDocument = new TypedDocumentString(`
     mutation setAddress($billingAddress: AddressInput, $shippingAddress: AddressInput!) {
   setAddress(
