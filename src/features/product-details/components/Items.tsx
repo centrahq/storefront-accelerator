@@ -8,7 +8,7 @@ import { ItemSelector } from './ItemSelector';
 import { SubscriptionSelector } from './SubscriptionSelector';
 
 export const Items = async ({ product }: { product: ProductDetailsFragment }) => {
-  const { country } = await getSession();
+  const { country, language, market } = await getSession();
   const { t } = await getTranslation(['server']);
 
   if (!product.available) {
@@ -54,8 +54,12 @@ export const Items = async ({ product }: { product: ProductDetailsFragment }) =>
       {product.subscriptionPlans.length > 0 && <SubscriptionSelector plans={product.subscriptionPlans} />}
       <AddToCartButton
         items={itemsData}
+        productName={product.name}
+        productPrice={product.price?.value ?? 0}
         isFlexibleBundle={product.bundle?.type === BundleType.Flexible}
         bundleItemAvailability={bundleItemAvailability}
+        language={language}
+        market={market}
       />
     </>
   );

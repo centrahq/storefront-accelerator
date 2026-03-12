@@ -62,7 +62,6 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
         toast.error(result.message);
         return;
       }
-
       // If there is an alternate, redirect to it. Otherwise replace the locale in the current URL.
       const newUrl = new URL(
         document.querySelector<HTMLLinkElement>(`link[rel="alternate"][hreflang="${result.locale}"]`)?.href ??

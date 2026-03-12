@@ -47,7 +47,10 @@ const getPaymentResult = (fields: Record<string, unknown>) => {
     },
   )
     .then((response) => response.data.paymentResult.type)
-    .catch(() => PaymentResultType.Failed);
+    .catch((err: unknown) => {
+      console.error(err);
+      return PaymentResultType.Failed;
+    });
 };
 
 /*

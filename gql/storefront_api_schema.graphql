@@ -1,9 +1,15 @@
 directive @captchaProtected(type: CAPTCHA_CALL_TYPE!) on FIELD_DEFINITION
 
 """
-The @defer directive may be specified on a fragment spread to imply de-prioritization, that causes the fragment to be omitted in the initial response, and delivered as a subsequent response afterward. A query with @defer directive will cause the request to potentially return multiple responses, where non-deferred data is delivered in the initial response and data deferred delivered in a subsequent response. @include and @skip take precedence over @defer.
+Directs the executor to defer this fragment when the `if` argument is true or undefined.
 """
-directive @defer(if: Boolean = true, label: String) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+directive @defer(
+  """Deferred when true or undefined."""
+  if: Boolean = true
+
+  """Unique name"""
+  label: String
+) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
 directive @maxLimit(limit: Int!, scope: SCOPE!) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INTERFACE | OBJECT
 
@@ -401,6 +407,7 @@ type Bundle {
 type BundleLine implements Line {
   addedFromCategory: Category
   appliedPromotions: [AppliedPromotion!]!
+  attributes: [Attribute!]!
   brand: Brand
   bundle: SelectionBundle
   comment: String!
@@ -984,6 +991,17 @@ input DynamicAttributeInput {
   attributeTypeName: String!
 }
 
+input DynamicLineAttributeSetInput {
+  attributeElementKey: String!
+  attributeElementValue: String!
+  attributeTypeName: String!
+}
+
+input DynamicLineAttributeUnsetInput {
+  attributeElementKey: String!
+  attributeTypeName: String!
+}
+
 input DynamicSelectionAttributeSetInput {
   attributeElementKey: String!
   attributeElementValue: String!
@@ -1000,6 +1018,11 @@ type ExpressCheckoutWidget {
   error: String
   id: String
   name: String!
+}
+
+enum ExpressCheckoutWidgetType {
+  express_checkout_adyen
+  express_checkout_stripe_payment_intents
 }
 
 input ExpressCheckoutWidgetsAdditionalData {
@@ -1020,7 +1043,8 @@ type ExpressCheckoutWidgetsPayload implements Payload {
 
 input ExpressCheckoutWidgetsPluginItem {
   additionalData: ExpressCheckoutWidgetsAdditionalData!
-  uri: String!
+  type: ExpressCheckoutWidgetType
+  uri: String
 }
 
 type ExpressCheckoutWidgetsPluginWidgets {
@@ -1214,6 +1238,7 @@ type Language {
 interface Line {
   addedFromCategory: Category
   appliedPromotions: [AppliedPromotion!]!
+  attributes: [Attribute!]!
   brand: Brand
   comment: String!
   discountPercent: Float!
@@ -1328,6 +1353,14 @@ input MappedAttributeInput {
   attributeTypeName: String!
 }
 
+input MappedLineAttributeSetInput {
+  attributeId: Int!
+}
+
+input MappedLineAttributeUnsetInput {
+  attributeId: Int!
+}
+
 input MappedSelectionAttributeSetInput {
   attributeId: Int!
 }
@@ -1404,14 +1437,14 @@ type Mutation {
   
   Required [operating mode](#operating-mode): `SESSION`
   """
-  addFlexibleBundle(categoryId: Int, comment: String! = "", item: String!, localizedProdSize: LocalizedProdSizeInput, productExternalUrl: String! = "", quantity: Int! = 1, sections: [BundleSectionInput!]!, subscriptionPlan: Int): AddItemPayload!
+  addFlexibleBundle(categoryId: Int, comment: String! = "", dynamicAttributes: [DynamicLineAttributeSetInput!], item: String!, localizedProdSize: LocalizedProdSizeInput, mappedAttributes: [MappedLineAttributeSetInput!], productExternalUrl: String! = "", quantity: Int! = 1, sections: [BundleSectionInput!]!, subscriptionPlan: Int): AddItemPayload!
 
   """
   Add display item or fixed bundle to the current selection.
   
   Required [operating mode](#operating-mode): `SESSION`
   """
-  addItem(categoryId: Int, comment: String! = "", item: String!, localizedProdSize: LocalizedProdSizeInput, productExternalUrl: String! = "", quantity: Int! = 1, subscriptionPlan: Int): AddItemPayload!
+  addItem(categoryId: Int, comment: String! = "", dynamicAttributes: [DynamicLineAttributeSetInput!], item: String!, localizedProdSize: LocalizedProdSizeInput, mappedAttributes: [MappedLineAttributeSetInput!], productExternalUrl: String! = "", quantity: Int! = 1, subscriptionPlan: Int): AddItemPayload!
 
   """
   Add a subscription to an existing subscription contract.
@@ -1707,6 +1740,26 @@ type Mutation {
   setLanguage(code: String!): SessionPayload!
 
   """
+  Set dynamic and mapped attributes on a selection line.
+  If `quantity` is less than the line's quantity, the line will be split based on checksum:
+  - Original line quantity is reduced
+  - Items are added to a line matching the new checksum (created if none exists)
+  Lines with identical attributes will be merged automatically via checksum matching.
+  Required [operating mode](#operating-mode): `SHARED_SECRET`
+  """
+  setLineAttributes(
+    dynamicAttributes: [DynamicLineAttributeSetInput!]
+    lineId: String!
+    mappedAttributes: [MappedLineAttributeSetInput!]
+
+    """
+    Number of items to apply attributes to. If less than line quantity, line will be split.
+    Defaults to entire line quantity.
+    """
+    quantity: Int
+  ): SelectionMutationPayload!
+
+  """
   Set the market on the current selection.
   
   Required [operating mode](#operating-mode): `SHARED_SECRET`
@@ -1772,6 +1825,25 @@ type Mutation {
   Required [operating mode](#operating-mode): `SESSION`
   """
   triggerSelectionAction(actionType: SelectionActionType!): TriggerSelectionActionPayload!
+
+  """
+  Unset dynamic and mapped attributes from a selection line.
+  If `quantity` is less than the line's quantity, the line will be split based on checksum:
+  - Original line quantity is reduced
+  - Items are added to a line matching the new checksum (created if none exists)
+  Required [operating mode](#operating-mode): `SHARED_SECRET`
+  """
+  unsetLineAttributes(
+    dynamicAttributes: [DynamicLineAttributeUnsetInput!]
+    lineId: String!
+    mappedAttributes: [MappedLineAttributeUnsetInput!]
+
+    """
+    Number of items to remove attributes from. If less than line quantity, line will be split.
+    Defaults to entire line quantity.
+    """
+    quantity: Int
+  ): SelectionMutationPayload!
 
   """
   Unset dynamic and mapped attributes from the current selection.
@@ -2046,6 +2118,7 @@ type PaymentMethod {
 
 enum PaymentMethodKind {
   ADYEN_DROPIN
+  CYBERSOURCE
   DUMMY
   EXTERNAL_PAYMENT
   KLARNA_CHECKOUT_V3
@@ -2104,6 +2177,7 @@ type PricelistPrice {
 type ProductLine implements Line {
   addedFromCategory: Category
   appliedPromotions: [AppliedPromotion!]!
+  attributes: [Attribute!]!
   brand: Brand
   comment: String!
   discountPercent: Float!
@@ -2178,6 +2252,12 @@ type Query {
   Required [operating mode](#operating-mode): `NO_SESSION`
   """
   affiliates(limit: Int! = 20, page: Int! = 1, sort: [AffiliateSort!]! = [name_ASC]): AffiliateList!
+
+  """
+  Get available attributes that can be assigned to lines.
+  Required [operating mode](#operating-mode): `SESSION`
+  """
+  availableLineAttributes: [Attribute!]!
 
   """
   Get a list of brands.
