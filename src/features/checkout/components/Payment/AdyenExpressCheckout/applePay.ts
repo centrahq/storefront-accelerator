@@ -181,10 +181,9 @@ export const getApplePay = ({
         address1: '',
         ...address,
       },
-      paymentReturnPage: `${window.location.origin}/success?express=true`,
+      paymentReturnPage: `${window.location.origin}/success`,
       paymentFailedPage: `${window.location.origin}/failed`,
       paymentInitiateOnly: true,
-      paymentMethodSpecificFields: { express: true },
     })
       .then((data) => {
         debugLog('applePay:onShippingContactSelected:submitPaymentInstructions:response', data);

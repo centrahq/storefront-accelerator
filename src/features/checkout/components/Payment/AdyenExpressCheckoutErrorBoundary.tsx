@@ -29,7 +29,7 @@ export class AdyenExpressCheckoutErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      return 'Could not load Adyen Express Checkout';
+      return null;
     }
 
     return this.props.children;

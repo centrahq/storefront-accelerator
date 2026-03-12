@@ -7,9 +7,9 @@ import {
   SubmitActions,
   SubmitData
 } from '@adyen/adyen-web';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
-import { useEffect, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef } from 'react';
 
 import { updateLine } from '@/features/cart/service';
 
@@ -21,6 +21,7 @@ import { getApplePay } from './applePay';
 import { debugLog } from './debug';
 import { getGooglePay } from './googlePay';
 import { postAdditionalDetailsToSuccess } from './helpers';
+import { selectionQuery } from '@/features/cart/queries';
 
 interface Props {
   itemId?: string;
@@ -42,6 +43,9 @@ export const AdyenExpressCheckoutInner = ({
   language,
   market,
 }: Props) => {
+  const { data } = useSuspenseQuery(selectionQuery);
+  const { lines } = data;
+  const hasSubscriptionItems = useMemo(() => lines.some((line) => line?.subscriptionId != null), [lines]);
   const initializedRef = useRef(false);
   const googlePayContainerRef = useRef<HTMLDivElement>(null);
   const applePayContainerRef = useRef<HTMLDivElement>(null);
@@ -49,6 +53,7 @@ export const AdyenExpressCheckoutInner = ({
   const addedItemLineRef = useRef<string | null>(null);
   const grandTotal = cartTotal;
   const cartTotalInMinor = Math.round(grandTotal * 100);
+  
   useEffect(() => {
     itemRef.current = itemId;
   }, [itemId]);
@@ -56,7 +61,7 @@ export const AdyenExpressCheckoutInner = ({
   const { data: paymentConfig } = useQuery(
     expressCheckoutWidgetsQuery({
       type: 'express_checkout_adyen',
-      returnUrl: `${window.location.origin}/success?express=true`,
+      returnUrl: `${window.location.origin}/success`,
       amount: cartTotalInMinor,
       lineItems: initialLineItems,
       language,
@@ -137,7 +142,7 @@ export const AdyenExpressCheckoutInner = ({
               lastName: billingAddress.lastName,
               phoneNumber: billingAddress.phoneNumber,
             },
-            paymentReturnPage: `${window.location.origin}/success?express=true`,
+            paymentReturnPage: `${window.location.origin}/success`,
             paymentFailedPage: `${window.location.origin}/failed`,
             paymentMethodSpecificFields: { ...(state.data as unknown as Record<string, unknown>), express: true },
           });
@@ -283,6 +288,10 @@ export const AdyenExpressCheckoutInner = ({
     });
   }, [initialLineItems, paymentConfig, disabled, cartTotal, cartTotalInMinor]);
 
+  if (hasSubscriptionItems) {
+    return null;
+  }
+
   return (
     <>
       <div ref={googlePayContainerRef} style={{ display: disabled ? 'none' : 'block' }} />
@@ -308,8 +317,10 @@ export const AdyenExpressCheckout = (props: Props) => {
   }
 
   return (
-    <AdyenExpressCheckoutErrorBoundary>
-      <AdyenExpressCheckoutDynamic {...props} />
-    </AdyenExpressCheckoutErrorBoundary>
+    <Suspense fallback={null}>
+      <AdyenExpressCheckoutErrorBoundary>
+        <AdyenExpressCheckoutDynamic {...props} />
+      </AdyenExpressCheckoutErrorBoundary>
+    </Suspense>
   );
 };

@@ -79,7 +79,6 @@ export async function centraFetchNoSession<T>(
  */
 export const lookupProduct = async (variables: LookupProductMutationVariables) => {
   'use cache: remote';
-  const imageSizeName = process.env.MEDIA_SIZE_NAME ?? 'standard';
 
   const result = await centraFetchNoSession(
     graphql(`
@@ -126,7 +125,6 @@ export const lookupProduct = async (variables: LookupProductMutationVariables) =
 
 export const getRelatedProducts = async (variables: RelatedProductsQueryVariables) => {
   'use cache: remote';
-  const imageSizeName = process.env.MEDIA_SIZE_NAME ?? '1350x0';
 
   const result = await centraFetchNoSession(
     graphql(`
@@ -162,7 +160,6 @@ export const getRelatedProducts = async (variables: RelatedProductsQueryVariable
 };
 
 export const filterProducts = async (variables: ProductsQueryVariables) => {
-  const imageSizeName = process.env.MEDIA_SIZE_NAME ?? '1350x0';
   const res = await centraFetchNoSession(
     graphql(`
       query products(

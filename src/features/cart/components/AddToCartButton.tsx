@@ -1,9 +1,8 @@
 'use client';
 
-import { useSuspenseQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { parseAsString, useQueryState } from 'nuqs';
-import { useContext, useMemo } from 'react';
+import { useContext } from 'react';
 import { toast } from 'sonner';
 
 import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/AdyenExpressCheckout/AdyenExpressCheckout';
@@ -11,7 +10,6 @@ import { useTranslation } from '@/features/i18n/useTranslation/client';
 import { parseAsBundledItems } from '@/features/product-details/bundle/components/bundledItemsSearchParam';
 
 import { useAddFlexibleBundleToCart, useAddToCart } from '../mutations';
-import { selectionQuery } from '../queries';
 import { CartContext } from './CartContext';
 
 interface AddToCartButtonProps {
@@ -43,9 +41,6 @@ export const AddToCartButton = ({
   const addToCartMutation = useAddToCart();
   const addFlexibleBundleToCartMutation = useAddFlexibleBundleToCart();
   const { setIsCartOpen } = useContext(CartContext);
-  const { data } = useSuspenseQuery(selectionQuery);
-  const { lines } = data;
-  const hasSubscriptionItems = useMemo(() => lines.some((line) => line?.subscriptionId != null), [lines]);
   const currentItem = items.find((item) => item.id === itemId);
   const isCurrentItemAvailable = currentItem?.isAvailable ?? false;
 
@@ -113,16 +108,14 @@ export const AddToCartButton = ({
       >
         {selectedPlan === '' ? t('shop:product.add-to-cart') : t('shop:product.subscriptions.subscribe')}
       </button>
-      {!hasSubscriptionItems && (
-        <AdyenExpressCheckout
-          itemId={itemId}
-          cartTotal={productPrice}
-          disabled={!isCurrentItemAvailable}
-          initialLineItems={[{ name: productName, price: productPrice.toFixed(2) }]}
-          language={language}
-          market={market}
-        />
-      )}
+      <AdyenExpressCheckout
+        itemId={itemId}
+        cartTotal={productPrice}
+        disabled={!isCurrentItemAvailable}
+        initialLineItems={[{ name: productName, price: productPrice.toFixed(2) }]}
+        language={language}
+        market={market}
+      />
     </>
   );
 };
