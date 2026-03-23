@@ -15,7 +15,7 @@ import { selectionQuery } from '@/features/cart/queries';
 import { updateLine } from '@/features/cart/service';
 import { ExpressCheckoutWidgetType } from '@gql/graphql';
 
-import { expressCheckoutWidgetsQuery } from '../../../queries';
+import { type AdyenPaymentConfigResponse, expressCheckoutWidgetsQuery } from '../../../queries';
 import { submitPaymentInstructions } from '../../../service';
 import { AdyenExpressCheckoutErrorBoundary } from '../AdyenExpressCheckoutErrorBoundary';
 import { AdyenAddress } from '../types';
@@ -60,7 +60,7 @@ export const AdyenExpressCheckoutInner = ({
   }, [itemId]);
 
   const { data: paymentConfig } = useQuery(
-    expressCheckoutWidgetsQuery({
+    expressCheckoutWidgetsQuery<AdyenPaymentConfigResponse>({
       type: ExpressCheckoutWidgetType.ExpressCheckoutAdyen,
       returnUrl: `${window.location.origin}/success`,
       amount: cartTotalInMinor,
@@ -313,10 +313,6 @@ const AdyenExpressCheckoutDynamic = dynamic(async () => Promise.resolve(AdyenExp
 });
 
 export const AdyenExpressCheckout = (props: Props) => {
-  if (process.env.NEXT_PUBLIC_ADYEN_EXPRESS_CHECKOUT_ENABLED !== 'true') {
-    return null;
-  }
-
   return (
     <Suspense fallback={null}>
       <AdyenExpressCheckoutErrorBoundary>

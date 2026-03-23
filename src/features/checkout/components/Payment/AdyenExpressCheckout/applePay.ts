@@ -3,7 +3,7 @@ import { ApplePay, Core, SubmitActions, SubmitData, UIElement } from '@adyen/ady
 import { addToCart } from '@/features/cart/service';
 import { CheckoutQuery, SelectionTotalRowType } from '@gql/graphql';
 
-import { PaymentConfigResponse } from '../../../queries';
+import { AdyenPaymentConfigResponse } from '../../../queries';
 import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
 import { AdyenAddress } from '../types';
 import { debugLog } from './debug';
@@ -123,7 +123,7 @@ export const getApplePay = ({
     billingAddress?: AdyenAddress,
     shippingAddress?: AdyenAddress,
   ) => Promise<void>;
-  paymentConfig: PaymentConfigResponse;
+  paymentConfig: AdyenPaymentConfigResponse;
 }) => {
   let currentBillingAddress: AdyenAddress | undefined;
   let currentShippingAddress: AdyenAddress | undefined;
@@ -131,7 +131,7 @@ export const getApplePay = ({
     resolve: (data: ApplePayJS.ApplePayShippingContactUpdate) => void,
     reject: (error?: Error) => void,
     event: ApplePayJS.ApplePayShippingContactSelectedEvent,
-    paymentConfig: PaymentConfigResponse,
+    paymentConfig: AdyenPaymentConfigResponse,
   ) => {
     debugLog('applePay:onShippingContactSelected:input', { event, paymentConfig });
     const shippingAddress = event.shippingContact;

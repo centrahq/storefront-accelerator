@@ -5,7 +5,7 @@ import { parseAsString, useQueryState } from 'nuqs';
 import { useContext } from 'react';
 import { toast } from 'sonner';
 
-import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/AdyenExpressCheckout/AdyenExpressCheckout';
+import { ExpressCheckout } from '@/features/checkout/components/Payment/ExpressCheckout';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
 import { parseAsBundledItems } from '@/features/product-details/bundle/components/bundledItemsSearchParam';
 
@@ -108,7 +108,7 @@ export const AddToCartButton = ({
       >
         {selectedPlan === '' ? t('shop:product.add-to-cart') : t('shop:product.subscriptions.subscribe')}
       </button>
-      <AdyenExpressCheckout
+      <ExpressCheckout
         itemId={itemId}
         cartTotal={productPrice}
         disabled={!isCurrentItemAvailable}

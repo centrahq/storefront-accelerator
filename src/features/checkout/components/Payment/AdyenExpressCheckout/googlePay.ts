@@ -3,7 +3,7 @@ import { AddressData, Core, GooglePay, SubmitActions, SubmitData, UIElement } fr
 import { addToCart } from '@/features/cart/service';
 import { CheckoutQuery, SelectionTotalRowType } from '@gql/graphql';
 
-import { PaymentConfigResponse } from '../../../queries';
+import { AdyenPaymentConfigResponse } from '../../../queries';
 import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
 import { AdyenAddress } from '../types';
 import { debugLog } from './debug';
@@ -130,7 +130,7 @@ export const getGooglePay = ({
   onAddedItemLineChange,
 }: {
   checkout: Core;
-  paymentConfig: PaymentConfigResponse;
+  paymentConfig: AdyenPaymentConfigResponse;
   initialLineItems: {
     name: string;
     price: string;

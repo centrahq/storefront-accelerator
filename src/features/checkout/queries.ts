@@ -22,7 +22,7 @@ interface LineItem {
 }
 
 interface ExpressCheckoutWidgetsParams {
-  type: ExpressCheckoutWidgetType.ExpressCheckoutAdyen;
+  type: ExpressCheckoutWidgetType;
   returnUrl: string;
   amount: number;
   lineItems: LineItem[];
@@ -41,7 +41,7 @@ interface PaymentAmount {
   currency: string;
 }
 
-export interface PaymentConfigResponse {
+export interface AdyenPaymentConfigResponse {
   clientKey: string;
   context: 'test' | 'live' | 'live-us' | 'live-au' | 'live-apse' | 'live-in';
   country: string;
@@ -54,7 +54,28 @@ export interface PaymentConfigResponse {
   shippingMethods: ShippingMethod[];
 }
 
-export function expressCheckoutWidgetsQuery({
+export interface StripeParameters {
+  captureMethod?: 'automatic' | 'automatic_async' | 'manual';
+  country?: string;
+  currency?: string;
+  publishableKey?: string;
+  returnUrl?: string;
+}
+
+export interface StripePaymentConfigResponse {
+  publishableKey?: string;
+  paymentMethod?: string;
+  captureMethod?: 'automatic' | 'automatic_async' | 'manual';
+  country?: string;
+  currency?: string;
+  languageCode?: string;
+  phoneNumberRequired?: boolean;
+  paymentAmount?: { amount: number; currency: string };
+  shippingMethods?: Record<string, { id: string; uri: string; amount: number; displayName: string }>;
+  stripeParameters?: string | StripeParameters;
+}
+
+export function expressCheckoutWidgetsQuery<T>({
   type,
   returnUrl,
   amount,
@@ -63,8 +84,8 @@ export function expressCheckoutWidgetsQuery({
   market,
 }: ExpressCheckoutWidgetsParams) {
   return queryOptions({
-    queryKey: ['payment-configuration', language, market, { amount, lineItems, returnUrl, type }],
-    queryFn: async () => {
+    queryKey: ['payment-configuration', language, market, { amount, lineItems, returnUrl, type }] as const,
+    queryFn: async (): Promise<T | null> => {
       const data: ExpressCheckoutWidgetsQuery = await getExpressCheckoutWidgets({
         plugins: [
           {
@@ -80,7 +101,7 @@ export function expressCheckoutWidgetsQuery({
       const widget = data.expressCheckoutWidgets.list
         ?.flatMap((list) => list.widgets)
         .find((entry) => entry.name === type);
-      return widget?.contents ? (JSON.parse(widget.contents) as PaymentConfigResponse) : null;
+      return widget?.contents ? (JSON.parse(widget.contents) as T) : null;
     },
   });
 }

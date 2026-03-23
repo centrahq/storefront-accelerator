@@ -1,0 +1,682 @@
+'use client';
+
+import { Elements, ExpressCheckoutElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import {
+  BillingDetails,
+  loadStripe,
+  PaymentIntent,
+  ShippingAddress,
+  ShippingRate,
+  StripeExpressCheckoutElementClickEvent,
+  StripeExpressCheckoutElementConfirmEvent,
+  StripeExpressCheckoutElementShippingAddressChangeEvent,
+  StripeExpressCheckoutElementShippingRateChangeEvent,
+} from '@stripe/stripe-js';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { toast } from 'sonner';
+
+import { selectionQuery } from '@/features/cart/queries';
+import { addToCart, updateLine } from '@/features/cart/service';
+import { AddressInput, ExpressCheckoutWidgetType, PaymentMethodKind, SelectionTotalRowType } from '@gql/graphql';
+
+import { type StripeParameters, type StripePaymentConfigResponse, expressCheckoutWidgetsQuery } from '../../../queries';
+import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
+import { ExpressCheckoutErrorBoundary } from '../ExpressCheckoutErrorBoundary';
+import { debugLog } from './debug';
+
+interface Props {
+  itemId?: string;
+  cartTotal: number;
+  initialLineItems: {
+    name: string;
+    price: string;
+  }[];
+  disabled?: boolean;
+  language: string;
+  market: number;
+}
+
+type StripeFormFields = {
+  publishableKey?: string;
+  clientSecret?: string;
+  stripeParameters?: string | StripeParameters;
+};
+
+type StripeConfig = {
+  publishableKey: string;
+  clientSecret: string;
+  stripeParameters: StripeParameters;
+};
+
+type StripeLineItem = {
+  amount: number;
+  name: string;
+};
+
+type StripeAddressShape = {
+  city?: string;
+  country?: string;
+  line1?: string;
+  line2?: string;
+  postal_code?: string;
+  state?: string;
+};
+
+const isNonEmptyString = (value?: string | null): value is string =>
+  typeof value === 'string' && value.trim() !== '';
+
+const parseStripeParameters = (rawStripeParameters?: StripeFormFields['stripeParameters']): StripeParameters => {
+  if (typeof rawStripeParameters === 'string') {
+    try {
+      return JSON.parse(rawStripeParameters) as StripeParameters;
+    } catch {
+      return {};
+    }
+  }
+  return rawStripeParameters ?? {};
+};
+
+const getStripeConfig = (
+  action?: { __typename: string; formFields?: Record<string, unknown> | null; formType?: string } | null,
+): StripeConfig | null => {
+  if (action?.__typename !== 'FormPaymentAction' || action.formType !== 'stripe-payment-intents') {
+    return null;
+  }
+
+  const formFields = action.formFields as StripeFormFields | undefined;
+  if (!isNonEmptyString(formFields?.publishableKey) || !isNonEmptyString(formFields.clientSecret)) {
+    return null;
+  }
+
+  return {
+    clientSecret: formFields.clientSecret,
+    publishableKey: formFields.publishableKey,
+    stripeParameters: parseStripeParameters(formFields.stripeParameters),
+  };
+};
+
+const mapShippingMethodsToStripeRatesFromCheckout = (
+  shippingMethods: Array<{ id: number; name: string; price: { value: number } }>,
+): ShippingRate[] => {
+  return shippingMethods.map((shippingMethod) => ({
+    amount: Math.round(shippingMethod.price.value * 100),
+    displayName: shippingMethod.name,
+    id: String(shippingMethod.id),
+  }));
+};
+
+const mapShippingMethodsToStripeRatesFromConfig = (
+  shippingMethods?: StripePaymentConfigResponse['shippingMethods'],
+): ShippingRate[] => {
+  if (!shippingMethods) {
+    return [];
+  }
+  return Object.values(shippingMethods)
+    .filter((shippingMethod) => isNonEmptyString(shippingMethod.id))
+    .map((shippingMethod) => ({
+      amount: Math.round(shippingMethod.amount * 100),
+      displayName: shippingMethod.displayName,
+      id: shippingMethod.id,
+    }));
+};
+
+const getCheckoutTotalValue = (
+  totals: Array<{ type: SelectionTotalRowType; price: { value: number } }>,
+  type: SelectionTotalRowType,
+) => {
+  return totals.find((total) => total.type === type)?.price.value ?? 0;
+};
+
+const createStripeLineItems = (
+  totals: Array<{ type: SelectionTotalRowType; price: { value: number } }>,
+): Array<{ name: string; amount: number }> => {
+  return [
+    {
+      amount: Math.round(getCheckoutTotalValue(totals, SelectionTotalRowType.ItemsSubtotal) * 100),
+      name: 'Subtotal',
+    },
+    {
+      amount: Math.round(getCheckoutTotalValue(totals, SelectionTotalRowType.Shipping) * 100),
+      name: 'Shipping',
+    },
+  ];
+};
+
+const getCheckoutTotalAmountInMinor = (
+  totals: Array<{ type: SelectionTotalRowType; price: { value: number } }>,
+): number => {
+  return Math.round(getCheckoutTotalValue(totals, SelectionTotalRowType.GrandTotal) * 100);
+};
+
+const getStringValue = (value?: string | null): string | undefined => {
+  return typeof value === 'string' && value.trim() !== '' ? value : undefined;
+};
+
+const getStripeAddressValue = (
+  address?: BillingDetails['address'] | ShippingAddress['address'],
+  key?: keyof StripeAddressShape,
+): string | undefined => {
+  if (!address || !key) {
+    return undefined;
+  }
+  return getStringValue(address[key] ?? undefined);
+};
+
+const splitFullName = (name?: string) => {
+  if (!isNonEmptyString(name)) {
+    return { firstName: undefined, lastName: undefined };
+  }
+  const [firstName, ...lastNameParts] = name.trim().split(/\s+/);
+  return {
+    firstName,
+    lastName: lastNameParts.length > 0 ? lastNameParts.join(' ') : undefined,
+  };
+};
+
+const mapStripeBillingDetailsToAddress = (billingDetails?: BillingDetails): AddressInput | undefined => {
+  if (!billingDetails) {
+    return undefined;
+  }
+  const { firstName, lastName } = splitFullName(getStringValue(billingDetails.name));
+  return {
+    address1: getStripeAddressValue(billingDetails.address, 'line1'),
+    address2: getStripeAddressValue(billingDetails.address, 'line2'),
+    city: getStripeAddressValue(billingDetails.address, 'city'),
+    country: getStripeAddressValue(billingDetails.address, 'country') ?? '',
+    email: getStringValue(billingDetails.email),
+    firstName,
+    lastName,
+    phoneNumber: getStringValue(billingDetails.phone),
+    state: getStripeAddressValue(billingDetails.address, 'state'),
+    zipCode: getStripeAddressValue(billingDetails.address, 'postal_code'),
+  };
+};
+
+const mapStripeShippingAddress = (shippingAddress?: ShippingAddress): AddressInput | undefined => {
+  if (!shippingAddress) {
+    return undefined;
+  }
+  const { firstName, lastName } = splitFullName(getStringValue(shippingAddress.name));
+  return {
+    address1: getStripeAddressValue(shippingAddress.address, 'line1'),
+    address2: getStripeAddressValue(shippingAddress.address, 'line2'),
+    city: getStripeAddressValue(shippingAddress.address, 'city'),
+    country: getStripeAddressValue(shippingAddress.address, 'country') ?? '',
+    firstName,
+    lastName,
+    state: getStripeAddressValue(shippingAddress.address, 'state'),
+    zipCode: getStripeAddressValue(shippingAddress.address, 'postal_code'),
+  };
+};
+
+const getConfirmAddresses = (event: StripeExpressCheckoutElementConfirmEvent) => {
+  return {
+    billingAddress: mapStripeBillingDetailsToAddress(event.billingDetails),
+    shippingAddress: mapStripeShippingAddress(event.shippingAddress),
+  };
+};
+
+// ---------------------------------------------------------------------------
+// Inner element component -- renders the Stripe ExpressCheckoutElement
+// ---------------------------------------------------------------------------
+
+const StripeExpressCheckoutElement = ({
+  allowedShippingCountries,
+  initialLineItems,
+  onCancel,
+  onEnsureSelectionReady,
+  onRequirePaymentIntent,
+  shippingRates,
+}: {
+  allowedShippingCountries: string[];
+  initialLineItems: StripeLineItem[];
+  onCancel: () => void;
+  onEnsureSelectionReady: () => Promise<void>;
+  onRequirePaymentIntent: (addresses: {
+    billingAddress?: AddressInput;
+    shippingAddress?: AddressInput;
+  }) => Promise<{ clientSecret: string; returnUrl: string } | null>;
+  shippingRates: ShippingRate[];
+}) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [elementKey, setElementKey] = useState(0);
+
+  const resetExpressCheckoutElement = useCallback(() => {
+    setElementKey((currentKey) => currentKey + 1);
+  }, []);
+
+  const handleConfirm = useCallback(async (event: StripeExpressCheckoutElementConfirmEvent) => {
+    if (!stripe || !elements) {
+      debugLog('confirm:aborted:missing-stripe-or-elements', {
+        hasElements: Boolean(elements),
+        hasStripe: Boolean(stripe),
+      });
+      event.paymentFailed({ reason: 'fail' });
+      resetExpressCheckoutElement();
+      return;
+    }
+
+    try {
+      const confirmAddresses = getConfirmAddresses(event);
+      debugLog('confirm:started', {
+        billingDetails: event.billingDetails,
+        confirmAddresses,
+        shippingAddress: event.shippingAddress,
+      });
+      const config = await onRequirePaymentIntent(confirmAddresses);
+      if (!config) {
+        debugLog('confirm:aborted:no-config', {});
+        event.paymentFailed({ reason: 'fail' });
+        resetExpressCheckoutElement();
+        return;
+      }
+
+      const result = await stripe.confirmPayment({
+        clientSecret: config.clientSecret,
+        confirmParams: { return_url: config.returnUrl },
+        elements,
+      });
+      const { error } = result;
+      const { paymentIntent } = result as { paymentIntent?: PaymentIntent };
+
+      debugLog('confirm:result', {
+        errorCode: error?.code,
+        errorDeclineCode: error?.decline_code,
+        errorMessage: error?.message,
+        errorType: error?.type,
+        paymentIntentId: paymentIntent?.id,
+        paymentIntentStatus: paymentIntent?.status,
+      });
+
+      if (error) {
+        toast.error(error.message ?? 'Unable to confirm payment');
+        event.paymentFailed({ reason: 'fail' });
+        resetExpressCheckoutElement();
+        return;
+      }
+
+      if (paymentIntent?.status === 'succeeded') {
+        window.location.assign(config.returnUrl);
+      }
+    } catch (err) {
+      debugLog('confirm:exception', { error: err });
+      toast.error('Unable to confirm payment');
+      resetExpressCheckoutElement();
+    }
+  }, [stripe, elements, onRequirePaymentIntent, resetExpressCheckoutElement]);
+
+  const handleCancel = useCallback(() => {
+    debugLog('cancel', { elementKey });
+    onCancel();
+    resetExpressCheckoutElement();
+  }, [elementKey, onCancel, resetExpressCheckoutElement]);
+
+  const onShippingAddressChange = useCallback(
+    async ({ resolve, reject, address }: StripeExpressCheckoutElementShippingAddressChangeEvent) => {
+      try {
+        if (allowedShippingCountries.length > 0 && !allowedShippingCountries.includes(address.country ?? '')) {
+          reject();
+          return;
+        }
+
+        await onEnsureSelectionReady();
+
+        const data = await submitPaymentInstructions({
+          shippingAddress: {
+            address1: '',
+            city: address.city ?? '',
+            country: address.country ?? '',
+            zipCode: address.postal_code ?? '',
+            state: address.state ?? '',
+          },
+          paymentReturnPage: `${window.location.origin}/success`,
+          paymentFailedPage: `${window.location.origin}/failed`,
+          paymentInitiateOnly: true,
+        });
+
+        const checkoutData = data.selection;
+        const lineItems = createStripeLineItems(checkoutData.checkout.totals);
+        const selectedShippingMethod = String(checkoutData.checkout.shippingMethod?.id ?? '');
+        const nextShippingRates = [
+          ...mapShippingMethodsToStripeRatesFromCheckout(checkoutData.checkout.shippingMethods ?? []),
+        ].sort((a, b) => {
+          if (a.id === selectedShippingMethod) return -1;
+          if (b.id === selectedShippingMethod) return 1;
+          return 0;
+        });
+        const amount = getCheckoutTotalAmountInMinor(checkoutData.checkout.totals);
+
+        elements?.update({ amount });
+        debugLog('shippingAddressChange:success', { amount, lineItems, shippingRates: nextShippingRates });
+        resolve({ lineItems, shippingRates: nextShippingRates });
+      } catch (error) {
+        debugLog('shippingAddressChange:error', { error });
+        reject();
+      }
+    },
+    [allowedShippingCountries, elements, onEnsureSelectionReady],
+  );
+
+  const onShippingRateChange = useCallback(
+    async ({ resolve, reject, shippingRate }: StripeExpressCheckoutElementShippingRateChangeEvent) => {
+      if (!isNonEmptyString(shippingRate.id)) {
+        reject();
+        return;
+      }
+      try {
+        debugLog('shippingRateChange:start', { shippingRate });
+        await setShippingMethod(Number(shippingRate.id));
+        const checkoutData = await fetchCheckout();
+        const lineItems = createStripeLineItems(checkoutData.checkout.totals);
+        const nextShippingRates = mapShippingMethodsToStripeRatesFromCheckout(
+          checkoutData.checkout.shippingMethods ?? [],
+        );
+        const amount = getCheckoutTotalAmountInMinor(checkoutData.checkout.totals);
+
+        elements?.update({ amount });
+        debugLog('shippingRateChange:success', { amount, lineItems, shippingRates: nextShippingRates });
+        resolve({ lineItems, shippingRates: nextShippingRates });
+      } catch (error) {
+        debugLog('shippingRateChange:error', { error, shippingRateId: shippingRate.id });
+        reject();
+      }
+    },
+    [elements],
+  );
+
+  const expressCheckoutOptions = useMemo(
+    () => ({
+      allowedShippingCountries,
+      billingAddressRequired: true,
+      emailRequired: true,
+      lineItems: initialLineItems,
+      paymentMethods: { googlePay: 'always' as const },
+      phoneNumberRequired: true,
+      shippingAddressRequired: true,
+      shippingRates,
+    }),
+    [allowedShippingCountries, initialLineItems, shippingRates],
+  );
+
+  const handleClick = useCallback(
+    async (event: StripeExpressCheckoutElementClickEvent) => {
+      debugLog('click', { expressPaymentType: event.expressPaymentType });
+      try {
+        await onEnsureSelectionReady();
+        debugLog('click:selectionReady', {});
+        event.resolve();
+      } catch (error) {
+        debugLog('click:rejected', { error });
+        event.reject();
+      }
+    },
+    [onEnsureSelectionReady],
+  );
+
+  return (
+    <ExpressCheckoutElement
+      key={elementKey}
+      options={expressCheckoutOptions}
+      onClick={handleClick}
+      onCancel={handleCancel}
+      onConfirm={handleConfirm}
+      onReady={(event) => {
+        debugLog('ready', { availablePaymentMethods: event.availablePaymentMethods, elementKey });
+      }}
+      onShippingAddressChange={onShippingAddressChange}
+      onShippingRateChange={onShippingRateChange}
+    />
+  );
+};
+
+// ---------------------------------------------------------------------------
+// Middle wrapper -- loads Stripe, resolves payment intent on confirm
+// ---------------------------------------------------------------------------
+
+const StripeExpressCheckoutInner = ({
+  itemId,
+  cartTotal,
+  disabled = false,
+  initialLineItems,
+  language,
+  market,
+}: Props) => {
+  const { data: selectionData } = useSuspenseQuery(selectionQuery);
+  const { lines } = selectionData;
+  const hasSubscriptionItems = useMemo(() => lines.some((line) => line?.subscriptionId != null), [lines]);
+  const itemRef = useRef<string | undefined>(undefined);
+  const addedItemLineRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    itemRef.current = itemId;
+  }, [itemId]);
+
+  const cartTotalInMinor = Math.round(cartTotal * 100);
+
+  const stripeLineItems = useMemo<StripeLineItem[]>(
+    () =>
+      initialLineItems.map((li) => ({
+        amount: Math.round(Number.parseFloat(li.price) * 100),
+        name: li.name,
+      })),
+    [initialLineItems],
+  );
+
+  const { data: paymentConfig } = useQuery(
+    expressCheckoutWidgetsQuery<StripePaymentConfigResponse>({
+      type: ExpressCheckoutWidgetType.ExpressCheckoutStripePaymentIntents,
+      returnUrl: `${window.location.origin}/success`,
+      amount: cartTotalInMinor,
+      lineItems: initialLineItems,
+      language,
+      market,
+    }),
+  );
+
+  const stripeParameters = useMemo(
+    () => parseStripeParameters(paymentConfig?.stripeParameters),
+    [paymentConfig?.stripeParameters],
+  );
+
+  const publishableKey = useMemo(() => {
+    return isNonEmptyString(paymentConfig?.publishableKey)
+      ? paymentConfig.publishableKey
+      : stripeParameters.publishableKey;
+  }, [paymentConfig?.publishableKey, stripeParameters.publishableKey]);
+
+  const elementsCurrency = useMemo(() => {
+    const currency =
+      paymentConfig?.paymentAmount?.currency ?? paymentConfig?.currency ?? stripeParameters.currency;
+    return isNonEmptyString(currency) ? currency.toLowerCase() : 'usd';
+  }, [paymentConfig?.paymentAmount?.currency, paymentConfig?.currency, stripeParameters.currency]);
+
+  const elementsAmountInMinor = useMemo(() => {
+    const configuredAmount = paymentConfig?.paymentAmount?.amount;
+    if (configuredAmount != null && configuredAmount > 0) {
+      return Math.round(configuredAmount);
+    }
+    return cartTotalInMinor > 0 ? cartTotalInMinor : 100;
+  }, [paymentConfig?.paymentAmount?.amount, cartTotalInMinor]);
+
+  const elementsCaptureMethod = useMemo(() => {
+    return paymentConfig?.captureMethod ?? stripeParameters.captureMethod ?? 'manual';
+  }, [paymentConfig?.captureMethod, stripeParameters.captureMethod]);
+
+  const allowedShippingCountry = useMemo(
+    () => paymentConfig?.country ?? stripeParameters.country,
+    [paymentConfig?.country, stripeParameters.country],
+  );
+
+  const shippingRates = useMemo(
+    () => mapShippingMethodsToStripeRatesFromConfig(paymentConfig?.shippingMethods),
+    [paymentConfig?.shippingMethods],
+  );
+
+  const stripePromise = useMemo(
+    () =>
+      isNonEmptyString(publishableKey)
+        ? loadStripe(publishableKey, { developerTools: { assistant: { enabled: true } } })
+        : null,
+    [publishableKey],
+  );
+
+  const ensureSelectionReady = useCallback(async () => {
+    const currentItemId = itemRef.current;
+    if (currentItemId) {
+      const checkoutData = await fetchCheckout();
+      const hasProductInSelection = checkoutData.lines.some((line) => line?.item.id === currentItemId);
+      if (!hasProductInSelection) {
+        const addedSelection = await addToCart({ item: currentItemId });
+        const addedItem = addedSelection.lines.find((line) => line?.item.id === currentItemId);
+        if (addedItem) {
+          addedItemLineRef.current = addedItem.id;
+          debugLog('ensureSelectionReady:addedItem', { itemId: currentItemId, lineId: addedItem.id });
+        }
+      }
+      return;
+    }
+
+    const checkoutData = await fetchCheckout();
+    if (checkoutData.lines.length === 0) {
+      throw new Error('Selection is empty');
+    }
+  }, []);
+
+  const requirePaymentIntent = useCallback(
+    async (addresses: { billingAddress?: AddressInput; shippingAddress?: AddressInput }) => {
+      const checkoutData = await fetchCheckout();
+      const stripePaymentMethod = checkoutData.checkout.paymentMethods.find(
+        (m) => m.kind === PaymentMethodKind.StripePaymentIntents,
+      );
+
+      if (!stripePaymentMethod) {
+        debugLog('requirePaymentIntent:aborted:noPaymentMethod', { paymentConfig });
+        return null;
+      }
+
+      try {
+        const shippingAddress: AddressInput = addresses.shippingAddress ?? {
+          address1: checkoutData.checkout.shippingAddress.address1,
+          city: checkoutData.checkout.shippingAddress.city,
+          country: checkoutData.checkout.shippingAddress.country?.code ?? '',
+          email: checkoutData.checkout.shippingAddress.email,
+          firstName: checkoutData.checkout.shippingAddress.firstName,
+          lastName: checkoutData.checkout.shippingAddress.lastName,
+          phoneNumber: checkoutData.checkout.shippingAddress.phoneNumber,
+          state: checkoutData.checkout.shippingAddress.state?.code,
+          zipCode: checkoutData.checkout.shippingAddress.zipCode,
+        };
+
+        const separateBillingAddress: AddressInput | undefined = addresses.billingAddress ?? undefined;
+
+        debugLog('requirePaymentIntent:request', {
+          paymentMethodId: stripePaymentMethod.id,
+          shippingAddress,
+          separateBillingAddress,
+        });
+
+        const response = await submitPaymentInstructions({
+          paymentMethod: stripePaymentMethod.id,
+          paymentInitiateOnly: true,
+          shippingAddress,
+          separateBillingAddress,
+          paymentReturnPage: `${window.location.origin}/confirmation`,
+          paymentFailedPage: `${window.location.origin}/failed`,
+        });
+
+        debugLog('requirePaymentIntent:response', {
+          actionType: response.action?.__typename,
+          formType:
+            response.action?.__typename === 'FormPaymentAction' ? response.action.formType : undefined,
+        });
+
+        const stripeConfig = getStripeConfig(response.action);
+        if (!stripeConfig) {
+          debugLog('requirePaymentIntent:invalidConfig', {
+            actionType: response.action?.__typename,
+          });
+          toast.error('Unable to initialize Stripe');
+          return null;
+        }
+
+        const returnUrl = stripeConfig.stripeParameters.returnUrl ?? `${window.location.origin}/confirmation`;
+        debugLog('requirePaymentIntent:success', {
+          hasClientSecret: isNonEmptyString(stripeConfig.clientSecret),
+          hasPublishableKey: isNonEmptyString(stripeConfig.publishableKey),
+          returnUrl,
+        });
+
+        return { clientSecret: stripeConfig.clientSecret, returnUrl };
+      } catch (error) {
+        debugLog('requirePaymentIntent:error', { error });
+        toast.error('Unable to initialize Stripe');
+        return null;
+      }
+    },
+    [paymentConfig],
+  );
+
+  const handleCancelCleanup = useCallback(() => {
+    if (addedItemLineRef.current) {
+      const lineId = addedItemLineRef.current;
+      void updateLine({ id: lineId, quantity: 0 })
+        .then(() => {
+          addedItemLineRef.current = null;
+        })
+        .catch((removeError: unknown) => {
+          console.error('Failed to remove item from cart:', removeError);
+        });
+    }
+  }, []);
+
+  if (hasSubscriptionItems || disabled) {
+    return null;
+  }
+
+  if (!paymentConfig || !stripePromise || elementsAmountInMinor <= 0) {
+    return null;
+  }
+
+  return (
+    <Elements
+      key={publishableKey}
+      stripe={stripePromise}
+      options={{
+        amount: elementsAmountInMinor,
+        captureMethod: elementsCaptureMethod,
+        currency: elementsCurrency,
+        mode: 'payment',
+      }}
+    >
+      <StripeExpressCheckoutElement
+        allowedShippingCountries={isNonEmptyString(allowedShippingCountry) ? [allowedShippingCountry] : []}
+        initialLineItems={stripeLineItems}
+        onCancel={handleCancelCleanup}
+        onEnsureSelectionReady={ensureSelectionReady}
+        onRequirePaymentIntent={requirePaymentIntent}
+        shippingRates={shippingRates}
+      />
+    </Elements>
+  );
+};
+
+// ---------------------------------------------------------------------------
+// Public wrapper -- SSR prevention + error boundary
+// ---------------------------------------------------------------------------
+
+const StripeExpressCheckoutDynamic = dynamic(() => Promise.resolve(StripeExpressCheckoutInner), {
+  ssr: false,
+});
+
+export const StripeExpressCheckout = (props: Props) => {
+  return (
+    <Suspense fallback={null}>
+      <ExpressCheckoutErrorBoundary>
+        <StripeExpressCheckoutDynamic {...props} />
+      </ExpressCheckoutErrorBoundary>
+    </Suspense>
+  );
+};
