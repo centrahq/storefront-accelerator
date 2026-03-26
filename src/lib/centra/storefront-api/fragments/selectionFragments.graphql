@@ -4,6 +4,7 @@ fragment cart on Selection {
   }
   grandTotal {
     currency {
+      code
       prefix
       suffix
     }

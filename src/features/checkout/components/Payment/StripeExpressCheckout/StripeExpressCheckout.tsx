@@ -155,7 +155,7 @@ const getStringValue = (value?: string | null): string | undefined => {
 };
 
 const getStripeAddressValue = (
-  address?: BillingDetails['address'] | ShippingAddress['address'],
+  address?: BillingDetails['address'],
   key?: keyof StripeAddressShape,
 ): string | undefined => {
   if (!address || !key) {
@@ -260,6 +260,7 @@ const StripeExpressCheckoutElement = ({
     }
 
     try {
+      await onEnsureSelectionReady();
       const confirmAddresses = getConfirmAddresses(event);
       debugLog('confirm:started', {
         billingDetails: event.billingDetails,
@@ -306,7 +307,7 @@ const StripeExpressCheckoutElement = ({
       toast.error('Unable to confirm payment');
       resetExpressCheckoutElement();
     }
-  }, [stripe, elements, onRequirePaymentIntent, resetExpressCheckoutElement]);
+  }, [stripe, elements, onEnsureSelectionReady, onRequirePaymentIntent, resetExpressCheckoutElement]);
 
   const handleCancel = useCallback(() => {
     debugLog('cancel', { elementKey });
@@ -317,7 +318,7 @@ const StripeExpressCheckoutElement = ({
   const onShippingAddressChange = useCallback(
     async ({ resolve, reject, address }: StripeExpressCheckoutElementShippingAddressChangeEvent) => {
       try {
-        if (allowedShippingCountries.length > 0 && !allowedShippingCountries.includes(address.country ?? '')) {
+        if (allowedShippingCountries.length > 0 && !allowedShippingCountries.includes(address.country)) {
           reject();
           return;
         }
@@ -328,7 +329,7 @@ const StripeExpressCheckoutElement = ({
           shippingAddress: {
             address1: '',
             city: address.city ?? '',
-            country: address.country ?? '',
+            country: address.country,
             zipCode: address.postal_code ?? '',
             state: address.state ?? '',
           },
@@ -481,17 +482,18 @@ const StripeExpressCheckoutInner = ({
     [paymentConfig?.stripeParameters],
   );
 
-  const publishableKey = useMemo(() => {
-    return isNonEmptyString(paymentConfig?.publishableKey)
-      ? paymentConfig.publishableKey
-      : stripeParameters.publishableKey;
-  }, [paymentConfig?.publishableKey, stripeParameters.publishableKey]);
+  const publishableKey = isNonEmptyString(paymentConfig?.publishableKey)
+    ? paymentConfig.publishableKey
+    : stripeParameters.publishableKey;
 
   const elementsCurrency = useMemo(() => {
     const currency =
-      paymentConfig?.paymentAmount?.currency ?? paymentConfig?.currency ?? stripeParameters.currency;
-    return isNonEmptyString(currency) ? currency.toLowerCase() : 'usd';
-  }, [paymentConfig?.paymentAmount?.currency, paymentConfig?.currency, stripeParameters.currency]);
+      paymentConfig?.paymentAmount?.currency ??
+      paymentConfig?.currency ??
+      stripeParameters.currency ??
+      selectionData.grandTotal.currency.code;
+    return isNonEmptyString(currency) ? currency.toLowerCase() : undefined;
+  }, [paymentConfig?.paymentAmount?.currency, paymentConfig?.currency, stripeParameters.currency, selectionData.grandTotal.currency.code]);
 
   const elementsAmountInMinor = useMemo(() => {
     const configuredAmount = paymentConfig?.paymentAmount?.amount;
@@ -558,19 +560,23 @@ const StripeExpressCheckoutInner = ({
       }
 
       try {
-        const shippingAddress: AddressInput = addresses.shippingAddress ?? {
-          address1: checkoutData.checkout.shippingAddress.address1,
-          city: checkoutData.checkout.shippingAddress.city,
-          country: checkoutData.checkout.shippingAddress.country?.code ?? '',
-          email: checkoutData.checkout.shippingAddress.email,
-          firstName: checkoutData.checkout.shippingAddress.firstName,
-          lastName: checkoutData.checkout.shippingAddress.lastName,
-          phoneNumber: checkoutData.checkout.shippingAddress.phoneNumber,
-          state: checkoutData.checkout.shippingAddress.state?.code,
-          zipCode: checkoutData.checkout.shippingAddress.zipCode,
+        const shippingAddressSource = addresses.shippingAddress;
+        const billingAddressSource = addresses.billingAddress;
+
+        const shippingAddress: AddressInput = {
+          address1: shippingAddressSource?.address1 ?? billingAddressSource?.address1,
+          address2: shippingAddressSource?.address2 ?? billingAddressSource?.address2,
+          city: shippingAddressSource?.city ?? billingAddressSource?.city,
+          country: shippingAddressSource?.country ?? billingAddressSource?.country ?? '',
+          email: shippingAddressSource?.email ?? billingAddressSource?.email,
+          firstName: shippingAddressSource?.firstName ?? billingAddressSource?.firstName,
+          lastName: shippingAddressSource?.lastName ?? billingAddressSource?.lastName,
+          phoneNumber: shippingAddressSource?.phoneNumber ?? billingAddressSource?.phoneNumber,
+          state: shippingAddressSource?.state ?? billingAddressSource?.state,
+          zipCode: shippingAddressSource?.zipCode ?? billingAddressSource?.zipCode,
         };
 
-        const separateBillingAddress: AddressInput | undefined = addresses.billingAddress ?? undefined;
+        const separateBillingAddress: AddressInput | undefined = billingAddressSource;
 
         debugLog('requirePaymentIntent:request', {
           paymentMethodId: stripePaymentMethod.id,
@@ -594,6 +600,7 @@ const StripeExpressCheckoutInner = ({
         });
 
         const stripeConfig = getStripeConfig(response.action);
+        debugLog('requirePaymentIntent:stripeConfig', { stripeConfig });
         if (!stripeConfig) {
           debugLog('requirePaymentIntent:invalidConfig', {
             actionType: response.action?.__typename,
@@ -636,7 +643,7 @@ const StripeExpressCheckoutInner = ({
     return null;
   }
 
-  if (!paymentConfig || !stripePromise || elementsAmountInMinor <= 0) {
+  if (!paymentConfig || !stripePromise || !elementsCurrency || elementsAmountInMinor <= 0) {
     return null;
   }
 
