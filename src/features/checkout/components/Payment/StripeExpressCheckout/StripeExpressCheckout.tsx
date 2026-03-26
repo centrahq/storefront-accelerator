@@ -563,18 +563,31 @@ const StripeExpressCheckoutInner = ({
         const shippingAddressSource = addresses.shippingAddress;
         const billingAddressSource = addresses.billingAddress;
 
-        const shippingAddress: AddressInput = {
-          address1: shippingAddressSource?.address1 ?? billingAddressSource?.address1,
-          address2: shippingAddressSource?.address2 ?? billingAddressSource?.address2,
-          city: shippingAddressSource?.city ?? billingAddressSource?.city,
-          country: shippingAddressSource?.country ?? billingAddressSource?.country ?? '',
-          email: shippingAddressSource?.email ?? billingAddressSource?.email,
-          firstName: shippingAddressSource?.firstName ?? billingAddressSource?.firstName,
-          lastName: shippingAddressSource?.lastName ?? billingAddressSource?.lastName,
-          phoneNumber: shippingAddressSource?.phoneNumber ?? billingAddressSource?.phoneNumber,
-          state: shippingAddressSource?.state ?? billingAddressSource?.state,
-          zipCode: shippingAddressSource?.zipCode ?? billingAddressSource?.zipCode,
-        };
+        const shippingAddress: AddressInput = shippingAddressSource
+          ? {
+              address1: shippingAddressSource.address1,
+              address2: shippingAddressSource.address2,
+              city: shippingAddressSource.city,
+              country: shippingAddressSource.country,
+              email: shippingAddressSource.email ?? billingAddressSource?.email,
+              firstName: shippingAddressSource.firstName,
+              lastName: shippingAddressSource.lastName,
+              phoneNumber: shippingAddressSource.phoneNumber ?? billingAddressSource?.phoneNumber,
+              state: shippingAddressSource.state,
+              zipCode: shippingAddressSource.zipCode,
+            }
+          : {
+              address1: billingAddressSource?.address1,
+              address2: billingAddressSource?.address2,
+              city: billingAddressSource?.city,
+              country: billingAddressSource?.country ?? '',
+              email: billingAddressSource?.email,
+              firstName: billingAddressSource?.firstName,
+              lastName: billingAddressSource?.lastName,
+              phoneNumber: billingAddressSource?.phoneNumber,
+              state: billingAddressSource?.state,
+              zipCode: billingAddressSource?.zipCode,
+            };
 
         const separateBillingAddress: AddressInput | undefined = billingAddressSource;
 
