@@ -3,6 +3,7 @@ import { z } from 'zod';
 const envSchema = z.object({
   NEXT_PUBLIC_GQL_API: z.string(),
   GQL_AUTHORIZATION: z.string(),
+  GQL_SHARED_SECRET: z.string(),
   NO_SESSION_GQL_API: z.string(),
   NO_SESSION_GQL_AUTHORIZATION: z.string(),
   NO_SESSION_GQL_SHARED_SECRET: z.string(),
@@ -16,6 +17,7 @@ export const validateEnv = () => {
   const parsedEnv = envSchema.safeParse({
     NEXT_PUBLIC_GQL_API: process.env.NEXT_PUBLIC_GQL_API,
     GQL_AUTHORIZATION: process.env.GQL_AUTHORIZATION,
+    GQL_SHARED_SECRET: process.env.GQL_SHARED_SECRET,
     NO_SESSION_GQL_API: process.env.NO_SESSION_GQL_API,
     NO_SESSION_GQL_AUTHORIZATION: process.env.NO_SESSION_GQL_AUTHORIZATION,
     NO_SESSION_GQL_SHARED_SECRET: process.env.NO_SESSION_GQL_SHARED_SECRET,

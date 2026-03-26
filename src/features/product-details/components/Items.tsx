@@ -1,5 +1,7 @@
 import { AddToCartButton } from '@/features/cart/components/AddToCartButton';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
+import { EmbroideryContextProvider } from '@/features/product-customization/embroidery/components/EmbroideryContext';
+import { SetEmbroidery } from '@/features/product-customization/embroidery/components/SetEmbroidery';
 import { getSession } from '@/lib/centra/sessionCookie';
 import { getItemName, getSizeGuideTable } from '@/lib/utils/product';
 import { BundleType, ProductDetailsFragment } from '@gql/graphql';
@@ -52,15 +54,18 @@ export const Items = async ({ product }: { product: ProductDetailsFragment }) =>
         </span>
       )}
       {product.subscriptionPlans.length > 0 && <SubscriptionSelector plans={product.subscriptionPlans} />}
-      <AddToCartButton
-        items={itemsData}
-        productName={product.name}
-        productPrice={product.price?.value ?? 0}
-        isFlexibleBundle={product.bundle?.type === BundleType.Flexible}
-        bundleItemAvailability={bundleItemAvailability}
-        language={language}
-        market={market}
-      />
+      <EmbroideryContextProvider>
+        <SetEmbroidery />
+        <AddToCartButton
+          items={itemsData}
+          productName={product.name}
+          productPrice={product.price?.value ?? 0}
+          isFlexibleBundle={product.bundle?.type === BundleType.Flexible}
+          bundleItemAvailability={bundleItemAvailability}
+          language={language}
+          market={market}
+        />
+      </EmbroideryContextProvider>
     </>
   );
 };

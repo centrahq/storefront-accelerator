@@ -3416,8 +3416,34 @@ export type ReceiptQuery = { order?: { id: string, number: number, orderDate: st
       | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
       | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
     >, shippingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, billingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingMethod: { id: number, name: string, comment?: string | null, selected: boolean, price: { value: number, formattedValue: string } }, lines: Array<
-      | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-      | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+      | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+          | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+          | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+        > }
+      | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+          | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+          | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+        > }
      | null> } | null };
 
 export type PaymentResultMutationVariables = Exact<{
@@ -3461,11 +3487,54 @@ export type ChangeLocaleMutation = { setCountryState:
       > }
   , setLanguage: { session: { country: { code: string }, countryState?: { code: string } | null, language?: { code: string } | null, market: { id: number }, pricelist: { id: number }, loggedIn?: { id: number } | null } } };
 
+export type AddItemMutationVariables = Exact<{
+  item: Scalars['String']['input'];
+  quantity?: InputMaybe<Scalars['Int']['input']>;
+  subscriptionPlan?: InputMaybe<Scalars['Int']['input']>;
+  dynamicAttributes?: InputMaybe<Array<DynamicLineAttributeSetInput> | DynamicLineAttributeSetInput>;
+}>;
+
+
+export type AddItemMutation = { addItem: { userErrors: Array<
+      | { message: string, path?: Array<string> | null }
+      | { message: string, path?: Array<string> | null }
+    >, selection?: { lines: Array<
+        | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+            | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+            | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+          > }
+        | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+            | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+            | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+          > }
+       | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null } };
+
 export type AddFlexibleBundleToCartMutationVariables = Exact<{
   item: Scalars['String']['input'];
   sections: Array<BundleSectionInput> | BundleSectionInput;
   quantity?: InputMaybe<Scalars['Int']['input']>;
   subscriptionPlan?: InputMaybe<Scalars['Int']['input']>;
+  dynamicAttributes?: InputMaybe<Array<DynamicLineAttributeSetInput> | DynamicLineAttributeSetInput>;
 }>;
 
 
@@ -3473,16 +3542,68 @@ export type AddFlexibleBundleToCartMutation = { addFlexibleBundle: { userErrors:
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     >, selection?: { lines: Array<
-        | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-        | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+        | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+            | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+            | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+          > }
+        | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+            | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+            | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+          > }
        | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null } };
 
 export type CartQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CartQuery = { selection: { lines: Array<
-      | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-      | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+      | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+          | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+          | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+        > }
+      | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+          | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+          | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+        > }
      | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } };
 
 export type UpdateLineMutationVariables = Exact<{
@@ -3497,46 +3618,135 @@ export type UpdateLineMutation = { updateLine:
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null }
     | { userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null }
     | { userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null }
     | { userErrors: Array<
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null }
    };
-
-export type AddItemMutationVariables = Exact<{
-  item: Scalars['String']['input'];
-  quantity?: InputMaybe<Scalars['Int']['input']>;
-  subscriptionPlan?: InputMaybe<Scalars['Int']['input']>;
-}>;
-
-
-export type AddItemMutation = { addItem: { userErrors: Array<
-      | { message: string, path?: Array<string> | null }
-      | { message: string, path?: Array<string> | null }
-    >, selection?: { lines: Array<
-        | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-        | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-       | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null } };
 
 export type ExpressCheckoutWidgetsQueryVariables = Exact<{
   plugins: Array<ExpressCheckoutWidgetsPluginItem> | ExpressCheckoutWidgetsPluginItem;
@@ -3556,8 +3766,34 @@ export type SetAddressMutationVariables = Exact<{
 
 export type SetAddressMutation = { setAddress:
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3574,8 +3810,34 @@ export type SetAddressMutation = { setAddress:
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3592,8 +3854,34 @@ export type SetAddressMutation = { setAddress:
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3610,8 +3898,34 @@ export type SetAddressMutation = { setAddress:
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3636,8 +3950,34 @@ export type AddVoucherMutationVariables = Exact<{
 
 export type AddVoucherMutation = { addVoucher:
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3654,8 +3994,34 @@ export type AddVoucherMutation = { addVoucher:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3672,8 +4038,34 @@ export type AddVoucherMutation = { addVoucher:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3690,8 +4082,34 @@ export type AddVoucherMutation = { addVoucher:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3716,8 +4134,34 @@ export type RemoveVoucherMutationVariables = Exact<{
 
 export type RemoveVoucherMutation = { removeVoucher:
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3734,8 +4178,34 @@ export type RemoveVoucherMutation = { removeVoucher:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3752,8 +4222,34 @@ export type RemoveVoucherMutation = { removeVoucher:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3770,8 +4266,34 @@ export type RemoveVoucherMutation = { removeVoucher:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3801,8 +4323,34 @@ export type UpdateLineCheckoutMutation = { updateLine:
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3819,8 +4367,34 @@ export type UpdateLineCheckoutMutation = { updateLine:
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3837,8 +4411,34 @@ export type UpdateLineCheckoutMutation = { updateLine:
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3855,8 +4455,34 @@ export type UpdateLineCheckoutMutation = { updateLine:
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3879,8 +4505,34 @@ export type ApplyGiftCardMutationVariables = Exact<{
 
 export type ApplyGiftCardMutation = { applyGiftCard:
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3897,8 +4549,34 @@ export type ApplyGiftCardMutation = { applyGiftCard:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3915,8 +4593,34 @@ export type ApplyGiftCardMutation = { applyGiftCard:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3933,8 +4637,34 @@ export type ApplyGiftCardMutation = { applyGiftCard:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3956,8 +4686,34 @@ export type CheckoutQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CheckoutQuery = { selection: { externalGiftCardAvailable: boolean, lines: Array<
-      | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-      | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+      | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+          | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+          | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+        > }
+      | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+          | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+          | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+        > }
      | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
       | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
       | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3983,8 +4739,34 @@ export type SetShippingMethodMutationVariables = Exact<{
 
 export type SetShippingMethodMutation = { setShippingMethod:
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4001,8 +4783,34 @@ export type SetShippingMethodMutation = { setShippingMethod:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4019,8 +4827,34 @@ export type SetShippingMethodMutation = { setShippingMethod:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4037,8 +4871,34 @@ export type SetShippingMethodMutation = { setShippingMethod:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4068,8 +4928,34 @@ export type PaymentInstructionsMutation = { paymentInstructions: { action?:
       | { __typename: 'SuccessPaymentAction', order: { id: string } }
       | { __typename: 'SuccessStoredPaymentAction' }
      | null, selection: { externalGiftCardAvailable: boolean, lines: Array<
-        | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-        | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+        | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+            | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+            | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+          > }
+        | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+            | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+            | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+          > }
        | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
         | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4093,8 +4979,34 @@ export type WidgetEventMutationVariables = Exact<{
 
 export type WidgetEventMutation = { handleWidgetEvent:
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4111,8 +5023,34 @@ export type WidgetEventMutation = { handleWidgetEvent:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4129,8 +5067,34 @@ export type WidgetEventMutation = { handleWidgetEvent:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4147,8 +5111,34 @@ export type WidgetEventMutation = { handleWidgetEvent:
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4207,9 +5197,407 @@ export type OrdersQuery = { customer?: { totalOrders: number, orders: Array<{ id
         | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
         | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
       >, shippingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, billingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingMethod: { id: number, name: string, comment?: string | null, selected: boolean, price: { value: number, formattedValue: string } }, lines: Array<
-        | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-        | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+        | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+            | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+            | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+          > }
+        | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+            | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+            | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                | { __typename: 'AttributeChoiceElement', key: string }
+                | { __typename: 'AttributeFileElement', key: string }
+                | { __typename: 'AttributeImageElement', key: string }
+                | { __typename: 'AttributeStringElement', value: string, key: string }
+              > }
+          > }
        | null> }> } | null };
+
+export type AddEmbroideryToLineMutationVariables = Exact<{
+  lineId: Scalars['String']['input'];
+  dynamicAttributes: Array<DynamicLineAttributeSetInput> | DynamicLineAttributeSetInput;
+  inCheckout: Scalars['Boolean']['input'];
+}>;
+
+
+export type AddEmbroideryToLineMutation = { setLineAttributes:
+    | { userErrors: Array<
+        | { message: string, path?: Array<string> | null }
+        | { message: string, path?: Array<string> | null }
+      >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+         | null>, grandTotal: { value: number, currency: { denominator: number, code: string, prefix?: string | null, suffix?: string | null } }, discounts: Array<
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+          >, widgets?: Array<
+            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
+            | { __typename: 'KlarnaCheckoutWidget' }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
+          > | null } | null } | null }
+    | { userErrors: Array<
+        | { message: string, path?: Array<string> | null }
+        | { message: string, path?: Array<string> | null }
+      >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+         | null>, grandTotal: { value: number, currency: { denominator: number, code: string, prefix?: string | null, suffix?: string | null } }, discounts: Array<
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+          >, widgets?: Array<
+            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
+            | { __typename: 'KlarnaCheckoutWidget' }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
+          > | null } | null } | null }
+    | { userErrors: Array<
+        | { message: string, path?: Array<string> | null }
+        | { message: string, path?: Array<string> | null }
+      >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+         | null>, grandTotal: { value: number, currency: { denominator: number, code: string, prefix?: string | null, suffix?: string | null } }, discounts: Array<
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+          >, widgets?: Array<
+            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
+            | { __typename: 'KlarnaCheckoutWidget' }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
+          > | null } | null } | null }
+    | { userErrors: Array<
+        | { message: string, path?: Array<string> | null }
+        | { message: string, path?: Array<string> | null }
+      >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+         | null>, grandTotal: { value: number, currency: { denominator: number, code: string, prefix?: string | null, suffix?: string | null } }, discounts: Array<
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+          >, widgets?: Array<
+            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
+            | { __typename: 'KlarnaCheckoutWidget' }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
+          > | null } | null } | null }
+   };
+
+export type RemoveEmbroideryFromLineMutationVariables = Exact<{
+  lineId: Scalars['String']['input'];
+  dynamicAttributes: Array<DynamicLineAttributeUnsetInput> | DynamicLineAttributeUnsetInput;
+  inCheckout: Scalars['Boolean']['input'];
+}>;
+
+
+export type RemoveEmbroideryFromLineMutation = { unsetLineAttributes:
+    | { userErrors: Array<
+        | { message: string, path?: Array<string> | null }
+        | { message: string, path?: Array<string> | null }
+      >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+         | null>, grandTotal: { value: number, currency: { denominator: number, code: string, prefix?: string | null, suffix?: string | null } }, discounts: Array<
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+          >, widgets?: Array<
+            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
+            | { __typename: 'KlarnaCheckoutWidget' }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
+          > | null } | null } | null }
+    | { userErrors: Array<
+        | { message: string, path?: Array<string> | null }
+        | { message: string, path?: Array<string> | null }
+      >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+         | null>, grandTotal: { value: number, currency: { denominator: number, code: string, prefix?: string | null, suffix?: string | null } }, discounts: Array<
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+          >, widgets?: Array<
+            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
+            | { __typename: 'KlarnaCheckoutWidget' }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
+          > | null } | null } | null }
+    | { userErrors: Array<
+        | { message: string, path?: Array<string> | null }
+        | { message: string, path?: Array<string> | null }
+      >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+         | null>, grandTotal: { value: number, currency: { denominator: number, code: string, prefix?: string | null, suffix?: string | null } }, discounts: Array<
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+          >, widgets?: Array<
+            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
+            | { __typename: 'KlarnaCheckoutWidget' }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
+          > | null } | null } | null }
+    | { userErrors: Array<
+        | { message: string, path?: Array<string> | null }
+        | { message: string, path?: Array<string> | null }
+      >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+         | null>, grandTotal: { value: number, currency: { denominator: number, code: string, prefix?: string | null, suffix?: string | null } }, discounts: Array<
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+          | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
+        >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+            | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
+          >, widgets?: Array<
+            | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
+            | { __typename: 'KlarnaCheckoutWidget' }
+            | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
+          > | null } | null } | null }
+   };
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -4268,8 +5656,34 @@ export type ChangeSubscriptionContractAddressMutationVariables = Exact<{
 
 
 export type ChangeSubscriptionContractAddressMutation = { changeSubscriptionContractAddress: { contract?: { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
@@ -4282,8 +5696,34 @@ export type UpdateSubscriptionIntervalMutationVariables = Exact<{
 
 
 export type UpdateSubscriptionIntervalMutation = { updateSubscriptionInterval: { contract?: { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
@@ -4296,8 +5736,34 @@ export type UpdateSubscriptionQuantityMutationVariables = Exact<{
 
 
 export type UpdateSubscriptionQuantityMutation = { updateSubscriptionQuantity: { contract?: { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
@@ -4310,8 +5776,34 @@ export type UpdateSubscriptionStatusMutationVariables = Exact<{
 
 
 export type UpdateSubscriptionStatusMutation = { updateSubscriptionStatus: { contract?: { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
@@ -4321,8 +5813,34 @@ export type SubscriptionContractsQueryVariables = Exact<{ [key: string]: never; 
 
 
 export type SubscriptionContractsQuery = { customer?: { subscriptionContracts: Array<{ id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
-          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
+          | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+              | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+              | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+                  | { __typename: 'AttributeChoiceElement', key: string }
+                  | { __typename: 'AttributeFileElement', key: string }
+                  | { __typename: 'AttributeImageElement', key: string }
+                  | { __typename: 'AttributeStringElement', value: string, key: string }
+                > }
+            > }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> }> } | null };
 
 export type LookupProductMutationVariables = Exact<{
@@ -4476,8 +5994,34 @@ export type LookupCategoryMutation = { lookupUri?:
    | null };
 
 export type CheckoutFragment = { externalGiftCardAvailable: boolean, lines: Array<
-    | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-    | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+    | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+        | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+        | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+      > }
+    | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+        | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+        | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+      > }
    | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
     | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
     | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4497,8 +6041,34 @@ export type OrderFragment = { id: string, number: number, orderDate: string, sta
     | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
     | { type: SelectionTotalRowType, price: { value: number, formattedValue: string } }
   >, shippingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, billingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingMethod: { id: number, name: string, comment?: string | null, selected: boolean, price: { value: number, formattedValue: string } }, lines: Array<
-    | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-    | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+    | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+        | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+        | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+      > }
+    | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+        | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+        | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+      > }
    | null> };
 
 type Voucher_AutoVoucher_Fragment = { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null };
@@ -4618,13 +6188,65 @@ export type ProductDetailsFragment = { id: number, available: boolean, uri: stri
   > };
 
 export type CartFragment = { lines: Array<
-    | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-    | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+    | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+        | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+        | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+      > }
+    | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+        | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+        | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+      > }
    | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } };
 
-type Line_BundleLine_Fragment = { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } };
+type Line_BundleLine_Fragment = { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+    | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+        | { __typename: 'AttributeChoiceElement', key: string }
+        | { __typename: 'AttributeFileElement', key: string }
+        | { __typename: 'AttributeImageElement', key: string }
+        | { __typename: 'AttributeStringElement', value: string, key: string }
+      > }
+    | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+        | { __typename: 'AttributeChoiceElement', key: string }
+        | { __typename: 'AttributeFileElement', key: string }
+        | { __typename: 'AttributeImageElement', key: string }
+        | { __typename: 'AttributeStringElement', value: string, key: string }
+      > }
+  > };
 
-type Line_ProductLine_Fragment = { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } };
+type Line_ProductLine_Fragment = { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+    | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+        | { __typename: 'AttributeChoiceElement', key: string }
+        | { __typename: 'AttributeFileElement', key: string }
+        | { __typename: 'AttributeImageElement', key: string }
+        | { __typename: 'AttributeStringElement', value: string, key: string }
+      > }
+    | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+        | { __typename: 'AttributeChoiceElement', key: string }
+        | { __typename: 'AttributeFileElement', key: string }
+        | { __typename: 'AttributeImageElement', key: string }
+        | { __typename: 'AttributeStringElement', value: string, key: string }
+      > }
+  > };
 
 export type LineFragment =
   | Line_BundleLine_Fragment
@@ -4634,13 +6256,65 @@ export type LineFragment =
 export type SessionFragment = { country: { code: string }, countryState?: { code: string } | null, language?: { code: string } | null, market: { id: number }, pricelist: { id: number }, loggedIn?: { id: number } | null };
 
 export type SubscriptionInfoFragment = { id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
-    | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-    | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+    | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+        | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+        | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+      > }
+    | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+        | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+        | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+            | { __typename: 'AttributeChoiceElement', key: string }
+            | { __typename: 'AttributeFileElement', key: string }
+            | { __typename: 'AttributeImageElement', key: string }
+            | { __typename: 'AttributeStringElement', value: string, key: string }
+          > }
+      > }
   >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null };
 
 export type SubscriptionContractFragment = { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
-      | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-      | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+      | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+          | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+          | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+        > }
+      | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> }, attributes: Array<
+          | { __typename: 'DynamicAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+          | { __typename: 'MappedAttribute', type: { name: string }, elements: Array<
+              | { __typename: 'AttributeChoiceElement', key: string }
+              | { __typename: 'AttributeFileElement', key: string }
+              | { __typename: 'AttributeImageElement', key: string }
+              | { __typename: 'AttributeStringElement', value: string, key: string }
+            > }
+        > }
     >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> };
 
 export class TypedDocumentString<TResult, TVariables>
@@ -4707,6 +6381,19 @@ export const LineFragmentDoc = new TypedDocumentString(`
     }
     subscriptionPlans {
       ...subscriptionPlan
+    }
+  }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
     }
   }
   ... on BundleLine {
@@ -4939,6 +6626,19 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
   ... on BundleLine {
     bundle {
       type
@@ -5053,6 +6753,19 @@ fragment line on Line {
     }
     subscriptionPlans {
       ...subscriptionPlan
+    }
+  }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
     }
   }
   ... on BundleLine {
@@ -5459,6 +7172,19 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
   ... on BundleLine {
     bundle {
       type
@@ -5560,6 +7286,19 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
   ... on BundleLine {
     bundle {
       type
@@ -5651,6 +7390,19 @@ fragment line on Line {
     }
     subscriptionPlans {
       ...subscriptionPlan
+    }
+  }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
     }
   }
   ... on BundleLine {
@@ -5796,6 +7548,19 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
   ... on BundleLine {
     bundle {
       type
@@ -5862,13 +7627,13 @@ export const ChangeLocaleDocument = new TypedDocumentString(`
     id
   }
 }`) as unknown as TypedDocumentString<ChangeLocaleMutation, ChangeLocaleMutationVariables>;
-export const AddFlexibleBundleToCartDocument = new TypedDocumentString(`
-    mutation addFlexibleBundleToCart($item: String!, $sections: [BundleSectionInput!]!, $quantity: Int = 1, $subscriptionPlan: Int) {
-  addFlexibleBundle(
+export const AddItemDocument = new TypedDocumentString(`
+    mutation addItem($item: String!, $quantity: Int = 1, $subscriptionPlan: Int, $dynamicAttributes: [DynamicLineAttributeSetInput!]) {
+  addItem(
     item: $item
     quantity: $quantity
-    sections: $sections
     subscriptionPlan: $subscriptionPlan
+    dynamicAttributes: $dynamicAttributes
   ) {
     userErrors {
       message
@@ -5931,6 +7696,124 @@ fragment line on Line {
     }
     subscriptionPlans {
       ...subscriptionPlan
+    }
+  }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
+  ... on BundleLine {
+    bundle {
+      type
+      sections {
+        quantity
+        lines {
+          id
+          lineValue {
+            formattedValue
+          }
+          name
+          quantity
+          item {
+            ...item
+          }
+        }
+      }
+    }
+  }
+}`) as unknown as TypedDocumentString<AddItemMutation, AddItemMutationVariables>;
+export const AddFlexibleBundleToCartDocument = new TypedDocumentString(`
+    mutation addFlexibleBundleToCart($item: String!, $sections: [BundleSectionInput!]!, $quantity: Int = 1, $subscriptionPlan: Int, $dynamicAttributes: [DynamicLineAttributeSetInput!]) {
+  addFlexibleBundle(
+    item: $item
+    quantity: $quantity
+    sections: $sections
+    subscriptionPlan: $subscriptionPlan
+    dynamicAttributes: $dynamicAttributes
+  ) {
+    userErrors {
+      message
+      path
+    }
+    selection {
+      ...cart
+    }
+  }
+}
+    fragment item on Item {
+  id
+  name
+  sizeLocalization {
+    name
+    countries {
+      code
+    }
+  }
+}
+fragment subscriptionPlan on SubscriptionPlan {
+  id
+  discount
+  interval {
+    value
+    type
+  }
+}
+fragment cart on Selection {
+  lines {
+    ...line
+  }
+  grandTotal {
+    currency {
+      prefix
+      suffix
+    }
+  }
+}
+fragment line on Line {
+  __typename
+  id
+  item {
+    ...item
+  }
+  quantity
+  lineValue {
+    formattedValue
+    value
+  }
+  subscriptionId
+  displayItem {
+    name
+    uri
+    media {
+      altText
+      source(sizeName: "mini") {
+        url
+      }
+    }
+    subscriptionPlans {
+      ...subscriptionPlan
+    }
+  }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
     }
   }
   ... on BundleLine {
@@ -6011,6 +7894,19 @@ fragment line on Line {
     }
     subscriptionPlans {
       ...subscriptionPlan
+    }
+  }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
     }
   }
   ... on BundleLine {
@@ -6103,90 +7999,17 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
-  ... on BundleLine {
-    bundle {
-      type
-      sections {
-        quantity
-        lines {
-          id
-          lineValue {
-            formattedValue
-          }
-          name
-          quantity
-          item {
-            ...item
-          }
-        }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
       }
-    }
-  }
-}`) as unknown as TypedDocumentString<UpdateLineMutation, UpdateLineMutationVariables>;
-export const AddItemDocument = new TypedDocumentString(`
-    mutation addItem($item: String!, $quantity: Int = 1, $subscriptionPlan: Int) {
-  addItem(item: $item, quantity: $quantity, subscriptionPlan: $subscriptionPlan) {
-    userErrors {
-      message
-      path
-    }
-    selection {
-      ...cart
-    }
-  }
-}
-    fragment item on Item {
-  id
-  name
-  sizeLocalization {
-    name
-    countries {
-      code
-    }
-  }
-}
-fragment subscriptionPlan on SubscriptionPlan {
-  id
-  discount
-  interval {
-    value
-    type
-  }
-}
-fragment cart on Selection {
-  lines {
-    ...line
-  }
-  grandTotal {
-    currency {
-      prefix
-      suffix
-    }
-  }
-}
-fragment line on Line {
-  __typename
-  id
-  item {
-    ...item
-  }
-  quantity
-  lineValue {
-    formattedValue
-    value
-  }
-  subscriptionId
-  displayItem {
-    name
-    uri
-    media {
-      altText
-      source(sizeName: "mini") {
-        url
-      }
-    }
-    subscriptionPlans {
-      ...subscriptionPlan
     }
   }
   ... on BundleLine {
@@ -6208,7 +8031,7 @@ fragment line on Line {
       }
     }
   }
-}`) as unknown as TypedDocumentString<AddItemMutation, AddItemMutationVariables>;
+}`) as unknown as TypedDocumentString<UpdateLineMutation, UpdateLineMutationVariables>;
 export const ExpressCheckoutWidgetsDocument = new TypedDocumentString(`
     query expressCheckoutWidgets($plugins: [ExpressCheckoutWidgetsPluginItem!]!) {
   expressCheckoutWidgets(configurationOnly: true, plugins: $plugins) {
@@ -6398,6 +8221,19 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
   ... on BundleLine {
     bundle {
       type
@@ -6584,6 +8420,19 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
   ... on BundleLine {
     bundle {
       type
@@ -6768,6 +8617,19 @@ fragment line on Line {
     }
     subscriptionPlans {
       ...subscriptionPlan
+    }
+  }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
     }
   }
   ... on BundleLine {
@@ -6960,6 +8822,19 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
   ... on BundleLine {
     bundle {
       type
@@ -7146,6 +9021,19 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
   ... on BundleLine {
     bundle {
       type
@@ -7324,6 +9212,19 @@ fragment line on Line {
     }
     subscriptionPlans {
       ...subscriptionPlan
+    }
+  }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
     }
   }
   ... on BundleLine {
@@ -7525,6 +9426,19 @@ fragment line on Line {
     }
     subscriptionPlans {
       ...subscriptionPlan
+    }
+  }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
     }
   }
   ... on BundleLine {
@@ -7737,6 +9651,19 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
   ... on BundleLine {
     bundle {
       type
@@ -7921,6 +9848,19 @@ fragment line on Line {
     }
     subscriptionPlans {
       ...subscriptionPlan
+    }
+  }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
     }
   }
   ... on BundleLine {
@@ -8108,6 +10048,19 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
   ... on BundleLine {
     bundle {
       type
@@ -8128,6 +10081,428 @@ fragment line on Line {
     }
   }
 }`) as unknown as TypedDocumentString<OrdersQuery, OrdersQueryVariables>;
+export const AddEmbroideryToLineDocument = new TypedDocumentString(`
+    mutation addEmbroideryToLine($lineId: String!, $dynamicAttributes: [DynamicLineAttributeSetInput!]!, $inCheckout: Boolean!) {
+  setLineAttributes(lineId: $lineId, dynamicAttributes: $dynamicAttributes) {
+    userErrors {
+      message
+      path
+    }
+    selection {
+      ...checkout @include(if: $inCheckout)
+      ...cart @skip(if: $inCheckout)
+    }
+  }
+}
+    fragment checkout on Selection {
+  lines {
+    ...line
+  }
+  grandTotal {
+    value
+    currency {
+      denominator
+      code
+    }
+  }
+  discounts {
+    ...voucher
+  }
+  externalGiftCardAvailable
+  checkout {
+    checkoutScript
+    separateBillingAddress {
+      ...address
+    }
+    shippingAddress {
+      ...address
+    }
+    paymentMethods {
+      id
+      uri
+      name
+      kind
+      initiateOnlySupported
+      handlingCost {
+        formattedValue
+        value
+      }
+    }
+    paymentMethod {
+      id
+    }
+    shippingMethods {
+      id
+      name
+      comment
+      price {
+        formattedValue
+        value
+      }
+    }
+    shippingMethod {
+      id
+      name
+      comment
+      price {
+        value
+        formattedValue
+      }
+    }
+    totals {
+      type
+      price {
+        value
+        formattedValue
+        currency {
+          code
+        }
+      }
+    }
+    widgets {
+      __typename
+      ... on IngridWidget {
+        snippet
+        deliveryOptionsAvailable
+      }
+      ... on KlarnaPaymentWidget {
+        client_token
+        authorizePayload
+      }
+    }
+  }
+}
+fragment address on Address {
+  country {
+    code
+    name
+  }
+  state {
+    code
+    name
+  }
+  address1
+  address2
+  city
+  zipCode
+  email
+  firstName
+  lastName
+  phoneNumber
+  companyName
+  vatNumber
+}
+fragment voucher on Voucher {
+  name
+  value {
+    value
+    formattedValue
+  }
+  ... on CodeVoucher {
+    code
+  }
+  giftCard {
+    lastFourDigits
+  }
+}
+fragment item on Item {
+  id
+  name
+  sizeLocalization {
+    name
+    countries {
+      code
+    }
+  }
+}
+fragment subscriptionPlan on SubscriptionPlan {
+  id
+  discount
+  interval {
+    value
+    type
+  }
+}
+fragment cart on Selection {
+  lines {
+    ...line
+  }
+  grandTotal {
+    currency {
+      prefix
+      suffix
+    }
+  }
+}
+fragment line on Line {
+  __typename
+  id
+  item {
+    ...item
+  }
+  quantity
+  lineValue {
+    formattedValue
+    value
+  }
+  subscriptionId
+  displayItem {
+    name
+    uri
+    media {
+      altText
+      source(sizeName: "mini") {
+        url
+      }
+    }
+    subscriptionPlans {
+      ...subscriptionPlan
+    }
+  }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
+  ... on BundleLine {
+    bundle {
+      type
+      sections {
+        quantity
+        lines {
+          id
+          lineValue {
+            formattedValue
+          }
+          name
+          quantity
+          item {
+            ...item
+          }
+        }
+      }
+    }
+  }
+}`) as unknown as TypedDocumentString<AddEmbroideryToLineMutation, AddEmbroideryToLineMutationVariables>;
+export const RemoveEmbroideryFromLineDocument = new TypedDocumentString(`
+    mutation removeEmbroideryFromLine($lineId: String!, $dynamicAttributes: [DynamicLineAttributeUnsetInput!]!, $inCheckout: Boolean!) {
+  unsetLineAttributes(lineId: $lineId, dynamicAttributes: $dynamicAttributes) {
+    userErrors {
+      message
+      path
+    }
+    selection {
+      ...checkout @include(if: $inCheckout)
+      ...cart @skip(if: $inCheckout)
+    }
+  }
+}
+    fragment checkout on Selection {
+  lines {
+    ...line
+  }
+  grandTotal {
+    value
+    currency {
+      denominator
+      code
+    }
+  }
+  discounts {
+    ...voucher
+  }
+  externalGiftCardAvailable
+  checkout {
+    checkoutScript
+    separateBillingAddress {
+      ...address
+    }
+    shippingAddress {
+      ...address
+    }
+    paymentMethods {
+      id
+      uri
+      name
+      kind
+      initiateOnlySupported
+      handlingCost {
+        formattedValue
+        value
+      }
+    }
+    paymentMethod {
+      id
+    }
+    shippingMethods {
+      id
+      name
+      comment
+      price {
+        formattedValue
+        value
+      }
+    }
+    shippingMethod {
+      id
+      name
+      comment
+      price {
+        value
+        formattedValue
+      }
+    }
+    totals {
+      type
+      price {
+        value
+        formattedValue
+        currency {
+          code
+        }
+      }
+    }
+    widgets {
+      __typename
+      ... on IngridWidget {
+        snippet
+        deliveryOptionsAvailable
+      }
+      ... on KlarnaPaymentWidget {
+        client_token
+        authorizePayload
+      }
+    }
+  }
+}
+fragment address on Address {
+  country {
+    code
+    name
+  }
+  state {
+    code
+    name
+  }
+  address1
+  address2
+  city
+  zipCode
+  email
+  firstName
+  lastName
+  phoneNumber
+  companyName
+  vatNumber
+}
+fragment voucher on Voucher {
+  name
+  value {
+    value
+    formattedValue
+  }
+  ... on CodeVoucher {
+    code
+  }
+  giftCard {
+    lastFourDigits
+  }
+}
+fragment item on Item {
+  id
+  name
+  sizeLocalization {
+    name
+    countries {
+      code
+    }
+  }
+}
+fragment subscriptionPlan on SubscriptionPlan {
+  id
+  discount
+  interval {
+    value
+    type
+  }
+}
+fragment cart on Selection {
+  lines {
+    ...line
+  }
+  grandTotal {
+    currency {
+      prefix
+      suffix
+    }
+  }
+}
+fragment line on Line {
+  __typename
+  id
+  item {
+    ...item
+  }
+  quantity
+  lineValue {
+    formattedValue
+    value
+  }
+  subscriptionId
+  displayItem {
+    name
+    uri
+    media {
+      altText
+      source(sizeName: "mini") {
+        url
+      }
+    }
+    subscriptionPlans {
+      ...subscriptionPlan
+    }
+  }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
+  ... on BundleLine {
+    bundle {
+      type
+      sections {
+        quantity
+        lines {
+          id
+          lineValue {
+            formattedValue
+          }
+          name
+          quantity
+          item {
+            ...item
+          }
+        }
+      }
+    }
+  }
+}`) as unknown as TypedDocumentString<RemoveEmbroideryFromLineMutation, RemoveEmbroideryFromLineMutationVariables>;
 export const LoginDocument = new TypedDocumentString(`
     mutation login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -8279,6 +10654,19 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
   ... on BundleLine {
     bundle {
       type
@@ -8402,6 +10790,19 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
   ... on BundleLine {
     bundle {
       type
@@ -8520,6 +10921,19 @@ fragment line on Line {
     }
     subscriptionPlans {
       ...subscriptionPlan
+    }
+  }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
     }
   }
   ... on BundleLine {
@@ -8642,6 +11056,19 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
   ... on BundleLine {
     bundle {
       type
@@ -8755,6 +11182,19 @@ fragment line on Line {
     }
     subscriptionPlans {
       ...subscriptionPlan
+    }
+  }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
     }
   }
   ... on BundleLine {

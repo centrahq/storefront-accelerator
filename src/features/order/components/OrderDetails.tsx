@@ -5,6 +5,7 @@ import { PlainAddress } from '@/components/PlainAddress';
 import { TotalRow } from '@/components/TotalRow';
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { getTranslation } from '@/features/i18n/useTranslation/server';
+import { getEmbroideryText } from '@/features/product-customization/embroidery/utils';
 import { getSession } from '@/lib/centra/sessionCookie';
 import { getItemName } from '@/lib/utils/product';
 import { BundleType, OrderFragment, SelectionTotalRowType } from '@gql/graphql';
@@ -57,6 +58,7 @@ export const OrderDetails = async ({ order }: { order: OrderFragment }) => {
           .filter((line) => !!line)
           .map((line) => {
             const subscription = line.displayItem.subscriptionPlans.find((plan) => plan.id === line.subscriptionId);
+            const embroideryText = getEmbroideryText(line.attributes);
 
             return (
               <li key={line.id} className="bg-mono-50 flex gap-5 p-3">
@@ -90,6 +92,12 @@ export const OrderDetails = async ({ order }: { order: OrderFragment }) => {
                           <dt className="text-mono-500">{t('shop:cart.quantity')}:</dt>
                           <dd>{line.quantity}</dd>
                         </div>
+                        {embroideryText && (
+                          <div className="flex gap-2 text-sm">
+                            <dt className="text-mono-500">{t('shop:embroidery.label')}:</dt>
+                            <dd className="wrap-anywhere">{embroideryText}</dd>
+                          </div>
+                        )}
                       </dl>
                       {line.__typename === 'BundleLine' && line.bundle?.type === BundleType.Flexible && (
                         <ul className="list-inside list-disc text-sm">

@@ -57,6 +57,21 @@
   "common": {
     "close": "Close"
   },
+  "embroidery": {
+    "add-for-free": "Add embroidery for free",
+    "change": "Change embroidery",
+    "customize": "Customize",
+    "description": "Add embroidery to your item",
+    "edit": "Edit embroidery",
+    "edit-customization": "Edit your customization",
+    "error-add": "Failed to add embroidery",
+    "error-change": "Failed to change embroidery",
+    "free": "Free",
+    "label": "Embroidery",
+    "remove": "Remove embroidery",
+    "text-label": "Embroidery text",
+    "text-with-value": "Embroidery text: {{text}}"
+  },
   "filters": {
     "brand": "Brand",
     "clear-filters": "Clear filters",

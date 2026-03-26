@@ -35,6 +35,19 @@ fragment line on Line {
       ...subscriptionPlan
     }
   }
+  attributes {
+    __typename
+    type {
+      name
+    }
+    elements {
+      __typename
+      key
+      ... on AttributeStringElement {
+        value
+      }
+    }
+  }
   ... on BundleLine {
     bundle {
       type

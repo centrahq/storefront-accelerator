@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/AdyenExpressCheckout/AdyenExpressCheckout';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
+import { useEmbroidery } from '@/features/product-customization/embroidery/components/EmbroideryContext';
 import { parseAsBundledItems } from '@/features/product-details/bundle/components/bundledItemsSearchParam';
 
 import { useAddFlexibleBundleToCart, useAddToCart } from '../mutations';
@@ -43,6 +44,7 @@ export const AddToCartButton = ({
   const { setIsCartOpen } = useContext(CartContext);
   const currentItem = items.find((item) => item.id === itemId);
   const isCurrentItemAvailable = currentItem?.isAvailable ?? false;
+  const { embroideryText } = useEmbroidery();
 
   const addFlexibleBundle = () => {
     const sections = Object.entries(bundledItems).map(([sectionId, item]) => ({
@@ -60,7 +62,12 @@ export const AddToCartButton = ({
     }
 
     addFlexibleBundleToCartMutation.mutate(
-      { item: itemId, sections, subscriptionPlan: selectedPlan !== '' ? Number(selectedPlan) : undefined },
+      {
+        item: itemId,
+        sections,
+        subscriptionPlan: selectedPlan !== '' ? Number(selectedPlan) : undefined,
+        customizations: { embroideryText },
+      },
       {
         onSuccess: () => {
           setIsCartOpen(true);
@@ -81,7 +88,11 @@ export const AddToCartButton = ({
     }
 
     addToCartMutation.mutate(
-      { item: itemId, subscriptionPlan: selectedPlan !== '' ? Number(selectedPlan) : undefined },
+      {
+        item: itemId,
+        subscriptionPlan: selectedPlan !== '' ? Number(selectedPlan) : undefined,
+        customizations: { embroideryText },
+      },
       {
         onSuccess: () => {
           setIsCartOpen(true);

@@ -57,6 +57,21 @@
   "common": {
     "close": "Stäng"
   },
+  "embroidery": {
+    "add-for-free": "Lägg till broderi gratis",
+    "change": "Ändra broderi",
+    "customize": "Anpassa",
+    "description": "Lägg till broderi på din produkt",
+    "edit": "Redigera broderi",
+    "edit-customization": "Redigera din anpassning",
+    "error-add": "Kunde inte lägga till broderi",
+    "error-change": "Kunde inte ändra broderi",
+    "free": "Gratis",
+    "label": "Broderi",
+    "remove": "Ta bort broderi",
+    "text-label": "Broderitext",
+    "text-with-value": "Broderitext: {{text}}"
+  },
   "filters": {
     "brand": "Märke",
     "clear-filters": "Rensa filter",

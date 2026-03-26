@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { useLocale } from '@/features/i18n/routing/useLocale';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
+import { EmbroideryLine } from '@/features/product-customization/embroidery/components/EmbroideryLine';
 import { useDebouncedState } from '@/hooks/useDebouncedState';
 import { getItemName } from '@/lib/utils/product';
 import { BundleType, LineFragment } from '@gql/graphql';
@@ -106,6 +107,7 @@ const CheckoutItem = ({ line }: { line: LineFragment }) => {
             )}
           </div>
         </div>
+        <EmbroideryLine line={line} inCheckout />
         <div className="flex items-end gap-3">
           <div className="border-mono-300 bg-mono-0 text-mono-600 flex items-center gap-5 border px-2">
             <button type="button" className="font-bold" onClick={() => setQuantity(Math.max(0, quantity - 1))}>
