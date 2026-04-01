@@ -8,16 +8,15 @@ import {
   SubmitData,
 } from '@adyen/adyen-web';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
-import dynamic from 'next/dynamic';
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 
 import { selectionQuery } from '@/features/cart/queries';
 import { updateLine } from '@/features/cart/service';
 import { ExpressCheckoutWidgetType } from '@gql/graphql';
 
-import { type AdyenPaymentConfigResponse, expressCheckoutWidgetsQuery } from '../../../queries';
+import { expressCheckoutWidgetsQuery } from '../../../queries';
 import { submitPaymentInstructions } from '../../../service';
-import { AdyenExpressCheckoutErrorBoundary } from '../AdyenExpressCheckoutErrorBoundary';
+import { ExpressCheckoutErrorBoundary } from '../ExpressCheckoutErrorBoundary';
 import { AdyenAddress } from '../types';
 import { getApplePay } from './applePay';
 import { debugLog } from './debug';
@@ -60,7 +59,7 @@ export const AdyenExpressCheckoutInner = ({
   }, [itemId]);
 
   const { data: paymentConfig } = useQuery(
-    expressCheckoutWidgetsQuery<AdyenPaymentConfigResponse>({
+    expressCheckoutWidgetsQuery({
       type: ExpressCheckoutWidgetType.ExpressCheckoutAdyen,
       returnUrl: `${window.location.origin}/success`,
       amount: cartTotalInMinor,
@@ -308,16 +307,12 @@ export const AdyenExpressCheckoutInner = ({
   );
 };
 
-const AdyenExpressCheckoutDynamic = dynamic(async () => Promise.resolve(AdyenExpressCheckoutInner), {
-  ssr: false,
-});
-
 export const AdyenExpressCheckout = (props: Props) => {
   return (
     <Suspense fallback={null}>
-      <AdyenExpressCheckoutErrorBoundary>
-        <AdyenExpressCheckoutDynamic {...props} />
-      </AdyenExpressCheckoutErrorBoundary>
+      <ExpressCheckoutErrorBoundary>
+        <AdyenExpressCheckoutInner {...props} />
+      </ExpressCheckoutErrorBoundary>
     </Suspense>
   );
 };

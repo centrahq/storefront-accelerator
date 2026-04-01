@@ -21,8 +21,13 @@ interface LineItem {
   price: string;
 }
 
-interface ExpressCheckoutWidgetsParams {
-  type: ExpressCheckoutWidgetType;
+type WidgetTypeResponseMap = {
+  [ExpressCheckoutWidgetType.ExpressCheckoutAdyen]: AdyenPaymentConfigResponse;
+  [ExpressCheckoutWidgetType.ExpressCheckoutStripePaymentIntents]: StripePaymentConfigResponse;
+};
+
+interface ExpressCheckoutWidgetsParams<K extends ExpressCheckoutWidgetType> {
+  type: K;
   returnUrl: string;
   amount: number;
   lineItems: LineItem[];
@@ -75,17 +80,17 @@ export interface StripePaymentConfigResponse {
   stripeParameters?: string | StripeParameters;
 }
 
-export function expressCheckoutWidgetsQuery<T>({
+export function expressCheckoutWidgetsQuery<K extends ExpressCheckoutWidgetType>({
   type,
   returnUrl,
   amount,
   lineItems,
   language,
   market,
-}: ExpressCheckoutWidgetsParams) {
+}: ExpressCheckoutWidgetsParams<K>) {
   return queryOptions({
     queryKey: ['payment-configuration', language, market, { amount, lineItems, returnUrl, type }] as const,
-    queryFn: async (): Promise<T | null> => {
+    queryFn: async (): Promise<WidgetTypeResponseMap[K] | null> => {
       const data: ExpressCheckoutWidgetsQuery = await getExpressCheckoutWidgets({
         plugins: [
           {
@@ -101,7 +106,7 @@ export function expressCheckoutWidgetsQuery<T>({
       const widget = data.expressCheckoutWidgets.list
         ?.flatMap((list) => list.widgets)
         .find((entry) => entry.name === type);
-      return widget?.contents ? (JSON.parse(widget.contents) as T) : null;
+      return widget?.contents ? (JSON.parse(widget.contents) as WidgetTypeResponseMap[K]) : null;
     },
   });
 }
