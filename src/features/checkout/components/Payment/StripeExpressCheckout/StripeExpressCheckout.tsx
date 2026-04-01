@@ -302,9 +302,7 @@ const StripeExpressCheckoutElement = ({
       }
 
       if (paymentIntent?.status === 'succeeded') {
-        setTimeout(() => {
-          window.location.assign(config.returnUrl);
-        }, 5000);
+        window.location.assign(config.returnUrl);
       }
     } catch (err) {
       debugLog('confirm:exception', { error: err });
