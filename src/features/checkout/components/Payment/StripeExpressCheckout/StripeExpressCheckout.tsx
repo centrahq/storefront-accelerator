@@ -492,7 +492,7 @@ const StripeExpressCheckoutInner = ({
 
   return (
     <Elements
-      key={publishableKey}
+      key={`${publishableKey ?? ''}-${elementsCurrency ?? ''}`}
       stripe={stripePromise}
       options={{
         amount: elementsAmountInMinor,

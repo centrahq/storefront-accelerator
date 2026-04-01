@@ -27,7 +27,7 @@ const StripeExpressCheckout = dynamic(
 );
 
 export const ExpressCheckout = (props: Props) => {
-  if (provider === 'adyen') return <AdyenExpressCheckout {...props} />;
-  if (provider === 'stripe') return <StripeExpressCheckout {...props} />;
+  if (provider === 'adyen') return <AdyenExpressCheckout key={props.market} {...props} />;
+  if (provider === 'stripe') return <StripeExpressCheckout key={props.market} {...props} />;
   return null;
 };
