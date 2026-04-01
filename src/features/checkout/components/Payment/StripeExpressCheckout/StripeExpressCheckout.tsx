@@ -331,7 +331,7 @@ const StripeExpressCheckoutElement = ({
             city: address.city ?? '',
             country: address.country,
             zipCode: address.postal_code ?? '',
-            state: address.state ?? '',
+            state: address.state,
           },
           paymentReturnPage: `${window.location.origin}/success`,
           paymentFailedPage: `${window.location.origin}/failed`,
