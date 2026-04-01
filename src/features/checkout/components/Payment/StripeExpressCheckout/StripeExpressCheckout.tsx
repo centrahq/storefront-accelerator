@@ -5,8 +5,10 @@ import {
   BillingDetails,
   loadStripe,
   PaymentIntent,
+  PaymentIntentResult,
   ShippingAddress,
   ShippingRate,
+  StripeError,
   StripeExpressCheckoutElementClickEvent,
   StripeExpressCheckoutElementConfirmEvent,
   StripeExpressCheckoutElementShippingAddressChangeEvent,
@@ -275,7 +277,7 @@ const StripeExpressCheckoutElement = ({
         return;
       }
 
-      const result = await stripe.confirmPayment({
+      const result: PaymentIntentResult | { error?: StripeError } = await stripe.confirmPayment({
         clientSecret: config.clientSecret,
         confirmParams: { return_url: config.returnUrl },
         elements,
@@ -300,7 +302,9 @@ const StripeExpressCheckoutElement = ({
       }
 
       if (paymentIntent?.status === 'succeeded') {
-        window.location.assign(config.returnUrl);
+        setTimeout(() => {
+          window.location.assign(config.returnUrl);
+        }, 5000);
       }
     } catch (err) {
       debugLog('confirm:exception', { error: err });
@@ -328,9 +332,9 @@ const StripeExpressCheckoutElement = ({
         const data = await submitPaymentInstructions({
           shippingAddress: {
             address1: '',
-            city: address.city ?? '',
+            city: address.city,
             country: address.country,
-            zipCode: address.postal_code ?? '',
+            zipCode: address.postal_code,
             state: address.state,
           },
           paymentReturnPage: `${window.location.origin}/success`,
@@ -565,29 +569,29 @@ const StripeExpressCheckoutInner = ({
 
         const shippingAddress: AddressInput = shippingAddressSource
           ? {
-              address1: shippingAddressSource.address1,
-              address2: shippingAddressSource.address2,
-              city: shippingAddressSource.city,
-              country: shippingAddressSource.country,
-              email: shippingAddressSource.email ?? billingAddressSource?.email,
-              firstName: shippingAddressSource.firstName,
-              lastName: shippingAddressSource.lastName,
-              phoneNumber: shippingAddressSource.phoneNumber ?? billingAddressSource?.phoneNumber,
-              state: shippingAddressSource.state,
-              zipCode: shippingAddressSource.zipCode,
-            }
+            address1: shippingAddressSource.address1,
+            address2: shippingAddressSource.address2,
+            city: shippingAddressSource.city,
+            country: shippingAddressSource.country,
+            email: shippingAddressSource.email ?? billingAddressSource?.email,
+            firstName: shippingAddressSource.firstName,
+            lastName: shippingAddressSource.lastName,
+            phoneNumber: shippingAddressSource.phoneNumber ?? billingAddressSource?.phoneNumber,
+            state: shippingAddressSource.state,
+            zipCode: shippingAddressSource.zipCode,
+          }
           : {
-              address1: billingAddressSource?.address1,
-              address2: billingAddressSource?.address2,
-              city: billingAddressSource?.city,
-              country: billingAddressSource?.country ?? '',
-              email: billingAddressSource?.email,
-              firstName: billingAddressSource?.firstName,
-              lastName: billingAddressSource?.lastName,
-              phoneNumber: billingAddressSource?.phoneNumber,
-              state: billingAddressSource?.state,
-              zipCode: billingAddressSource?.zipCode,
-            };
+            address1: billingAddressSource?.address1,
+            address2: billingAddressSource?.address2,
+            city: billingAddressSource?.city,
+            country: billingAddressSource?.country ?? '',
+            email: billingAddressSource?.email,
+            firstName: billingAddressSource?.firstName,
+            lastName: billingAddressSource?.lastName,
+            phoneNumber: billingAddressSource?.phoneNumber,
+            state: billingAddressSource?.state,
+            zipCode: billingAddressSource?.zipCode,
+          };
 
         const separateBillingAddress: AddressInput | undefined = billingAddressSource;
 
@@ -602,7 +606,7 @@ const StripeExpressCheckoutInner = ({
           paymentInitiateOnly: true,
           shippingAddress,
           separateBillingAddress,
-          paymentReturnPage: `${window.location.origin}/confirmation`,
+          paymentReturnPage: `${window.location.origin}/success`,
           paymentFailedPage: `${window.location.origin}/failed`,
         });
 
@@ -622,7 +626,7 @@ const StripeExpressCheckoutInner = ({
           return null;
         }
 
-        const returnUrl = stripeConfig.stripeParameters.returnUrl ?? `${window.location.origin}/confirmation`;
+        const returnUrl = stripeConfig.stripeParameters.returnUrl ?? `${window.location.origin}/success`;
         debugLog('requirePaymentIntent:success', {
           hasClientSecret: isNonEmptyString(stripeConfig.clientSecret),
           hasPublishableKey: isNonEmptyString(stripeConfig.publishableKey),
