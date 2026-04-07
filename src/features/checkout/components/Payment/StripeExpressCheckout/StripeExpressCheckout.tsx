@@ -350,7 +350,7 @@ const StripeExpressCheckoutInner = ({
   const stripePromise = useMemo(
     () =>
       isNonEmptyString(publishableKey)
-        ? loadStripe(publishableKey, { developerTools: { assistant: { enabled: true } } })
+        ? loadStripe(publishableKey)
         : null,
     [publishableKey],
   );
