@@ -14,13 +14,14 @@ i18next
   .use(LanguageDetector)
   .use(
     resourcesToBackend((language: string, namespace: string) => {
-      if (namespace !== 'server') {
-        return import(`../locales/${language}/${namespace}.json`);
+      if (namespace === 'server') {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Server namespace can not be used on client side');
+        }
+        return Promise.reject(new Error('Server namespace is not available on client side'));
       }
 
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Server namespace can not be used on client side');
-      }
+      return import(`../locales/${language}/${namespace}.json`);
     }),
   )
   .init({
