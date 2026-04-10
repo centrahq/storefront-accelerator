@@ -1,10 +1,10 @@
 'use client';
 
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { loadStripe, PaymentIntent, Stripe } from '@stripe/stripe-js';
+import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -138,7 +138,7 @@ const StripeCheckoutForm = ({
   const { t } = useTranslation(['checkout']);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!stripe || !elements) {
@@ -147,16 +147,15 @@ const StripeCheckoutForm = ({
 
     setIsSubmitting(true);
 
-    const result = await stripe.confirmPayment({
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         return_url: returnUrl,
         payment_method_data: { billing_details: billingDetails },
         ...(shippingDetails ? { shipping: shippingDetails } : {}),
       },
+      redirect: 'if_required',
     });
-
-    const { error, paymentIntent } = result as (typeof result) & { paymentIntent?: PaymentIntent };
 
     if (error) {
       toast.error(error.message ?? t('checkout:something-went-wrong'), { id: 'stripe-payment-error' });
@@ -164,7 +163,7 @@ const StripeCheckoutForm = ({
       return;
     }
 
-    if (paymentIntent?.status === 'succeeded') {
+    if (paymentIntent.status === 'succeeded') {
       window.location.assign(returnUrl);
       return;
     }
@@ -173,7 +172,7 @@ const StripeCheckoutForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={(e) => { void handleSubmit(e); }} className="flex flex-col gap-6">
       <PaymentElement />
       <button
         type="submit"
