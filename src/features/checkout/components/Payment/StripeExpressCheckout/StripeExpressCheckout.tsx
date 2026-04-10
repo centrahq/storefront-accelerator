@@ -131,6 +131,12 @@ const StripeExpressCheckoutElement = ({
 
       if (paymentIntent?.status === 'succeeded') {
         window.location.assign(config.returnUrl);
+      } else if (paymentIntent?.status === 'requires_action' || paymentIntent?.status === 'processing') {
+        window.location.assign(config.returnUrl);
+      } else {
+        toast.error('Unable to confirm payment');
+        event.paymentFailed({ reason: 'fail' });
+        resetExpressCheckoutElement();
       }
     } catch (err) {
       debugLog('confirm:exception', { error: err });
