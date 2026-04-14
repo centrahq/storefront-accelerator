@@ -2,27 +2,23 @@ import { UserError } from '@/lib/centra/errors';
 import { centraFetch } from '@/lib/centra/storefront-api/fetchers/session';
 import { mutationMutex } from '@/lib/centra/storefront-api/mutationLock';
 import { graphql } from '@gql/gql';
-import { PaymentInstructionsInput } from '@gql/graphql';
+import { PaymentInstructionsInput, PaymentInstructionsMutation, WidgetEventMutation } from '@gql/graphql';
 
-export async function fetchCheckout() {
-  const response = await centraFetch(
-    graphql(`
-      query checkout {
-        selection {
-          ...checkout
-        }
-      }
-    `),
-  );
+type RawWidgetEventSelection = NonNullable<WidgetEventMutation['handleWidgetEvent']['selection']>;
+export type CheckoutData = Omit<RawWidgetEventSelection, 'checkout'> & {
+  checkout: NonNullable<RawWidgetEventSelection['checkout']>;
+};
 
-  if (!response.data.selection.checkout) {
-    throw new Error('Checkout not found');
-  }
+export type PaymentInstructionsData = Omit<PaymentInstructionsMutation['paymentInstructions'], 'selection'> & {
+  selection: CheckoutData;
+};
 
-  return {
-    ...response.data.selection,
-    checkout: response.data.selection.checkout,
-  };
+export function fetchCheckout(): Promise<CheckoutData> {
+  return sendWidgetData({ expressCheckout: false });
+}
+
+export function fetchExpressCheckout(): Promise<CheckoutData> {
+  return sendWidgetData({ expressCheckout: true });
 }
 
 export async function fetchCheckoutPaymentMethods() {
@@ -85,7 +81,9 @@ export async function setShippingMethod(id: number) {
   };
 }
 
-export async function submitPaymentInstructions(variables: Omit<PaymentInstructionsInput, 'termsAndConditions'>) {
+export async function submitPaymentInstructions(
+  variables: Omit<PaymentInstructionsInput, 'termsAndConditions'>,
+): Promise<PaymentInstructionsData> {
   const response = await mutationMutex.runExclusive(() =>
     centraFetch(
       graphql(`
@@ -133,7 +131,7 @@ export async function submitPaymentInstructions(variables: Omit<PaymentInstructi
   };
 }
 
-export async function sendWidgetData(payload: Record<string, unknown>) {
+export async function sendWidgetData(payload: Record<string, unknown>): Promise<CheckoutData> {
   const response = await mutationMutex.runExclusive(() =>
     centraFetch(
       graphql(`

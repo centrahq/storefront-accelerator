@@ -21,7 +21,7 @@ import { addToCart, updateLine } from '@/features/cart/service';
 import { AddressInput, ExpressCheckoutWidgetType, PaymentMethodKind } from '@gql/graphql';
 
 import { expressCheckoutWidgetsQuery } from '../../../queries';
-import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
+import { CheckoutData, fetchExpressCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
 import { ExpressCheckoutErrorBoundary } from '../ExpressCheckoutErrorBoundary';
 import { debugLog } from './debug';
 import {
@@ -63,11 +63,11 @@ const StripeExpressCheckoutElement = ({
   allowedShippingCountries: string[];
   initialLineItems: StripeLineItem[];
   onCancel: () => void;
-  onEnsureSelectionReady: () => Promise<void>;
+  onEnsureSelectionReady: () => Promise<CheckoutData>;
   onRequirePaymentIntent: (addresses: {
     billingAddress?: AddressInput;
     shippingAddress?: AddressInput;
-  }) => Promise<{ clientSecret: string; returnUrl: string } | null>;
+  }, checkoutData: CheckoutData) => Promise<{ clientSecret: string; returnUrl: string } | null>;
   shippingRates: ShippingRate[];
 }) => {
   const stripe = useStripe();
@@ -90,14 +90,14 @@ const StripeExpressCheckoutElement = ({
     }
 
     try {
-      await onEnsureSelectionReady();
+      const checkoutData = await onEnsureSelectionReady();
       const confirmAddresses = getConfirmAddresses(event);
       debugLog('confirm:started', {
         billingDetails: event.billingDetails,
         confirmAddresses,
         shippingAddress: event.shippingAddress,
       });
-      const config = await onRequirePaymentIntent(confirmAddresses);
+      const config = await onRequirePaymentIntent(confirmAddresses, checkoutData);
       if (!config) {
         debugLog('confirm:aborted:no-config', {});
         event.paymentFailed({ reason: 'fail' });
@@ -153,13 +153,13 @@ const StripeExpressCheckoutElement = ({
 
   const onShippingAddressChange = useCallback(
     async ({ resolve, reject, address }: StripeExpressCheckoutElementShippingAddressChangeEvent) => {
+      debugLog('shippingAddressChange:start', { address, allowedShippingCountries });
       try {
         if (allowedShippingCountries.length > 0 && !allowedShippingCountries.includes(address.country)) {
+          debugLog('shippingAddressChange:rejectedCountry', { country: address.country, allowedShippingCountries });
           reject();
           return;
         }
-
-        await onEnsureSelectionReady();
 
         const data = await submitPaymentInstructions({
           shippingAddress: {
@@ -194,7 +194,7 @@ const StripeExpressCheckoutElement = ({
         reject();
       }
     },
-    [allowedShippingCountries, elements, onEnsureSelectionReady],
+    [allowedShippingCountries, elements],
   );
 
   const onShippingRateChange = useCallback(
@@ -206,7 +206,7 @@ const StripeExpressCheckoutElement = ({
       try {
         debugLog('shippingRateChange:start', { shippingRate });
         await setShippingMethod(Number(shippingRate.id));
-        const checkoutData = await fetchCheckout();
+        const checkoutData = await fetchExpressCheckout();
         const lineItems = createStripeLineItems(checkoutData.checkout.totals);
         const nextShippingRates = mapShippingMethodsToStripeRatesFromCheckout(
           checkoutData.checkout.shippingMethods ?? [],
@@ -233,9 +233,8 @@ const StripeExpressCheckoutElement = ({
       paymentMethods: { googlePay: 'always' as const },
       phoneNumberRequired: true,
       shippingAddressRequired: true,
-      shippingRates,
     }),
-    [allowedShippingCountries, initialLineItems, shippingRates],
+    [allowedShippingCountries, initialLineItems],
   );
 
   const handleClick = useCallback(
@@ -244,13 +243,13 @@ const StripeExpressCheckoutElement = ({
       try {
         await onEnsureSelectionReady();
         debugLog('click:selectionReady', {});
-        event.resolve();
+        event.resolve({ shippingRates });
       } catch (error) {
         debugLog('click:rejected', { error });
         event.reject();
       }
     },
-    [onEnsureSelectionReady],
+    [onEnsureSelectionReady, shippingRates],
   );
 
   return (
@@ -361,10 +360,10 @@ const StripeExpressCheckoutInner = ({
     [publishableKey],
   );
 
-  const ensureSelectionReady = useCallback(async () => {
+  const ensureSelectionReady = useCallback(async (): Promise<CheckoutData> => {
     const currentItemId = itemRef.current;
+    const checkoutData = await fetchExpressCheckout();
     if (currentItemId) {
-      const checkoutData = await fetchCheckout();
       const hasProductInSelection = checkoutData.lines.some((line) => line?.item.id === currentItemId);
       if (!hasProductInSelection) {
         const addedSelection = await addToCart({ item: currentItemId });
@@ -374,18 +373,17 @@ const StripeExpressCheckoutInner = ({
           debugLog('ensureSelectionReady:addedItem', { itemId: currentItemId, lineId: addedItem.id });
         }
       }
-      return;
+      return checkoutData;
     }
 
-    const checkoutData = await fetchCheckout();
     if (checkoutData.lines.length === 0) {
       throw new Error('Selection is empty');
     }
+    return checkoutData;
   }, []);
 
   const requirePaymentIntent = useCallback(
-    async (addresses: { billingAddress?: AddressInput; shippingAddress?: AddressInput }) => {
-      const checkoutData = await fetchCheckout();
+    async (addresses: { billingAddress?: AddressInput; shippingAddress?: AddressInput }, checkoutData: CheckoutData) => {
       const stripePaymentMethod = checkoutData.checkout.paymentMethods.find(
         (m) => m.kind === PaymentMethodKind.StripePaymentIntents,
       );

@@ -2315,6 +2315,61 @@ export type PaginationInfo = {
   total: Scalars['Int']['output'];
 };
 
+export type PasswordCannotContainNewline = UserError & {
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordCannotStartOrEndWithWhitespace = UserError & {
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordIsLeaked = UserError & {
+  message: Scalars['String']['output'];
+  occurrences: Scalars['Int']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordIsTooLong = UserError & {
+  maxPasswordLength: Scalars['Int']['output'];
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordIsTooShort = UserError & {
+  message: Scalars['String']['output'];
+  minPasswordLength: Scalars['Int']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordNeedsChange = UserError & {
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+  resetI: Scalars['String']['output'];
+  resetId: Scalars['String']['output'];
+};
+
+export type PasswordRequiresLowercaseLetter = UserError & {
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordRequiresNumber = UserError & {
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordRequiresSymbol = UserError & {
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordRequiresUppercaseLetter = UserError & {
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
 export type PasswordUpdateInput = {
   confirmNewPassword?: InputMaybe<Scalars['String']['input']>;
   newPassword: Scalars['String']['input'];
@@ -3427,10 +3482,30 @@ export type PaymentResultMutationVariables = Exact<{
 
 export type PaymentResultMutation = { paymentResult:
     | { type: PaymentResultType, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { type: PaymentResultType, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3444,18 +3519,58 @@ export type ChangeLocaleMutationVariables = Exact<{
 
 export type ChangeLocaleMutation = { setCountryState:
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
@@ -3470,6 +3585,16 @@ export type AddFlexibleBundleToCartMutationVariables = Exact<{
 
 
 export type AddFlexibleBundleToCartMutation = { addFlexibleBundle: { userErrors: Array<
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     >, selection?: { lines: Array<
@@ -3494,6 +3619,16 @@ export type UpdateLineMutationVariables = Exact<{
 
 export type UpdateLineMutation = { updateLine:
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { lines: Array<
@@ -3501,6 +3636,16 @@ export type UpdateLineMutation = { updateLine:
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { currency: { code: string, prefix?: string | null, suffix?: string | null } } } | null }
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { lines: Array<
@@ -3508,6 +3653,16 @@ export type UpdateLineMutation = { updateLine:
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { currency: { code: string, prefix?: string | null, suffix?: string | null } } } | null }
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { lines: Array<
@@ -3515,6 +3670,16 @@ export type UpdateLineMutation = { updateLine:
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { currency: { code: string, prefix?: string | null, suffix?: string | null } } } | null }
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { lines: Array<
@@ -3531,6 +3696,16 @@ export type AddItemMutationVariables = Exact<{
 
 
 export type AddItemMutation = { addItem: { userErrors: Array<
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     >, selection?: { lines: Array<
@@ -3544,6 +3719,16 @@ export type ExpressCheckoutWidgetsQueryVariables = Exact<{
 
 
 export type ExpressCheckoutWidgetsQuery = { expressCheckoutWidgets: { list?: Array<{ name: string, widgets: Array<{ id?: string | null, name: string, contents?: string | null, error?: string | null }> }> | null, userErrors: Array<
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     > } };
@@ -3570,6 +3755,16 @@ export type SetAddressMutation = { setAddress:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
@@ -3588,6 +3783,16 @@ export type SetAddressMutation = { setAddress:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
@@ -3606,6 +3811,16 @@ export type SetAddressMutation = { setAddress:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
@@ -3624,6 +3839,16 @@ export type SetAddressMutation = { setAddress:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
@@ -3650,6 +3875,16 @@ export type AddVoucherMutation = { addVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3668,6 +3903,16 @@ export type AddVoucherMutation = { addVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3686,6 +3931,16 @@ export type AddVoucherMutation = { addVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3704,6 +3959,16 @@ export type AddVoucherMutation = { addVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3730,6 +3995,16 @@ export type RemoveVoucherMutation = { removeVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3748,6 +4023,16 @@ export type RemoveVoucherMutation = { removeVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3766,6 +4051,16 @@ export type RemoveVoucherMutation = { removeVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3784,6 +4079,16 @@ export type RemoveVoucherMutation = { removeVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3798,6 +4103,16 @@ export type UpdateLineCheckoutMutationVariables = Exact<{
 
 export type UpdateLineCheckoutMutation = { updateLine:
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
@@ -3816,6 +4131,16 @@ export type UpdateLineCheckoutMutation = { updateLine:
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null }
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
@@ -3834,6 +4159,16 @@ export type UpdateLineCheckoutMutation = { updateLine:
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null }
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
@@ -3852,6 +4187,16 @@ export type UpdateLineCheckoutMutation = { updateLine:
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null }
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
@@ -3893,6 +4238,16 @@ export type ApplyGiftCardMutation = { applyGiftCard:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3911,6 +4266,16 @@ export type ApplyGiftCardMutation = { applyGiftCard:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3929,6 +4294,16 @@ export type ApplyGiftCardMutation = { applyGiftCard:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3947,29 +4322,20 @@ export type ApplyGiftCardMutation = { applyGiftCard:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
    };
-
-export type CheckoutQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type CheckoutQuery = { selection: { externalGiftCardAvailable: boolean, lines: Array<
-      | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-      | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-     | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
-      | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-      | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-      | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-    >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-        | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
-        | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
-      >, widgets?: Array<
-        | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
-        | { __typename: 'KlarnaCheckoutWidget' }
-        | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
-      > | null } | null } };
 
 export type CheckoutPaymentMethodsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3997,6 +4363,16 @@ export type SetShippingMethodMutation = { setShippingMethod:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -4015,6 +4391,16 @@ export type SetShippingMethodMutation = { setShippingMethod:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -4033,6 +4419,16 @@ export type SetShippingMethodMutation = { setShippingMethod:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -4051,6 +4447,16 @@ export type SetShippingMethodMutation = { setShippingMethod:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -4082,6 +4488,16 @@ export type PaymentInstructionsMutation = { paymentInstructions: { action?:
           | { __typename: 'KlarnaCheckoutWidget' }
           | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
         > | null } | null }, userErrors: Array<
+      | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+      | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+      | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
     > } };
@@ -4107,6 +4523,16 @@ export type WidgetEventMutation = { handleWidgetEvent:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -4125,6 +4551,16 @@ export type WidgetEventMutation = { handleWidgetEvent:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -4143,6 +4579,16 @@ export type WidgetEventMutation = { handleWidgetEvent:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -4161,6 +4607,16 @@ export type WidgetEventMutation = { handleWidgetEvent:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -4180,18 +4636,58 @@ export type SetCountryAndLanguageMutationVariables = Exact<{
 
 export type SetCountryAndLanguageMutation = { setCountryState:
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
@@ -4218,6 +4714,16 @@ export type LoginMutationVariables = Exact<{
 
 
 export type LoginMutation = { login: { session: { country: { code: string }, countryState?: { code: string } | null, language?: { code: string } | null, market: { id: number }, pricelist: { id: number }, loggedIn?: { id: number } | null }, userErrors: Array<
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     > } };
@@ -4228,6 +4734,16 @@ export type RegisterMutationVariables = Exact<{
 
 
 export type RegisterMutation = { registerCustomer: { userErrors: Array<
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     > } };
@@ -4244,6 +4760,16 @@ export type ForgotPasswordMutationVariables = Exact<{
 
 
 export type ForgotPasswordMutation = { requestPasswordResetEmail: { userErrors: Array<
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     > } };
@@ -4257,6 +4783,16 @@ export type ResetPasswordMutationVariables = Exact<{
 
 
 export type ResetPasswordMutation = { resetPassword: { userErrors: Array<
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     > } };
@@ -4271,6 +4807,16 @@ export type ChangeSubscriptionContractAddressMutation = { changeSubscriptionCont
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
+      | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+      | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+      | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
     > } };
@@ -4285,6 +4831,16 @@ export type UpdateSubscriptionIntervalMutation = { updateSubscriptionInterval: {
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
+      | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+      | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+      | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
     > } };
@@ -4299,6 +4855,16 @@ export type UpdateSubscriptionQuantityMutation = { updateSubscriptionQuantity: {
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
+      | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+      | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+      | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
     > } };
@@ -4313,6 +4879,16 @@ export type UpdateSubscriptionStatusMutation = { updateSubscriptionStatus: { con
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
+      | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+      | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+      | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
     > } };
@@ -7171,186 +7747,6 @@ fragment line on Line {
     }
   }
 }`) as unknown as TypedDocumentString<ApplyGiftCardMutation, ApplyGiftCardMutationVariables>;
-export const CheckoutDocument = new TypedDocumentString(`
-    query checkout {
-  selection {
-    ...checkout
-  }
-}
-    fragment checkout on Selection {
-  lines {
-    ...line
-  }
-  grandTotal {
-    value
-    currency {
-      denominator
-      code
-    }
-  }
-  discounts {
-    ...voucher
-  }
-  externalGiftCardAvailable
-  checkout {
-    checkoutScript
-    separateBillingAddress {
-      ...address
-    }
-    shippingAddress {
-      ...address
-    }
-    paymentMethods {
-      id
-      uri
-      name
-      kind
-      initiateOnlySupported
-      handlingCost {
-        formattedValue
-        value
-      }
-    }
-    paymentMethod {
-      id
-    }
-    shippingMethods {
-      id
-      name
-      comment
-      price {
-        formattedValue
-        value
-      }
-    }
-    shippingMethod {
-      id
-      name
-      comment
-      price {
-        value
-        formattedValue
-      }
-    }
-    totals {
-      type
-      price {
-        value
-        formattedValue
-        currency {
-          code
-        }
-      }
-    }
-    widgets {
-      __typename
-      ... on IngridWidget {
-        snippet
-        deliveryOptionsAvailable
-      }
-      ... on KlarnaPaymentWidget {
-        client_token
-        authorizePayload
-      }
-    }
-  }
-}
-fragment address on Address {
-  country {
-    code
-    name
-  }
-  state {
-    code
-    name
-  }
-  address1
-  address2
-  city
-  zipCode
-  email
-  firstName
-  lastName
-  phoneNumber
-  companyName
-  vatNumber
-}
-fragment voucher on Voucher {
-  name
-  value {
-    value
-    formattedValue
-  }
-  ... on CodeVoucher {
-    code
-  }
-  giftCard {
-    lastFourDigits
-  }
-}
-fragment item on Item {
-  id
-  name
-  sizeLocalization {
-    name
-    countries {
-      code
-    }
-  }
-}
-fragment subscriptionPlan on SubscriptionPlan {
-  id
-  discount
-  interval {
-    value
-    type
-  }
-}
-fragment line on Line {
-  __typename
-  id
-  item {
-    ...item
-  }
-  quantity
-  lineValue {
-    formattedValue
-    value
-  }
-  subscriptionId
-  displayItem {
-    name
-    uri
-    media {
-      altText
-      source(sizeName: "mini") {
-        url
-      }
-    }
-    subscriptionPlans {
-      ...subscriptionPlan
-    }
-  }
-  ... on BundleLine {
-    bundle {
-      type
-      sections {
-        quantity
-        lines {
-          id
-          lineValue {
-            formattedValue
-          }
-          name
-          quantity
-          item {
-            ...item
-          }
-        }
-      }
-    }
-  }
-}`) as unknown as TypedDocumentString<CheckoutQuery, CheckoutQueryVariables>;
 export const CheckoutPaymentMethodsDocument = new TypedDocumentString(`
     query checkoutPaymentMethods {
   selection {

@@ -2054,6 +2054,61 @@ type PaginationInfo {
   total: Int!
 }
 
+type PasswordCannotContainNewline implements UserError {
+  message: String!
+  path: [String!]!
+}
+
+type PasswordCannotStartOrEndWithWhitespace implements UserError {
+  message: String!
+  path: [String!]!
+}
+
+type PasswordIsLeaked implements UserError {
+  message: String!
+  occurrences: Int!
+  path: [String!]!
+}
+
+type PasswordIsTooLong implements UserError {
+  maxPasswordLength: Int!
+  message: String!
+  path: [String!]!
+}
+
+type PasswordIsTooShort implements UserError {
+  message: String!
+  minPasswordLength: Int!
+  path: [String!]!
+}
+
+type PasswordNeedsChange implements UserError {
+  message: String!
+  path: [String!]!
+  resetI: String!
+  resetId: String!
+}
+
+type PasswordRequiresLowercaseLetter implements UserError {
+  message: String!
+  path: [String!]!
+}
+
+type PasswordRequiresNumber implements UserError {
+  message: String!
+  path: [String!]!
+}
+
+type PasswordRequiresSymbol implements UserError {
+  message: String!
+  path: [String!]!
+}
+
+type PasswordRequiresUppercaseLetter implements UserError {
+  message: String!
+  path: [String!]!
+}
+
 input PasswordUpdateInput {
   confirmNewPassword: String
   newPassword: String!
@@ -2614,7 +2669,7 @@ type SelectionDeliveryGroup {
   shippingPrice: MonetaryValue!
 }
 
-interface SelectionMutationPayload {
+interface SelectionMutationPayload implements Payload {
   selection(voucherMode: VOUCHER_MODE! = LINES): Selection
   userErrors: [UserError!]!
 }
@@ -2934,7 +2989,7 @@ type TriggerSelectionActionPayload implements Payload & SelectionMutationPayload
   userErrors: [UserError!]!
 }
 
-interface URILookupPayload {
+interface URILookupPayload implements Payload {
   found: UriLookupType!
   userErrors: [UserError!]!
 }
