@@ -43,7 +43,7 @@ export const AddToCartButton = ({
   const { setIsCartOpen } = useContext(CartContext);
   const currentItem = items.find((item) => item.id === itemId);
   const isCurrentItemAvailable = currentItem?.isAvailable ?? false;
-
+  const isSubscription = selectedPlan !== '';
   const addFlexibleBundle = () => {
     const sections = Object.entries(bundledItems).map(([sectionId, item]) => ({
       sectionId: Number(sectionId),
@@ -60,7 +60,7 @@ export const AddToCartButton = ({
     }
 
     addFlexibleBundleToCartMutation.mutate(
-      { item: itemId, sections, subscriptionPlan: selectedPlan !== '' ? Number(selectedPlan) : undefined },
+      { item: itemId, sections, subscriptionPlan: isSubscription ? Number(selectedPlan) : undefined },
       {
         onSuccess: () => {
           setIsCartOpen(true);
@@ -81,7 +81,7 @@ export const AddToCartButton = ({
     }
 
     addToCartMutation.mutate(
-      { item: itemId, subscriptionPlan: selectedPlan !== '' ? Number(selectedPlan) : undefined },
+      { item: itemId, subscriptionPlan: isSubscription ? Number(selectedPlan) : undefined },
       {
         onSuccess: () => {
           setIsCartOpen(true);
@@ -106,16 +106,17 @@ export const AddToCartButton = ({
           },
         )}
       >
-        {selectedPlan === '' ? t('shop:product.add-to-cart') : t('shop:product.subscriptions.subscribe')}
+        {!isSubscription ? t('shop:product.add-to-cart') : t('shop:product.subscriptions.subscribe')}
       </button>
-      <ExpressCheckout
+
+      {!isSubscription && <ExpressCheckout
         itemId={itemId}
         cartTotal={productPrice}
         disabled={!isCurrentItemAvailable}
         initialLineItems={[{ name: productName, price: productPrice.toFixed(2) }]}
         language={language}
         market={market}
-      />
+      />}
     </>
   );
 };
