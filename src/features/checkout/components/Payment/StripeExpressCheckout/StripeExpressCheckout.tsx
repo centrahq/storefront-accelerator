@@ -161,6 +161,8 @@ const StripeExpressCheckoutElement = ({
           return;
         }
 
+        await onEnsureSelectionReady();
+
         const data = await submitPaymentInstructions({
           shippingAddress: {
             address1: '',
@@ -194,7 +196,7 @@ const StripeExpressCheckoutElement = ({
         reject();
       }
     },
-    [allowedShippingCountries, elements],
+    [allowedShippingCountries, elements, onEnsureSelectionReady],
   );
 
   const onShippingRateChange = useCallback(
@@ -237,26 +239,10 @@ const StripeExpressCheckoutElement = ({
     [allowedShippingCountries, initialLineItems],
   );
 
-  const handleClick = useCallback(
-    async (event: StripeExpressCheckoutElementClickEvent) => {
-      debugLog('click', { expressPaymentType: event.expressPaymentType });
-      try {
-        await onEnsureSelectionReady();
-        debugLog('click:selectionReady', {});
-        event.resolve({ shippingRates });
-      } catch (error) {
-        debugLog('click:rejected', { error });
-        event.reject();
-      }
-    },
-    [onEnsureSelectionReady, shippingRates],
-  );
-
   return (
     <ExpressCheckoutElement
       key={elementKey}
       options={expressCheckoutOptions}
-      onClick={handleClick}
       onCancel={handleCancel}
       onConfirm={handleConfirm}
       onReady={(event) => {

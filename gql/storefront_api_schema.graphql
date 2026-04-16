@@ -11,6 +11,8 @@ directive @defer(
   label: String
 ) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
+directive @feature(flag: String!) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INTERFACE | OBJECT
+
 directive @maxLimit(limit: Int!, scope: SCOPE!) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INTERFACE | OBJECT
 
 directive @nolock on FIELD_DEFINITION
@@ -280,7 +282,6 @@ type AutoVoucher implements Voucher {
 
 input BackInStockSubscribeInput {
   email: String
-  item: String!
   languageCode: String
   shipTo: CountryStateInput!
 }
@@ -444,7 +445,6 @@ type BundleSection {
 }
 
 input BundleSectionInput {
-  item: String!
   sectionId: Int!
 }
 
@@ -2134,7 +2134,6 @@ input PaymentInstructionsInput {
   affiliate: Int
   checkoutPageOrigin: String
   clientDetails: ClientDetails
-  comment: String
   consents: [ConsentInput!]
   customerClubSpecificFields: CustomerClubSpecificFields
   express: Boolean! = false

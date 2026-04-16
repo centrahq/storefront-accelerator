@@ -284,7 +284,6 @@ export type AutoVoucher = Voucher & {
 
 export type BackInStockSubscribeInput = {
   email?: InputMaybe<Scalars['String']['input']>;
-  item: Scalars['String']['input'];
   languageCode?: InputMaybe<Scalars['String']['input']>;
   shipTo: CountryStateInput;
 };
@@ -480,7 +479,6 @@ export type BundleSection = {
 };
 
 export type BundleSectionInput = {
-  item: Scalars['String']['input'];
   sectionId: Scalars['Int']['input'];
 };
 
@@ -2395,7 +2393,6 @@ export type PaymentInstructionsInput = {
   affiliate?: InputMaybe<Scalars['Int']['input']>;
   checkoutPageOrigin?: InputMaybe<Scalars['String']['input']>;
   clientDetails?: InputMaybe<ClientDetails>;
-  comment?: InputMaybe<Scalars['String']['input']>;
   consents?: InputMaybe<Array<ConsentInput>>;
   customerClubSpecificFields?: InputMaybe<CustomerClubSpecificFields>;
   express?: Scalars['Boolean']['input'];
