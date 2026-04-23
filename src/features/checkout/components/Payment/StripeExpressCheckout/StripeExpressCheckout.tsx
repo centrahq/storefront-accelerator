@@ -7,8 +7,8 @@ import {
   PaymentIntentResult,
   ShippingRate,
   StripeError,
-  StripeExpressCheckoutElementClickEvent,
   StripeExpressCheckoutElementConfirmEvent,
+  StripeExpressCheckoutElementOptions,
   StripeExpressCheckoutElementShippingAddressChangeEvent,
   StripeExpressCheckoutElementShippingRateChangeEvent,
 } from '@stripe/stripe-js';
@@ -226,7 +226,7 @@ const StripeExpressCheckoutElement = ({
     [elements],
   );
 
-  const expressCheckoutOptions = useMemo(
+  const expressCheckoutOptions: StripeExpressCheckoutElementOptions = useMemo(
     () => ({
       allowedShippingCountries,
       billingAddressRequired: true,
@@ -235,8 +235,9 @@ const StripeExpressCheckoutElement = ({
       paymentMethods: { googlePay: 'always' as const },
       phoneNumberRequired: true,
       shippingAddressRequired: true,
+      shippingRates
     }),
-    [allowedShippingCountries, initialLineItems],
+    [allowedShippingCountries, initialLineItems, shippingRates],
   );
 
   return (

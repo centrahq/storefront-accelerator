@@ -109,6 +109,14 @@ export const createStripeLineItems = (
       name: 'Subtotal',
     },
     {
+      amount: Math.round(getCheckoutTotalValue(totals, SelectionTotalRowType.Discount) * 100),
+      name: 'Discount',
+    },
+    {
+      amount: Math.round(getCheckoutTotalValue(totals, SelectionTotalRowType.IncludingTaxTotal) * 100),
+      name: 'Tax',
+    },
+    {
       amount: Math.round(getCheckoutTotalValue(totals, SelectionTotalRowType.Shipping) * 100),
       name: 'Shipping',
     },
