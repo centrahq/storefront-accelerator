@@ -4,7 +4,9 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
+import { PaymentMethodKind } from '@gql/graphql';
 
+import { paymentConfig } from '../config/payment';
 import { checkoutQuery } from '../queries';
 
 export const DeliveryInfo = () => {
@@ -18,6 +20,13 @@ export const DeliveryInfo = () => {
   );
 
   if (hasIngridWidget || !shippingMethod) {
+    return null;
+  }
+
+  if (
+    paymentConfig.stripeUseAddressElement &&
+    paymentConfig.paymentMethod === PaymentMethodKind.StripePaymentIntents
+  ) {
     return null;
   }
 
