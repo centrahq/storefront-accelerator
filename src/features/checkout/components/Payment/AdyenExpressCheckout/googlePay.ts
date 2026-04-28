@@ -28,7 +28,6 @@ const createGooglePayLineItems = (
   lines: CheckoutData['lines'],
 ): google.payments.api.DisplayItem[] => {
   const itemsTotal = totals.find((t) => t.type === SelectionTotalRowType.ItemsSubtotal)?.price.value ?? 0;
-  const tax = totals.find((t) => t.type === SelectionTotalRowType.IncludingTaxTotal)?.price.value ?? 0;
   const shipping = totals.find((t) => t.type === SelectionTotalRowType.Shipping)?.price.value ?? 0;
   const discount = totals.find((t) => t.type === SelectionTotalRowType.Discount)?.price.value ?? 0;
 
@@ -47,11 +46,6 @@ const createGooglePayLineItems = (
       label: 'Discount',
       price: discount.toFixed(2),
       type: 'SUBTOTAL' as const,
-    },
-    {
-      label: 'Tax',
-      price: tax.toFixed(2),
-      type: 'TAX' as const,
     },
     {
       label: 'Shipping',
