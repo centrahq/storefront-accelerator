@@ -129,15 +129,45 @@ const StripeExpressCheckoutElement = ({
         return;
       }
 
-      if (paymentIntent?.status === 'succeeded') {
+      if (
+        paymentIntent?.status === 'succeeded' ||
+        paymentIntent?.status === 'processing' ||
+        paymentIntent?.status === 'requires_capture'
+      ) {
         window.location.assign(config.returnUrl);
-      } else if (paymentIntent?.status === 'requires_action' || paymentIntent?.status === 'processing') {
-        window.location.assign(config.returnUrl);
-      } else {
+        return;
+      }
+
+      if (paymentIntent?.status === 'requires_action') {
+        const nextActionResult = await stripe.handleNextAction({ clientSecret: config.clientSecret });
+        debugLog('confirm:handleNextAction:result', {
+          errorCode: nextActionResult.error?.code,
+          errorMessage: nextActionResult.error?.message,
+          paymentIntentStatus: nextActionResult.paymentIntent?.status,
+        });
+
+        if (nextActionResult.error) {
+          toast.error(nextActionResult.error.message ?? 'Unable to confirm payment');
+          event.paymentFailed({ reason: 'fail' });
+          resetExpressCheckoutElement();
+          return;
+        }
+
+        const nextStatus = nextActionResult.paymentIntent?.status;
+        if (nextStatus === 'succeeded' || nextStatus === 'processing' || nextStatus === 'requires_capture') {
+          window.location.assign(config.returnUrl);
+          return;
+        }
+
         toast.error('Unable to confirm payment');
         event.paymentFailed({ reason: 'fail' });
         resetExpressCheckoutElement();
+        return;
       }
+
+      toast.error('Unable to confirm payment');
+      event.paymentFailed({ reason: 'fail' });
+      resetExpressCheckoutElement();
     } catch (err) {
       debugLog('confirm:exception', { error: err });
       toast.error('Unable to confirm payment');

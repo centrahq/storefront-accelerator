@@ -125,10 +125,12 @@ const buildShippingDetails = (address: CheckoutAddress, fallbackName?: string): 
 };
 
 const StripeCheckoutForm = ({
+  clientSecret,
   returnUrl,
   billingDetails,
   shippingDetails,
 }: {
+  clientSecret: string;
   returnUrl: string;
   billingDetails: BillingDetails;
   shippingDetails: ShippingDetails | undefined;
@@ -163,11 +165,34 @@ const StripeCheckoutForm = ({
       return;
     }
 
-    if (paymentIntent.status === 'succeeded') {
+    if (
+      paymentIntent.status === 'succeeded' ||
+      paymentIntent.status === 'processing' ||
+      paymentIntent.status === 'requires_capture'
+    ) {
       window.location.assign(returnUrl);
       return;
     }
 
+    if (paymentIntent.status === 'requires_action') {
+      const nextActionResult = await stripe.handleNextAction({ clientSecret });
+
+      if (nextActionResult.error) {
+        toast.error(nextActionResult.error.message ?? t('checkout:something-went-wrong'), {
+          id: 'stripe-payment-error',
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      const nextStatus = nextActionResult.paymentIntent?.status;
+      if (nextStatus === 'succeeded' || nextStatus === 'processing' || nextStatus === 'requires_capture') {
+        window.location.assign(returnUrl);
+        return;
+      }
+    }
+
+    toast.error(t('checkout:something-went-wrong'), { id: 'stripe-payment-error' });
     setIsSubmitting(false);
   };
 
@@ -288,6 +313,7 @@ export const StripePaymentIntentsWidget = ({ id }: { id: number }) => {
   return (
     <Elements stripe={stripePromise} options={{ clientSecret: widgetState.config.clientSecret }}>
       <StripeCheckoutForm
+        clientSecret={widgetState.config.clientSecret}
         returnUrl={widgetState.config.returnUrl}
         billingDetails={billingDetails}
         shippingDetails={shippingDetails}
