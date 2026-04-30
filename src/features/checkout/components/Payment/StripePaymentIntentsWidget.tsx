@@ -1,6 +1,6 @@
 'use client';
 
-import { AddressElement, Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
@@ -12,7 +12,6 @@ import { useTranslation } from '@/features/i18n/useTranslation/client';
 import { UserError } from '@/lib/centra/errors';
 import { checkUnavailableItems } from '@/lib/utils/unavailableItems';
 
-import { paymentConfig } from '../../config/payment';
 import { usePaymentInstructions } from '../../mutations';
 import { checkoutQuery, StripeParameters } from '../../queries';
 import { showItemsRemovedToast } from '../../utils/showItemsRemovedToast';
@@ -199,7 +198,6 @@ const StripeCheckoutForm = ({
 
   return (
     <form onSubmit={(e) => { void handleSubmit(e); }} className="flex flex-col gap-6">
-      {paymentConfig.stripeUseAddressElement && <AddressElement options={{ mode: 'shipping' }} />}
       <PaymentElement />
       <button
         type="submit"

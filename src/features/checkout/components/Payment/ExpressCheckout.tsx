@@ -2,6 +2,10 @@
 
 import dynamic from 'next/dynamic';
 
+import { PaymentMethodKind } from '@gql/graphql';
+
+import { paymentConfig } from '../../config/payment';
+
 interface Props {
   itemId?: string;
   cartTotal: number;
@@ -14,8 +18,6 @@ interface Props {
   market: number;
 }
 
-const provider = process.env.NEXT_PUBLIC_EXPRESS_CHECKOUT_PROVIDER;
-
 const AdyenExpressCheckout = dynamic(
   () => import('./AdyenExpressCheckout/AdyenExpressCheckout').then((m) => ({ default: m.AdyenExpressCheckout })),
   { ssr: false },
@@ -27,7 +29,12 @@ const StripeExpressCheckout = dynamic(
 );
 
 export const ExpressCheckout = (props: Props) => {
-  if (provider === 'adyen') return <AdyenExpressCheckout key={props.market} {...props} />;
-  if (provider === 'stripe') return <StripeExpressCheckout key={props.market} {...props} />;
+  if (!paymentConfig.expressCheckout) return null;
+  if (paymentConfig.paymentMethod === PaymentMethodKind.StripePaymentIntents) {
+    return <StripeExpressCheckout key={props.market} {...props} />;
+  }
+  if (paymentConfig.paymentMethod === PaymentMethodKind.AdyenDropin) {
+    return <AdyenExpressCheckout key={props.market} {...props} />;
+  }
   return null;
 };

@@ -13,7 +13,6 @@ import { PaymentWidget } from './PaymentWidget';
 export const Payment = () => {
   const { t } = useTranslation(['checkout']);
   const { data } = useSuspenseQuery(checkoutQuery);
-
   const method = paymentConfig.paymentMethod
     ? data.checkout.paymentMethods.find((m) => m.kind === paymentConfig.paymentMethod)
     : undefined;
