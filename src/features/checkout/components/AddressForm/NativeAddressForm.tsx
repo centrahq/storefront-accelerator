@@ -10,12 +10,14 @@ import { SubmitEvent, useState } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
 import { UserError } from '@/lib/centra/errors';
 import { checkUnavailableItems, REMOVED_ITEMS_PARAM } from '@/lib/utils/unavailableItems';
 
 import { useSetAddress } from '../../mutations';
 import { checkoutQuery } from '../../queries';
+import { Widget } from '../Widget';
 
 interface AddressFormProps {
   countries: Array<{
@@ -52,7 +54,9 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
   const { data } = useSuspenseQuery(checkoutQuery);
   const router = useRouter();
 
-  const { shippingAddress, separateBillingAddress: billingAddress } = data.checkout;
+  const { widgets, shippingAddress, separateBillingAddress: billingAddress } = data.checkout;
+
+  const ingridWidget = widgets?.find((widget) => widget.__typename === 'IngridWidget');
 
   const [shippingCountry, setShippingCountry] = useState(shippingAddress.country?.code ?? '');
   const [billingCountry, setBillingCountry] = useState(billingAddress?.country?.code ?? '');
@@ -74,6 +78,28 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
 
   const shippingStates = countries.find((country) => country.code === shippingCountry)?.states ?? [];
   const billingStates = countries.find((country) => country.code === billingCountry)?.states ?? [];
+
+  if (ingridWidget?.deliveryOptionsAvailable) {
+    return (
+      <>
+        <Widget
+          html={ingridWidget.snippet}
+          onMount={() => {
+            window.CentraCheckout?.reInitiate('ingrid');
+          }}
+          cleanUp={() => {
+            window._sw?.((api) => api.destroy?.());
+          }}
+        />
+        <ShopLink
+          href="/checkout/payment"
+          className="bg-mono-900 text-mono-0 mt-5 flex w-full items-center justify-center px-6 py-4 text-xs font-bold uppercase"
+        >
+          {t('checkout:continue')}
+        </ShopLink>
+      </>
+    );
+  }
 
   const changeAddress = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
