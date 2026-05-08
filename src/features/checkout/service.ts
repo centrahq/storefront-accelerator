@@ -13,10 +13,15 @@ export type PaymentInstructionsData = Omit<PaymentInstructionsMutation['paymentI
   selection: CheckoutData;
 };
 
+// The widget event requires an `expressCheckout` flag so the backend returns
+// the correct payment methods (express-only vs full checkout).
+// `fetchCheckout` is the default for the standard checkout flow.
 export function fetchCheckout(): Promise<CheckoutData> {
   return sendWidgetData({ expressCheckout: false });
 }
 
+// Used by the Stripe/Adyen express checkout components (Apple Pay, Google Pay)
+// to fetch payment methods scoped to express wallets only.
 export function fetchExpressCheckout(): Promise<CheckoutData> {
   return sendWidgetData({ expressCheckout: true });
 }

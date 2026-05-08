@@ -23,7 +23,7 @@ export const CheckoutSummary = ({ language, market, summary }: Props) => {
   const hasSubscriptionItems = lines.some((line) => line?.subscriptionId != null);
   const cartTotal = checkout.totals.find((total) => total.type === 'GRAND_TOTAL')?.price.value ?? 0;
   const lineItems = lines
-    .filter((line): line is NonNullable<typeof line> => line !== null)
+    .filter((line) => line !== null)
     .map((line) => ({
       name: line.displayItem.name,
       price: line.lineValue.value.toFixed(2),
