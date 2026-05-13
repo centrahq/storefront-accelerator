@@ -3,10 +3,12 @@
 import { CloseButton, Dialog, DialogBackdrop, DialogPanel, DialogTitle, Field, Label, Select } from '@headlessui/react';
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
+import { useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 
+import { selectionQuery } from '@/features/cart/queries';
 import { useLocale } from '@/features/i18n/routing/useLocale';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
 import { REMOVED_ITEMS_PARAM } from '@/lib/utils/unavailableItems';
@@ -30,6 +32,7 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
   const languageName = languages.find((lang) => lang.code === language)?.name ?? '?';
   const { t } = useTranslation(['shop']);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { locale } = useParams<{ locale: string }>();
   const [selectedCountry, setSelectedCountry] = useState(country);
   const [selectedLanguage, setSelectedLanguage] = useState(language);
@@ -73,6 +76,9 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
       if (result.hasRemovedItems) {
         newUrl.searchParams.set(REMOVED_ITEMS_PARAM, 'true');
       }
+
+      // Clear the cached cart data so it's fetched fresh with the new country's currency and shipping methods.
+      queryClient.removeQueries({ queryKey: selectionQuery.queryKey });
 
       router.push(newUrl.href);
     });

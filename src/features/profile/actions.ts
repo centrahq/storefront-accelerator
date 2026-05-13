@@ -62,7 +62,7 @@ export async function login(_prevState: unknown, formData: FormData) {
       throw new UserError(response.data.login.userErrors, response.extensions.traceId);
     }
 
-    cookieStore.set(apiTokenCookie.name, response.extensions.token);
+    cookieStore.set({ ...apiTokenCookie, value: response.extensions.token });
     locale = serializeLocale({
       country: response.data.login.session.country.code,
       language: response.data.login.session.language?.code ?? DEFAULT_LANGUAGE.code,
