@@ -41,7 +41,7 @@ export async function changeLocale({ country, language }: { country: string; lan
       },
     );
 
-    cookieStore.set(apiTokenCookie.name, response.extensions.token);
+    cookieStore.set({ ...apiTokenCookie, value: response.extensions.token });
     const session = mapSession(response.data.setLanguage.session);
     cookieStore.set(await createSessionCookie(session));
 
