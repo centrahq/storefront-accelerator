@@ -2,8 +2,6 @@
 
 import dynamic from 'next/dynamic';
 
-import { PaymentMethodKind } from '@gql/graphql';
-
 import { paymentConfig } from '../../config/payment';
 
 interface Props {
@@ -29,11 +27,10 @@ const StripeExpressCheckout = dynamic(
 );
 
 export const ExpressCheckout = (props: Props) => {
-  if (!paymentConfig.expressCheckout) return null;
-  if (paymentConfig.paymentMethod === PaymentMethodKind.StripePaymentIntents) {
+  if (paymentConfig.expressCheckout === 'stripe') {
     return <StripeExpressCheckout key={props.market} {...props} />;
   }
-  if (paymentConfig.paymentMethod === PaymentMethodKind.AdyenDropin) {
+  if (paymentConfig.expressCheckout === 'adyen') {
     return <AdyenExpressCheckout key={props.market} {...props} />;
   }
   return null;

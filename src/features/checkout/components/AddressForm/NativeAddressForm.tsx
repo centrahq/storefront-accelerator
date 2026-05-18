@@ -6,7 +6,7 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
-import { SubmitEvent, useState } from 'react';
+import { SubmitEvent, useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -51,8 +51,11 @@ const addressFormSchema = z.object({
 export const NativeAddressForm = ({ countries }: AddressFormProps) => {
   const { t } = useTranslation(['checkout', 'shop']);
   const setAddressMutation = useSetAddress();
+  const backgroundRefresh = useSetAddress();
   const { data } = useSuspenseQuery(checkoutQuery);
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const { widgets, shippingAddress, separateBillingAddress: billingAddress } = data.checkout;
 
@@ -78,6 +81,31 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
 
   const shippingStates = countries.find((country) => country.code === shippingCountry)?.states ?? [];
   const billingStates = countries.find((country) => country.code === billingCountry)?.states ?? [];
+
+  const refreshCheckout = useCallback(
+    (newCountry: string) => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        if (!formRef.current) return;
+        const fd = new FormData(formRef.current);
+        const shipping = {
+          address1: (fd.get('shipping.address1') as string) || '',
+          firstName: (fd.get('shipping.firstName') as string) || '',
+          lastName: (fd.get('shipping.lastName') as string) || '',
+          country: newCountry,
+          state: (fd.get('shipping.state') as string) || undefined,
+          city: (fd.get('shipping.city') as string) || '',
+          email: (fd.get('shipping.email') as string) || '',
+          zipCode: (fd.get('shipping.zipCode') as string) || '',
+        };
+        backgroundRefresh.mutate(
+          { shippingAddress: shipping, billingAddress: shipping },
+          { onError: () => {} },
+        );
+      }, 500);
+    },
+    [backgroundRefresh],
+  );
 
   if (ingridWidget?.deliveryOptionsAvailable) {
     return (
@@ -169,7 +197,7 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
   };
 
   return (
-    <form onSubmit={changeAddress} className="flex flex-col gap-5">
+    <form ref={formRef} onSubmit={changeAddress} className="flex flex-col gap-5">
       <Fieldset>
         <div className="flex flex-col gap-5">
           <Legend className="text-xl font-medium">{t('checkout:shipping-address')}</Legend>
@@ -181,7 +209,10 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
                   name="shipping.country"
                   className="border-mono-300 bg-mono-0 block w-full appearance-none border px-6 py-3 text-sm"
                   value={shippingCountry}
-                  onChange={(evt) => setShippingCountry(evt.target.value)}
+                  onChange={(evt) => {
+                    setShippingCountry(evt.target.value);
+                    refreshCheckout(evt.target.value);
+                  }}
                   required
                 >
                   <option value="">{t('shop:addressForm.placeholders.select-country')}</option>

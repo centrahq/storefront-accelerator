@@ -2,6 +2,8 @@
 
 import { useSuspenseQuery } from '@tanstack/react-query';
 
+import { PaymentMethodKind } from '@gql/graphql';
+
 import { isProviderAddressForm } from '../../config/payment';
 import { checkoutQuery } from '../../queries';
 import { NativeAddressForm } from './NativeAddressForm';
@@ -23,14 +25,13 @@ interface AddressProps {
 export const AddressForm = ({ countries, language, market }: AddressProps) => {
   const { data } = useSuspenseQuery(checkoutQuery);
 
-  if (isProviderAddressForm()) {
+  const hasStripePaymentMethod = data.checkout.paymentMethods.some(
+    (m) => m.kind === PaymentMethodKind.StripePaymentIntents,
+  );
+
+  if (isProviderAddressForm() && hasStripePaymentMethod) {
     return <StripeAddressForm language={language} market={market} />;
   }
 
-  return (
-    <NativeAddressForm
-      key={JSON.stringify([data.checkout.shippingAddress, data.checkout.separateBillingAddress])}
-      countries={countries}
-    />
-  );
+  return <NativeAddressForm countries={countries} />;
 };
