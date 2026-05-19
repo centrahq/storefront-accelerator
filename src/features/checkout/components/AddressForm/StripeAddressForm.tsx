@@ -1,12 +1,11 @@
 'use client';
 
 import { AddressElement, Elements, useElements, useStripe } from '@stripe/react-stripe-js';
-import type { StripeAddressElementChangeEvent } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -36,59 +35,22 @@ const StripeAddressFormInner = () => {
   const router = useRouter();
   const { t } = useTranslation(['checkout', 'shop']);
   const setAddressMutation = useSetAddress();
-  const backgroundRefresh = useSetAddress();
   const { data } = useSuspenseQuery(checkoutQuery);
   const { shippingAddress } = data.checkout;
   const [email, setEmail] = useState(shippingAddress.email ?? '');
-  const [submitting, setSubmitting] = useState(false);
-  const lastCountryRef = useRef(shippingAddress.country?.code ?? '');
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const defaultName = [shippingAddress.firstName, shippingAddress.lastName].filter(Boolean).join(' ');
-
-  const handleAddressChange = useCallback(
-    (event: StripeAddressElementChangeEvent) => {
-      const newCountry = event.value.address.country;
-      if (newCountry === lastCountryRef.current) return;
-      lastCountryRef.current = newCountry;
-
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => {
-        const { firstName, lastName } = splitName(event.value.name);
-        const address = {
-          firstName,
-          lastName,
-          address1: event.value.address.line1 || '',
-          city: event.value.address.city || '',
-          state: event.value.address.state || undefined,
-          zipCode: event.value.address.postal_code || '',
-          country: newCountry,
-          phoneNumber: event.value.phone ?? undefined,
-          email: email || '',
-        };
-        backgroundRefresh.mutate(
-          { shippingAddress: address, billingAddress: address },
-          { onError: () => {} },
-        );
-      }, 500);
-    },
-    [backgroundRefresh, email],
-  );
 
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!stripe || !elements) return;
-    setSubmitting(true);
 
     const addressEl = elements.getElement('address');
-    if (!addressEl) {
-      setSubmitting(false);
-      return;
-    }
+    if (!addressEl) return;
+
     const { complete, value } = await addressEl.getValue();
     if (!complete || !email.trim()) {
       toast.error(t('checkout:errors.fill-in-required-fields'));
-      setSubmitting(false);
       return;
     }
 
@@ -118,7 +80,6 @@ const StripeAddressFormInner = () => {
           } else {
             toast.error(t('checkout:errors.save-address'));
           }
-          setSubmitting(false);
         },
       },
     );
@@ -144,7 +105,6 @@ const StripeAddressFormInner = () => {
           },
           fields: { phone: 'always' },
         }}
-        onChange={handleAddressChange}
       />
       <div className="flex flex-col gap-1">
         <label htmlFor="stripe-address-email">{t('shop:addressForm.labels.email')}</label>
@@ -159,10 +119,10 @@ const StripeAddressFormInner = () => {
       </div>
       <button
         type="submit"
-        disabled={!stripe || !elements || submitting}
+        disabled={!stripe || !elements || setAddressMutation.isPending}
         className={clsx(
           'bg-mono-900 text-mono-0 flex w-full items-center justify-center px-6 py-4 text-xs font-bold uppercase',
-          { 'animate-pulse': submitting },
+          { 'animate-pulse': setAddressMutation.isPending },
         )}
       >
         {t('checkout:continue')}

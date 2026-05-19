@@ -2,8 +2,6 @@
 
 import dynamic from 'next/dynamic';
 
-import { paymentConfig } from '../../config/payment';
-
 interface Props {
   itemId?: string;
   cartTotal: number;
@@ -27,10 +25,10 @@ const StripeExpressCheckout = dynamic(
 );
 
 export const ExpressCheckout = (props: Props) => {
-  if (paymentConfig.expressCheckout === 'stripe') {
+  if (process.env.NEXT_PUBLIC_EXPRESS_CHECKOUT === 'stripe') {
     return <StripeExpressCheckout key={props.market} {...props} />;
   }
-  if (paymentConfig.expressCheckout === 'adyen') {
+  if (process.env.NEXT_PUBLIC_EXPRESS_CHECKOUT === 'adyen') {
     return <AdyenExpressCheckout key={props.market} {...props} />;
   }
   return null;

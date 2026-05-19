@@ -29,9 +29,16 @@ export const CheckoutScript = () => {
   }, [grandTotal]);
 
   const checkoutCallbackHandler = useEffectEvent((event: CheckoutEvent) => {
+    const currentPaymentMethod = data.checkout.paymentMethod?.id;
+
     sendWidgetData(event.detail, {
       onSettled: () => {
         window.CentraCheckout?.resume(event.detail.additionalFields?.suspendIgnore);
+      },
+      onSuccess(newData) {
+        if (newData.checkout.paymentMethod?.id !== currentPaymentMethod) {
+          window.location.reload();
+        }
       },
     });
   });
