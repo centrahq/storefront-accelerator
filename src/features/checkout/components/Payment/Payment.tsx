@@ -61,7 +61,9 @@ export const Payment = () => {
                   <ChevronDownIcon className="text-mono-800 size-4" aria-hidden="true" />
                 )}
               </button>
-              {selectedPaymentMethod === method.id && <PaymentWidget id={method.id} uri={method.uri} kind={method.kind} />}
+              {selectedPaymentMethod === method.id && (
+                <PaymentWidget id={method.id} uri={method.uri} kind={method.kind} />
+              )}
             </div>
           ))}
         </div>

@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ShippingPage() {
-  const { language } = await getSession();
+  const { language, market } = await getSession();
   const countries = (await getCountries())
     .map((country) => ({
       code: country.code,
@@ -25,7 +25,7 @@ export default async function ShippingPage() {
 
   return (
     <div className="bg-mono-0 p-10">
-      <AddressForm countries={countries} />
+      <AddressForm countries={countries} language={language} market={market} />
     </div>
   );
 }

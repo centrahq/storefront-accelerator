@@ -31,11 +31,18 @@ type AddItemPayload implements Payload & SelectionMutationPayload {
   line: Line
   selection(voucherMode: VOUCHER_MODE! = LINES): Selection
   userErrors: [UserError!]!
+  userWarnings: [UserWarning!]!
 }
 
 type AddWishlistItemPayload implements Payload {
   userErrors: [UserError!]!
+  userWarnings: [UserWarning!]!
   wishlist: Wishlist
+}
+
+input AddonItemInput {
+  dynamicAttributes: [DynamicLineAttributeSetInput!]
+  mappedAttributes: [MappedLineAttributeSetInput!]
 }
 
 type Address {
@@ -722,6 +729,30 @@ input CustomAttributeInput {
   mappedAttributes: [MappedAttributeInput!]
 }
 
+type CustomLinePriceChange implements UserWarning {
+  lineId: String!
+  message: String!
+  path: [String!]
+}
+
+"""
+CustomPriceInput allows you to enter a price injection when adding to cart or on an existing line
+"""
+input CustomPriceInput {
+  """
+  The custom original price, i.e. if you want to override the price list price on the added line
+  """
+  originalPrice: PriceInput
+
+  """
+  Quantity specifies for how many units the custom price is valid for, if the quantity of the line is greater than specified Centra will add additional units using the built-in pricing logic.
+  """
+  quantity: Int!
+
+  """The custom unitPrice"""
+  unitPrice: PriceInput!
+}
+
 input CustomSortInput {
   key: SortKey!
   order: SortOrder!
@@ -779,6 +810,7 @@ input CustomerRegisterInput {
   consents: [ConsentInput!]
   customAttributes: CustomAttributeInput
   gender: Gender
+  languageCode: String
   loginOnSuccess: Boolean!
   password: String!
 }
@@ -811,6 +843,7 @@ input CustomerUpdateInput {
   consents: [ConsentInput!]
   customAttributes: CustomAttributeInput
   gender: Gender
+  languageCode: String
   password: PasswordUpdateInput
 }
 
@@ -1122,6 +1155,7 @@ enum Gender {
 type GenericSelectionMutationPayload implements Payload & SelectionMutationPayload {
   selection(voucherMode: VOUCHER_MODE! = LINES): Selection
   userErrors: [UserError!]!
+  userWarnings: [UserWarning!]!
 }
 
 input GeoPositionInput {
@@ -1444,7 +1478,23 @@ type Mutation {
   
   Required [operating mode](#operating-mode): `SESSION`
   """
-  addItem(categoryId: Int, comment: String! = "", dynamicAttributes: [DynamicLineAttributeSetInput!], item: String!, localizedProdSize: LocalizedProdSizeInput, mappedAttributes: [MappedLineAttributeSetInput!], productExternalUrl: String! = "", quantity: Int! = 1, subscriptionPlan: Int): AddItemPayload!
+  addItem(
+    categoryId: Int
+    comment: String! = ""
+
+    """
+    customPrice allows you to override Centra's pricing logic for the item.
+    Required permissions: SHARED_SECRET and must have price injections allowed in the Storefront API plugin
+    """
+    customPrice: CustomPriceInput
+    dynamicAttributes: [DynamicLineAttributeSetInput!]
+    item: String!
+    localizedProdSize: LocalizedProdSizeInput
+    mappedAttributes: [MappedLineAttributeSetInput!]
+    productExternalUrl: String! = ""
+    quantity: Int! = 1
+    subscriptionPlan: Int
+  ): AddItemPayload!
 
   """
   Add a subscription to an existing subscription contract.
@@ -1512,6 +1562,15 @@ type Mutation {
     """Selection id from a purchase link."""
     id: String!
   ): SelectionMutationPayload!
+
+  """
+  Remove a previously applied custom price from a selection line, restoring the
+  pricelist price for the affected units.
+  
+  Required [operating mode](#operating-mode): `SHARED_SECRET`
+  Required permissions: must have price injections allowed in the Storefront API plugin.
+  """
+  clearCustomPrice(lineId: String!): SelectionMutationPayload!
 
   """
   Delete selection line by its id.
@@ -1659,7 +1718,7 @@ type Mutation {
   
   Required [operating mode](#operating-mode): `SESSION`
   """
-  requestPasswordResetEmail(email: String!, resetPasswordExternalUrl: String!): RequestPasswordResetEmailPayload!
+  requestPasswordResetEmail(email: String!, languageCode: String, resetPasswordExternalUrl: String!): RequestPasswordResetEmailPayload!
 
   """
   Finalize reset password flow providing new password.
@@ -1758,6 +1817,16 @@ type Mutation {
     """
     quantity: Int
   ): SelectionMutationPayload!
+
+  """
+  Apply a custom price to an existing selection line, overriding Centra's
+  pricing logic for the units covered by `customPrice.quantity`. If
+  `customPrice.quantity` is less than the line's quantity, the line is split.
+  
+  Required [operating mode](#operating-mode): `SHARED_SECRET`
+  Required permissions: must have price injections allowed in the Storefront API plugin.
+  """
+  setLinePrice(customPrice: CustomPriceInput!, lineId: String!): SelectionMutationPayload!
 
   """
   Set the market on the current selection.
@@ -2206,6 +2275,14 @@ type PaymentResultSuccessPayload implements PaymentResultPayload {
 enum PaymentResultType {
   FAILED
   SUCCESS
+}
+
+input PriceInput {
+  """CurrencyCode must match the currency code of the session """
+  currencyCode: String!
+
+  """The price value"""
+  price: Float!
 }
 
 type Pricelist {
@@ -2671,6 +2748,7 @@ type SelectionDeliveryGroup {
 interface SelectionMutationPayload implements Payload {
   selection(voucherMode: VOUCHER_MODE! = LINES): Selection
   userErrors: [UserError!]!
+  userWarnings: [UserWarning!]!
 }
 
 interface SelectionTotalRow {
@@ -2717,6 +2795,7 @@ type SessionPayload implements Payload & SelectionMutationPayload {
   selection(voucherMode: VOUCHER_MODE! = LINES): Selection
   session: Session!
   userErrors: [UserError!]!
+  userWarnings: [UserWarning!]!
 }
 
 type ShippingMethod {
@@ -2986,6 +3065,7 @@ type TranslatedProductVariant {
 type TriggerSelectionActionPayload implements Payload & SelectionMutationPayload {
   selection(voucherMode: VOUCHER_MODE! = LINES): Selection
   userErrors: [UserError!]!
+  userWarnings: [UserWarning!]!
 }
 
 interface URILookupPayload implements Payload {
@@ -3055,6 +3135,16 @@ interface UserError {
 }
 
 type UserErrorBase implements UserError {
+  message: String!
+  path: [String!]
+}
+
+interface UserWarning {
+  message: String!
+  path: [String!]
+}
+
+type UserWarningBase implements UserWarning {
   message: String!
   path: [String!]
 }

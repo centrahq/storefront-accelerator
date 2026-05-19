@@ -24,6 +24,7 @@ export type AddItemPayload = Payload & SelectionMutationPayload & {
   line?: Maybe<Line>;
   selection?: Maybe<Selection>;
   userErrors: Array<UserError>;
+  userWarnings: Array<UserWarning>;
 };
 
 
@@ -33,7 +34,13 @@ export type AddItemPayloadSelectionArgs = {
 
 export type AddWishlistItemPayload = Payload & {
   userErrors: Array<UserError>;
+  userWarnings: Array<UserWarning>;
   wishlist?: Maybe<Wishlist>;
+};
+
+export type AddonItemInput = {
+  dynamicAttributes?: InputMaybe<Array<DynamicLineAttributeSetInput>>;
+  mappedAttributes?: InputMaybe<Array<MappedLineAttributeSetInput>>;
 };
 
 export type Address = {
@@ -768,6 +775,22 @@ export type CustomAttributeInput = {
   mappedAttributes?: InputMaybe<Array<MappedAttributeInput>>;
 };
 
+export type CustomLinePriceChange = UserWarning & {
+  lineId: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+  path?: Maybe<Array<Scalars['String']['output']>>;
+};
+
+/** CustomPriceInput allows you to enter a price injection when adding to cart or on an existing line */
+export type CustomPriceInput = {
+  /** The custom original price, i.e. if you want to override the price list price on the added line */
+  originalPrice?: InputMaybe<PriceInput>;
+  /** Quantity specifies for how many units the custom price is valid for, if the quantity of the line is greater than specified Centra will add additional units using the built-in pricing logic. */
+  quantity: Scalars['Int']['input'];
+  /** The custom unitPrice */
+  unitPrice: PriceInput;
+};
+
 export type CustomSortInput = {
   key: SortKey;
   order: SortOrder;
@@ -840,6 +863,7 @@ export type CustomerRegisterInput = {
   consents?: InputMaybe<Array<ConsentInput>>;
   customAttributes?: InputMaybe<CustomAttributeInput>;
   gender?: InputMaybe<Gender>;
+  languageCode?: InputMaybe<Scalars['String']['input']>;
   loginOnSuccess: Scalars['Boolean']['input'];
   password: Scalars['String']['input'];
 };
@@ -872,6 +896,7 @@ export type CustomerUpdateInput = {
   consents?: InputMaybe<Array<ConsentInput>>;
   customAttributes?: InputMaybe<CustomAttributeInput>;
   gender?: InputMaybe<Gender>;
+  languageCode?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<PasswordUpdateInput>;
 };
 
@@ -1174,6 +1199,7 @@ export enum Gender {
 export type GenericSelectionMutationPayload = Payload & SelectionMutationPayload & {
   selection?: Maybe<Selection>;
   userErrors: Array<UserError>;
+  userWarnings: Array<UserWarning>;
 };
 
 
@@ -1573,6 +1599,14 @@ export type Mutation = {
    */
   claimSelection: SelectionMutationPayload;
   /**
+   * Remove a previously applied custom price from a selection line, restoring the
+   * pricelist price for the affected units.
+   *
+   * Required [operating mode](#operating-mode): `SHARED_SECRET`
+   * Required permissions: must have price injections allowed in the Storefront API plugin.
+   */
+  clearCustomPrice: SelectionMutationPayload;
+  /**
    * Delete selection line by its id.
    *
    * Required [operating mode](#operating-mode): `SESSION`
@@ -1750,6 +1784,15 @@ export type Mutation = {
    */
   setLineAttributes: SelectionMutationPayload;
   /**
+   * Apply a custom price to an existing selection line, overriding Centra's
+   * pricing logic for the units covered by `customPrice.quantity`. If
+   * `customPrice.quantity` is less than the line's quantity, the line is split.
+   *
+   * Required [operating mode](#operating-mode): `SHARED_SECRET`
+   * Required permissions: must have price injections allowed in the Storefront API plugin.
+   */
+  setLinePrice: SelectionMutationPayload;
+  /**
    * Set the market on the current selection.
    *
    * Required [operating mode](#operating-mode): `SHARED_SECRET`
@@ -1887,6 +1930,7 @@ export type MutationAddFlexibleBundleArgs = {
 export type MutationAddItemArgs = {
   categoryId?: InputMaybe<Scalars['Int']['input']>;
   comment?: Scalars['String']['input'];
+  customPrice?: InputMaybe<CustomPriceInput>;
   dynamicAttributes?: InputMaybe<Array<DynamicLineAttributeSetInput>>;
   item: Scalars['String']['input'];
   localizedProdSize?: InputMaybe<LocalizedProdSizeInput>;
@@ -1931,6 +1975,11 @@ export type MutationChangeSubscriptionContractAddressArgs = {
 export type MutationClaimSelectionArgs = {
   hash: Scalars['String']['input'];
   id: Scalars['String']['input'];
+};
+
+
+export type MutationClearCustomPriceArgs = {
+  lineId: Scalars['String']['input'];
 };
 
 
@@ -2005,6 +2054,7 @@ export type MutationRemoveWishlistItemArgs = {
 
 export type MutationRequestPasswordResetEmailArgs = {
   email: Scalars['String']['input'];
+  languageCode?: InputMaybe<Scalars['String']['input']>;
   resetPasswordExternalUrl: Scalars['String']['input'];
 };
 
@@ -2061,6 +2111,12 @@ export type MutationSetLineAttributesArgs = {
   lineId: Scalars['String']['input'];
   mappedAttributes?: InputMaybe<Array<MappedLineAttributeSetInput>>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type MutationSetLinePriceArgs = {
+  customPrice: CustomPriceInput;
+  lineId: Scalars['String']['input'];
 };
 
 
@@ -2486,6 +2542,13 @@ export enum PaymentResultType {
   Failed = 'FAILED',
   Success = 'SUCCESS'
 }
+
+export type PriceInput = {
+  /** CurrencyCode must match the currency code of the session  */
+  currencyCode: Scalars['String']['input'];
+  /** The price value */
+  price: Scalars['Float']['input'];
+};
 
 export type Pricelist = {
   comment?: Maybe<Scalars['String']['output']>;
@@ -2963,6 +3026,7 @@ export type SelectionDeliveryGroup = {
 export type SelectionMutationPayload = {
   selection?: Maybe<Selection>;
   userErrors: Array<UserError>;
+  userWarnings: Array<UserWarning>;
 };
 
 
@@ -3014,6 +3078,7 @@ export type SessionPayload = Payload & SelectionMutationPayload & {
   selection?: Maybe<Selection>;
   session: Session;
   userErrors: Array<UserError>;
+  userWarnings: Array<UserWarning>;
 };
 
 
@@ -3298,6 +3363,7 @@ export type TranslatedProductVariant = {
 export type TriggerSelectionActionPayload = Payload & SelectionMutationPayload & {
   selection?: Maybe<Selection>;
   userErrors: Array<UserError>;
+  userWarnings: Array<UserWarning>;
 };
 
 
@@ -3371,6 +3437,16 @@ export type UserError = {
 };
 
 export type UserErrorBase = UserError & {
+  message: Scalars['String']['output'];
+  path?: Maybe<Array<Scalars['String']['output']>>;
+};
+
+export type UserWarning = {
+  message: Scalars['String']['output'];
+  path?: Maybe<Array<Scalars['String']['output']>>;
+};
+
+export type UserWarningBase = UserWarning & {
   message: Scalars['String']['output'];
   path?: Maybe<Array<Scalars['String']['output']>>;
 };
