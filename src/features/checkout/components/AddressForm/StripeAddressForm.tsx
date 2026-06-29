@@ -3,7 +3,8 @@
 import { Checkbox, Field, Label } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/16/solid';
 import { AddressElement, Elements, useElements, useStripe } from '@stripe/react-stripe-js';
-import { loadStripe, StripeAddressElementChangeEvent } from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import type { StripeAddressElementChangeEvent } from '@stripe/stripe-js';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
