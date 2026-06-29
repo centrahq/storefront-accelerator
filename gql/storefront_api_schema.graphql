@@ -41,8 +41,26 @@ type AddWishlistItemPayload implements Payload {
 }
 
 input AddonItemInput {
+  comment: String
+
+  """
+  Inject a custom unit price for this add-on.
+  Required permissions: SHARED_SECRET and priceInjections enabled in the plugin.
+  customPrice.quantity must be at least the add-on quantity (partial splits are not supported for add-ons).
+  """
+  customPrice: CustomPriceInput
   dynamicAttributes: [DynamicLineAttributeSetInput!]
+  item: String!
   mappedAttributes: [MappedLineAttributeSetInput!]
+  productExternalUrl: String
+
+  """
+  Quantity of the add-on line. Defaults to 1.
+  
+  - For `addItem`: quantity is added incrementally to any existing add-on line for the same item.
+  - For `setLineAddons`: quantity is set directly, replacing the existing add-on line quantity.
+  """
+  quantity: Int! = 1
 }
 
 type Address {
@@ -289,6 +307,7 @@ type AutoVoucher implements Voucher {
 
 input BackInStockSubscribeInput {
   email: String
+  item: String!
   languageCode: String
   shipTo: CountryStateInput!
 }
@@ -452,6 +471,7 @@ type BundleSection {
 }
 
 input BundleSectionInput {
+  item: String!
   sectionId: Int!
 }
 
@@ -740,6 +760,11 @@ CustomPriceInput allows you to enter a price injection when adding to cart or on
 """
 input CustomPriceInput {
   """
+  A comment specifying where the price injection came from or why it happened. For traceability.
+  """
+  comment: String!
+
+  """
   The custom original price, i.e. if you want to override the price list price on the added line
   """
   originalPrice: PriceInput
@@ -813,6 +838,7 @@ input CustomerRegisterInput {
   languageCode: String
   loginOnSuccess: Boolean!
   password: String!
+  sendEmail: Boolean
 }
 
 type CustomerRegisterPayload implements Payload {
@@ -881,6 +907,14 @@ type DeliveryGroup {
 type DeliveryGroupLine {
   line: Line!
   quantity: Int!
+}
+
+enum DeliveryType {
+  LOCKER
+  MAILBOX
+  OTHER
+  PICKUP
+  TO_DOOR
 }
 
 type DisplayItem {
@@ -1479,6 +1513,7 @@ type Mutation {
   Required [operating mode](#operating-mode): `SESSION`
   """
   addItem(
+    addons: [AddonItemInput!]
     categoryId: Int
     comment: String! = ""
 
@@ -1799,6 +1834,16 @@ type Mutation {
   setLanguage(code: String!): SessionPayload!
 
   """
+  Set add-ons on a selection line.
+  
+  Add-ons not present in the input are left unchanged. For add-ons already on the line,
+  `quantity` is set directly (not incrementally).
+  
+  Required [operating mode](#operating-mode): `SESSION`
+  """
+  setLineAddons(addons: [AddonItemInput!]!, lineId: String!): SelectionMutationPayload!
+
+  """
   Set dynamic and mapped attributes on a selection line.
   If `quantity` is less than the line's quantity, the line will be split based on checksum:
   - Original line quantity is reduced
@@ -1933,7 +1978,7 @@ type Mutation {
   
   Required [operating mode](#operating-mode): `SESSION`
   """
-  updateLine(comment: String, lineId: String!, quantity: Int, subscriptionPlanId: Int): SelectionMutationPayload!
+  updateLine(comment: String, lineId: String!, quantity: Int, subscriptionPlanId: Int, updateQuantityStrategy: UpdateQuantityStrategy): SelectionMutationPayload!
 
   """
   Update the interval for a subscription owned by the logged in customer.
@@ -2203,6 +2248,7 @@ input PaymentInstructionsInput {
   affiliate: Int
   checkoutPageOrigin: String
   clientDetails: ClientDetails
+  comment: String
   consents: [ConsentInput!]
   customerClubSpecificFields: CustomerClubSpecificFields
   express: Boolean! = false
@@ -2278,7 +2324,7 @@ enum PaymentResultType {
 }
 
 input PriceInput {
-  """CurrencyCode must match the currency code of the session """
+  """CurrencyCode must match the currency code of the session"""
   currencyCode: String!
 
   """The price value"""
@@ -2330,6 +2376,37 @@ type ProductLine implements Line {
   unitOriginalPrice(includingTax: Boolean! = true): MonetaryValue!
   unitPrice(includingTax: Boolean! = true): MonetaryValue!
   unitPriceReduction(includingTax: Boolean! = true): MonetaryValue!
+}
+
+type ProductLineWithAddons implements Line {
+  addedFromCategory: Category
+  addons: [ProductLine!]!
+  appliedPromotions: [AppliedPromotion!]!
+  attributes: [Attribute!]!
+  brand: Brand
+  comment: String!
+  discountPercent: Float!
+  displayItem: DisplayItem!
+  hasDiscount: Boolean!
+  id: String!
+  item: Item!
+  lineValue(includingTax: Boolean! = true): MonetaryValue!
+  lineValueWithAddons(includingTax: Boolean! = true): MonetaryValue!
+  localizedSize: LocalizedProdSize
+  name: String!
+  originalLineValue(includingTax: Boolean! = true): MonetaryValue!
+  productExternalUrl: String
+  productNumber: String!
+  productVariantName: String!
+  quantity: Int!
+  size: String!
+  subscriptionId: Int
+  taxPercent: Float!
+  unitOriginalPrice(includingTax: Boolean! = true): MonetaryValue!
+  unitOriginalPriceWithAddons(includingTax: Boolean! = true): MonetaryValue!
+  unitPrice(includingTax: Boolean! = true): MonetaryValue!
+  unitPriceReduction(includingTax: Boolean! = true): MonetaryValue!
+  unitPriceWithAddons(includingTax: Boolean! = true): MonetaryValue!
 }
 
 type ProductMedia {
@@ -3081,6 +3158,10 @@ type UnavailableItem implements UserError {
   originalQuantity: Int!
   path: [String!]
   unavailableQuantity: Int!
+}
+
+enum UpdateQuantityStrategy {
+  INCLUDE_ADDONS
 }
 
 enum UriLookupType {
