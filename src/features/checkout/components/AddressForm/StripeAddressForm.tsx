@@ -1,7 +1,10 @@
 'use client';
 
+import { Checkbox, Field, Label } from '@headlessui/react';
+import { CheckIcon } from '@heroicons/react/16/solid';
 import { AddressElement, Elements, useElements, useStripe } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import type { StripeAddressElementChangeEvent } from '@stripe/stripe-js';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
@@ -23,11 +26,22 @@ interface Props {
   market: number;
 }
 
-const splitName = (name: string): { firstName: string; lastName: string } => {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length <= 1) return { firstName: parts[0] ?? '', lastName: '' };
-  return { firstName: parts.slice(0, -1).join(' '), lastName: parts[parts.length - 1] ?? '' };
-};
+type StripeAddressValue = StripeAddressElementChangeEvent['value'];
+
+// The Address Element is rendered with `display: { name: 'split' }`, so it
+// returns first/last name as separate fields and no name parsing is required.
+const mapStripeAddress = (value: StripeAddressValue, email: string): AddressInput => ({
+  firstName: value.firstName,
+  lastName: value.lastName,
+  address1: value.address.line1,
+  address2: value.address.line2 ?? undefined,
+  city: value.address.city,
+  state: value.address.state || undefined,
+  zipCode: value.address.postal_code,
+  country: value.address.country,
+  phoneNumber: value.phone,
+  email,
+});
 
 const StripeAddressFormInner = () => {
   const stripe = useStripe();
@@ -36,40 +50,37 @@ const StripeAddressFormInner = () => {
   const { t } = useTranslation(['checkout', 'shop']);
   const setAddressMutation = useSetAddress();
   const { data } = useSuspenseQuery(checkoutQuery);
-  const { shippingAddress } = data.checkout;
+  const { shippingAddress, separateBillingAddress: billingAddress } = data.checkout;
   const [email, setEmail] = useState(shippingAddress.email ?? '');
+  const [billingSameAsShipping, setBillingSameAsShipping] = useState(!billingAddress);
 
-  const defaultName = [shippingAddress.firstName, shippingAddress.lastName].filter(Boolean).join(' ');
+  const [shippingValue, setShippingValue] = useState<{ complete: boolean; value: StripeAddressValue } | null>(null);
+  const [billingValue, setBillingValue] = useState<{ complete: boolean; value: StripeAddressValue } | null>(null);
 
-  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!stripe || !elements) return;
 
-    const addressEl = elements.getElement('address');
-    if (!addressEl) return;
-
-    const { complete, value } = await addressEl.getValue();
-    if (!complete || !email.trim()) {
+    if (!shippingValue?.complete || !email.trim()) {
       toast.error(t('checkout:errors.fill-in-required-fields'));
       return;
     }
 
-    const { firstName, lastName } = splitName(value.name);
-    const address: AddressInput = {
-      firstName,
-      lastName,
-      address1: value.address.line1,
-      address2: value.address.line2 ?? undefined,
-      city: value.address.city,
-      state: value.address.state || undefined,
-      zipCode: value.address.postal_code,
-      country: value.address.country,
-      phoneNumber: value.phone,
-      email,
-    };
+    const shipping = mapStripeAddress(shippingValue.value, email);
 
+    let billing: AddressInput | undefined;
+    if (!billingSameAsShipping) {
+      if (!billingValue?.complete) {
+        toast.error(t('checkout:errors.fill-in-required-fields'));
+        return;
+      }
+      billing = mapStripeAddress(billingValue.value, email);
+    }
+
+    // When billing equals shipping we omit `billingAddress`; Centra's
+    // `setAddress` defaults `separateBillingAddress` to the shipping address.
     setAddressMutation.mutate(
-      { shippingAddress: address, billingAddress: address },
+      { shippingAddress: shipping, billingAddress: billing },
       {
         onSuccess: () => {
           router.push('/checkout/delivery');
@@ -86,13 +97,15 @@ const StripeAddressFormInner = () => {
   };
 
   return (
-    <form onSubmit={(e) => { void handleSubmit(e); }} className="flex flex-col gap-5">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <h2 className="text-xl font-medium">{t('checkout:shipping-address')}</h2>
       <AddressElement
         options={{
           mode: 'shipping',
+          display: { name: 'split' },
           defaultValues: {
-            name: defaultName || undefined,
+            firstName: shippingAddress.firstName ?? undefined,
+            lastName: shippingAddress.lastName ?? undefined,
             phone: shippingAddress.phoneNumber ?? undefined,
             address: {
               line1: shippingAddress.address1 ?? '',
@@ -105,6 +118,7 @@ const StripeAddressFormInner = () => {
           },
           fields: { phone: 'always' },
         }}
+        onChange={(event) => setShippingValue({ complete: event.complete, value: event.value })}
       />
       <div className="flex flex-col gap-1">
         <label htmlFor="stripe-address-email">{t('shop:addressForm.labels.email')}</label>
@@ -117,6 +131,45 @@ const StripeAddressFormInner = () => {
           className="border-mono-300 border px-6 py-3 text-sm"
         />
       </div>
+
+      <Field className="flex items-center gap-3">
+        <Checkbox
+          checked={billingSameAsShipping}
+          onChange={setBillingSameAsShipping}
+          className="group border-mono-500 flex size-5 items-center justify-center rounded-sm border"
+        >
+          <CheckIcon className="hidden size-4 fill-black group-data-checked:block" aria-hidden="true" />
+        </Checkbox>
+        <Label>{t('shop:addressForm.labels.sameAsShipping')}</Label>
+      </Field>
+
+      {!billingSameAsShipping && (
+        <>
+          <h2 className="text-xl font-medium">{t('checkout:billing-address')}</h2>
+          <AddressElement
+            options={{
+              mode: 'billing',
+              display: { name: 'split' },
+              defaultValues: {
+                firstName: billingAddress?.firstName ?? undefined,
+                lastName: billingAddress?.lastName ?? undefined,
+                phone: billingAddress?.phoneNumber ?? undefined,
+                address: {
+                  line1: billingAddress?.address1 ?? '',
+                  line2: billingAddress?.address2 ?? '',
+                  city: billingAddress?.city ?? '',
+                  state: billingAddress?.state?.code ?? '',
+                  postal_code: billingAddress?.zipCode ?? '',
+                  country: billingAddress?.country?.code ?? '',
+                },
+              },
+              fields: { phone: 'always' },
+            }}
+            onChange={(event) => setBillingValue({ complete: event.complete, value: event.value })}
+          />
+        </>
+      )}
+
       <button
         type="submit"
         disabled={!stripe || !elements || setAddressMutation.isPending}

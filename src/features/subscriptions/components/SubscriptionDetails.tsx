@@ -77,7 +77,7 @@ export const SubscriptionDetails = ({ subscription }: { subscription: Subscripti
                   {line.displayItem.name}
                 </ShopLink>
                 <div>
-                  {(line.__typename === 'ProductLine' || line.bundle?.type === BundleType.Fixed) && (
+                  {(line.__typename !== 'BundleLine' || line.bundle?.type === BundleType.Fixed) && (
                     <div className="flex gap-2 text-sm">
                       <span className="text-mono-500">{t('shop:cart.size')}:</span>
                       <span>{getItemName(line.item, country)}</span>

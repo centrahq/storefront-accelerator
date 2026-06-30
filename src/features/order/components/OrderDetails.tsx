@@ -80,7 +80,7 @@ export const OrderDetails = async ({ order }: { order: OrderFragment }) => {
                         {line.displayItem.name}
                       </ShopLink>
                       <dl>
-                        {(line.__typename === 'ProductLine' || line.bundle?.type === BundleType.Fixed) && (
+                        {(line.__typename !== 'BundleLine' || line.bundle?.type === BundleType.Fixed) && (
                           <div className="flex gap-2 text-sm">
                             <dt className="text-mono-500">{t('shop:cart.size')}:</dt>
                             <dd>{getItemName(line.item, country)}</dd>
