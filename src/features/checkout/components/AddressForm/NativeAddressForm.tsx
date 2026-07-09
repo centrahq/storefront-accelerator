@@ -29,16 +29,16 @@ interface AddressFormProps {
 }
 
 const addressSchema = z.object({
-  address1: z.string(),
+  address1: z.string().min(1),
   address2: z.string().optional(),
-  firstName: z.string(),
-  lastName: z.string(),
-  country: z.string(),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  country: z.string().min(1),
   state: z.string().nullable().optional(),
-  city: z.string(),
+  city: z.string().min(1),
   email: z.email(),
   phoneNumber: z.string().optional(),
-  zipCode: z.string(),
+  zipCode: z.string().min(1),
 });
 
 const addressFormSchema = z.object({
@@ -92,14 +92,13 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
       zipCode: formData.get('shipping.zipCode'),
     };
 
-    const billingAddress =
-      formData.get('sameAsShipping') === 'on'
-        ? {
-            ...shippingAddress,
-            companyName: '',
-            vatNumber: '',
-          }
-        : {
+    const billingAddress = billingSameAsShipping
+      ? {
+          ...shippingAddress,
+          companyName: '',
+          vatNumber: '',
+        }
+      : {
             address1: formData.get('billing.address1'),
             address2: formData.get('billing.address2'),
             firstName: formData.get('billing.firstName'),
@@ -276,7 +275,6 @@ export const NativeAddressForm = ({ countries }: AddressFormProps) => {
       </Fieldset>
       <Field className="flex items-center gap-3">
         <Checkbox
-          name="sameAsShipping"
           checked={billingSameAsShipping}
           onChange={setBillingSameAsShipping}
           className="group border-mono-500 flex size-5 items-center justify-center rounded-sm border"
