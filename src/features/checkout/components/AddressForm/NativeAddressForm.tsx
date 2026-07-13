@@ -38,7 +38,7 @@ const addressSchema = z.object({
   city: z.string().min(1),
   email: z.email(),
   phoneNumber: z.string().optional(),
-  zipCode: z.string().min(1),
+  zipCode: z.string().trim().nonempty(),
 });
 
 const addressFormSchema = z.object({
