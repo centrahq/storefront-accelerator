@@ -68,8 +68,14 @@ const StripeAddressFormInner = () => {
 
     const shipping = mapStripeAddress(shippingValue.value, email);
 
-    let billing: AddressInput | undefined;
-    if (!billingSameAsShipping) {
+    // Always send a complete billing address. Omitting it leaves Centra's
+    // separateBillingAddress with only country/city/zipCode synced from
+    // shipping (email and names empty), which later fails paymentInstructions
+    // validation and silently reverts the selected payment method.
+    let billing: AddressInput;
+    if (billingSameAsShipping) {
+      billing = { ...shipping, companyName: '', vatNumber: '' };
+    } else {
       if (!billingValue?.complete) {
         toast.error(t('checkout:errors.fill-in-required-fields'));
         return;
@@ -77,8 +83,6 @@ const StripeAddressFormInner = () => {
       billing = mapStripeAddress(billingValue.value, email);
     }
 
-    // When billing equals shipping we omit `billingAddress`; Centra's
-    // `setAddress` defaults `separateBillingAddress` to the shipping address.
     setAddressMutation.mutate(
       { shippingAddress: shipping, billingAddress: billing },
       {
