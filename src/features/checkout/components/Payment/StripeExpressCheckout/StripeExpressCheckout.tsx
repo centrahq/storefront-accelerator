@@ -64,10 +64,13 @@ const StripeExpressCheckoutElement = ({
   initialLineItems: StripeLineItem[];
   onCancel: () => void;
   onEnsureSelectionReady: () => Promise<CheckoutData>;
-  onRequirePaymentIntent: (addresses: {
-    billingAddress?: AddressInput;
-    shippingAddress?: AddressInput;
-  }, checkoutData: CheckoutData) => Promise<{ clientSecret: string; returnUrl: string } | null>;
+  onRequirePaymentIntent: (
+    addresses: {
+      billingAddress?: AddressInput;
+      shippingAddress?: AddressInput;
+    },
+    checkoutData: CheckoutData,
+  ) => Promise<{ clientSecret: string; returnUrl: string } | null>;
   shippingRates: ShippingRate[];
 }) => {
   const stripe = useStripe();
@@ -78,102 +81,105 @@ const StripeExpressCheckoutElement = ({
     setElementKey((currentKey) => currentKey + 1);
   }, []);
 
-  const handleConfirm = useCallback(async (event: StripeExpressCheckoutElementConfirmEvent) => {
-    if (!stripe || !elements) {
-      debugLog('confirm:aborted:missing-stripe-or-elements', {
-        hasElements: Boolean(elements),
-        hasStripe: Boolean(stripe),
-      });
-      event.paymentFailed({ reason: 'fail' });
-      resetExpressCheckoutElement();
-      return;
-    }
-
-    try {
-      const checkoutData = await onEnsureSelectionReady();
-      const confirmAddresses = getConfirmAddresses(event);
-      debugLog('confirm:started', {
-        billingDetails: event.billingDetails,
-        confirmAddresses,
-        shippingAddress: event.shippingAddress,
-      });
-      const config = await onRequirePaymentIntent(confirmAddresses, checkoutData);
-      if (!config) {
-        debugLog('confirm:aborted:no-config', {});
-        event.paymentFailed({ reason: 'fail' });
-        resetExpressCheckoutElement();
-        return;
-      }
-
-      const result: PaymentIntentResult | { error?: StripeError } = await stripe.confirmPayment({
-        clientSecret: config.clientSecret,
-        confirmParams: { return_url: config.returnUrl },
-        elements,
-      });
-      const { error } = result;
-      const { paymentIntent } = result as { paymentIntent?: PaymentIntent };
-
-      debugLog('confirm:result', {
-        errorCode: error?.code,
-        errorDeclineCode: error?.decline_code,
-        errorMessage: error?.message,
-        errorType: error?.type,
-        paymentIntentId: paymentIntent?.id,
-        paymentIntentStatus: paymentIntent?.status,
-      });
-
-      if (error) {
-        toast.error(error.message ?? 'Unable to confirm payment');
-        event.paymentFailed({ reason: 'fail' });
-        resetExpressCheckoutElement();
-        return;
-      }
-
-      if (
-        paymentIntent?.status === 'succeeded' ||
-        paymentIntent?.status === 'processing' ||
-        paymentIntent?.status === 'requires_capture'
-      ) {
-        window.location.assign(config.returnUrl);
-        return;
-      }
-
-      if (paymentIntent?.status === 'requires_action') {
-        const nextActionResult = await stripe.handleNextAction({ clientSecret: config.clientSecret });
-        debugLog('confirm:handleNextAction:result', {
-          errorCode: nextActionResult.error?.code,
-          errorMessage: nextActionResult.error?.message,
-          paymentIntentStatus: nextActionResult.paymentIntent?.status,
+  const handleConfirm = useCallback(
+    async (event: StripeExpressCheckoutElementConfirmEvent) => {
+      if (!stripe || !elements) {
+        debugLog('confirm:aborted:missing-stripe-or-elements', {
+          hasElements: Boolean(elements),
+          hasStripe: Boolean(stripe),
         });
+        event.paymentFailed({ reason: 'fail' });
+        resetExpressCheckoutElement();
+        return;
+      }
 
-        if (nextActionResult.error) {
-          toast.error(nextActionResult.error.message ?? 'Unable to confirm payment');
+      try {
+        const checkoutData = await onEnsureSelectionReady();
+        const confirmAddresses = getConfirmAddresses(event);
+        debugLog('confirm:started', {
+          billingDetails: event.billingDetails,
+          confirmAddresses,
+          shippingAddress: event.shippingAddress,
+        });
+        const config = await onRequirePaymentIntent(confirmAddresses, checkoutData);
+        if (!config) {
+          debugLog('confirm:aborted:no-config', {});
           event.paymentFailed({ reason: 'fail' });
           resetExpressCheckoutElement();
           return;
         }
 
-        const nextStatus = nextActionResult.paymentIntent?.status;
-        if (nextStatus === 'succeeded' || nextStatus === 'processing' || nextStatus === 'requires_capture') {
+        const result: PaymentIntentResult | { error?: StripeError } = await stripe.confirmPayment({
+          clientSecret: config.clientSecret,
+          confirmParams: { return_url: config.returnUrl },
+          elements,
+        });
+        const { error } = result;
+        const { paymentIntent } = result as { paymentIntent?: PaymentIntent };
+
+        debugLog('confirm:result', {
+          errorCode: error?.code,
+          errorDeclineCode: error?.decline_code,
+          errorMessage: error?.message,
+          errorType: error?.type,
+          paymentIntentId: paymentIntent?.id,
+          paymentIntentStatus: paymentIntent?.status,
+        });
+
+        if (error) {
+          toast.error(error.message ?? 'Unable to confirm payment');
+          event.paymentFailed({ reason: 'fail' });
+          resetExpressCheckoutElement();
+          return;
+        }
+
+        if (
+          paymentIntent?.status === 'succeeded' ||
+          paymentIntent?.status === 'processing' ||
+          paymentIntent?.status === 'requires_capture'
+        ) {
           window.location.assign(config.returnUrl);
+          return;
+        }
+
+        if (paymentIntent?.status === 'requires_action') {
+          const nextActionResult = await stripe.handleNextAction({ clientSecret: config.clientSecret });
+          debugLog('confirm:handleNextAction:result', {
+            errorCode: nextActionResult.error?.code,
+            errorMessage: nextActionResult.error?.message,
+            paymentIntentStatus: nextActionResult.paymentIntent?.status,
+          });
+
+          if (nextActionResult.error) {
+            toast.error(nextActionResult.error.message ?? 'Unable to confirm payment');
+            event.paymentFailed({ reason: 'fail' });
+            resetExpressCheckoutElement();
+            return;
+          }
+
+          const nextStatus = nextActionResult.paymentIntent?.status;
+          if (nextStatus === 'succeeded' || nextStatus === 'processing' || nextStatus === 'requires_capture') {
+            window.location.assign(config.returnUrl);
+            return;
+          }
+
+          toast.error('Unable to confirm payment');
+          event.paymentFailed({ reason: 'fail' });
+          resetExpressCheckoutElement();
           return;
         }
 
         toast.error('Unable to confirm payment');
         event.paymentFailed({ reason: 'fail' });
         resetExpressCheckoutElement();
-        return;
+      } catch (err) {
+        debugLog('confirm:exception', { error: err });
+        toast.error('Unable to confirm payment');
+        resetExpressCheckoutElement();
       }
-
-      toast.error('Unable to confirm payment');
-      event.paymentFailed({ reason: 'fail' });
-      resetExpressCheckoutElement();
-    } catch (err) {
-      debugLog('confirm:exception', { error: err });
-      toast.error('Unable to confirm payment');
-      resetExpressCheckoutElement();
-    }
-  }, [stripe, elements, onEnsureSelectionReady, onRequirePaymentIntent, resetExpressCheckoutElement]);
+    },
+    [stripe, elements, onEnsureSelectionReady, onRequirePaymentIntent, resetExpressCheckoutElement],
+  );
 
   const handleCancel = useCallback(() => {
     debugLog('cancel', { elementKey });
@@ -191,42 +197,26 @@ const StripeExpressCheckoutElement = ({
           return;
         }
 
+        // Ensure the (buy-now) item is in the selection so shipping-rate selection works,
+        // but DO NOT persist the wallet's tentative address here. `shippingaddresschange`
+        // fires when the wallet merely opens/previews, and it only exposes a partial address
+        // (city/state/postal/country -- no street or name). Writing it via paymentInstructions
+        // would overwrite the shopper's already-confirmed checkout address even if they close
+        // the wallet without paying, and that stale address then rides onto the order placed
+        // through the standard Payment Element (see PE-295). The real, complete address is
+        // written to Centra only at confirm time (requirePaymentIntent), which runs only when
+        // the shopper actually authorizes payment in the wallet. Resolve with the pre-configured
+        // shipping rates; Centra recomputes the authoritative total at confirm.
         await onEnsureSelectionReady();
 
-        const data = await submitPaymentInstructions({
-          shippingAddress: {
-            address1: '',
-            city: address.city,
-            country: address.country,
-            zipCode: address.postal_code,
-            state: address.state,
-          },
-          paymentReturnPage: `${window.location.origin}/success`,
-          paymentFailedPage: `${window.location.origin}/failed`,
-          paymentInitiateOnly: true,
-        });
-
-        const checkoutData = data.selection;
-        const lineItems = createStripeLineItems(checkoutData.checkout.totals);
-        const selectedShippingMethod = String(checkoutData.checkout.shippingMethod?.id ?? '');
-        const nextShippingRates = [
-          ...mapShippingMethodsToStripeRatesFromCheckout(checkoutData.checkout.shippingMethods ?? []),
-        ].sort((a, b) => {
-          if (a.id === selectedShippingMethod) return -1;
-          if (b.id === selectedShippingMethod) return 1;
-          return 0;
-        });
-        const amount = getCheckoutTotalAmountInMinor(checkoutData.checkout.totals);
-
-        elements?.update({ amount });
-        debugLog('shippingAddressChange:success', { amount, lineItems, shippingRates: nextShippingRates });
-        resolve({ lineItems, shippingRates: nextShippingRates });
+        debugLog('shippingAddressChange:success', { lineItems: initialLineItems, shippingRates });
+        resolve({ lineItems: initialLineItems, shippingRates });
       } catch (error) {
         debugLog('shippingAddressChange:error', { error });
         reject();
       }
     },
-    [allowedShippingCountries, elements, onEnsureSelectionReady],
+    [allowedShippingCountries, initialLineItems, onEnsureSelectionReady, shippingRates],
   );
 
   const onShippingRateChange = useCallback(
@@ -265,7 +255,7 @@ const StripeExpressCheckoutElement = ({
       paymentMethods: { googlePay: 'always' as const },
       phoneNumberRequired: true,
       shippingAddressRequired: true,
-      shippingRates
+      shippingRates,
     }),
     [allowedShippingCountries, initialLineItems, shippingRates],
   );
@@ -345,7 +335,12 @@ const StripeExpressCheckoutInner = ({
       stripeParameters.currency ??
       selectionData.grandTotal.currency.code;
     return isNonEmptyString(currency) ? currency.toLowerCase() : undefined;
-  }, [paymentConfig?.paymentAmount?.currency, paymentConfig?.currency, stripeParameters.currency, selectionData.grandTotal.currency.code]);
+  }, [
+    paymentConfig?.paymentAmount?.currency,
+    paymentConfig?.currency,
+    stripeParameters.currency,
+    selectionData.grandTotal.currency.code,
+  ]);
 
   const elementsAmountInMinor = useMemo(() => {
     const configuredAmount = paymentConfig?.paymentAmount?.amount;
@@ -370,10 +365,7 @@ const StripeExpressCheckoutInner = ({
   );
 
   const stripePromise = useMemo(
-    () =>
-      isNonEmptyString(publishableKey)
-        ? loadStripe(publishableKey)
-        : null,
+    () => (isNonEmptyString(publishableKey) ? loadStripe(publishableKey) : null),
     [publishableKey],
   );
 
@@ -400,7 +392,10 @@ const StripeExpressCheckoutInner = ({
   }, []);
 
   const requirePaymentIntent = useCallback(
-    async (addresses: { billingAddress?: AddressInput; shippingAddress?: AddressInput }, checkoutData: CheckoutData) => {
+    async (
+      addresses: { billingAddress?: AddressInput; shippingAddress?: AddressInput },
+      checkoutData: CheckoutData,
+    ) => {
       const stripePaymentMethod = checkoutData.checkout.paymentMethods.find(
         (m) => m.kind === PaymentMethodKind.StripePaymentIntents,
       );
@@ -416,29 +411,29 @@ const StripeExpressCheckoutInner = ({
 
         const shippingAddress: AddressInput = shippingAddressSource
           ? {
-            address1: shippingAddressSource.address1,
-            address2: shippingAddressSource.address2,
-            city: shippingAddressSource.city,
-            country: shippingAddressSource.country,
-            email: shippingAddressSource.email ?? billingAddressSource?.email,
-            firstName: shippingAddressSource.firstName,
-            lastName: shippingAddressSource.lastName,
-            phoneNumber: shippingAddressSource.phoneNumber ?? billingAddressSource?.phoneNumber,
-            state: shippingAddressSource.state,
-            zipCode: shippingAddressSource.zipCode,
-          }
+              address1: shippingAddressSource.address1,
+              address2: shippingAddressSource.address2,
+              city: shippingAddressSource.city,
+              country: shippingAddressSource.country,
+              email: shippingAddressSource.email ?? billingAddressSource?.email,
+              firstName: shippingAddressSource.firstName,
+              lastName: shippingAddressSource.lastName,
+              phoneNumber: shippingAddressSource.phoneNumber ?? billingAddressSource?.phoneNumber,
+              state: shippingAddressSource.state,
+              zipCode: shippingAddressSource.zipCode,
+            }
           : {
-            address1: billingAddressSource?.address1,
-            address2: billingAddressSource?.address2,
-            city: billingAddressSource?.city,
-            country: billingAddressSource?.country ?? '',
-            email: billingAddressSource?.email,
-            firstName: billingAddressSource?.firstName,
-            lastName: billingAddressSource?.lastName,
-            phoneNumber: billingAddressSource?.phoneNumber,
-            state: billingAddressSource?.state,
-            zipCode: billingAddressSource?.zipCode,
-          };
+              address1: billingAddressSource?.address1,
+              address2: billingAddressSource?.address2,
+              city: billingAddressSource?.city,
+              country: billingAddressSource?.country ?? '',
+              email: billingAddressSource?.email,
+              firstName: billingAddressSource?.firstName,
+              lastName: billingAddressSource?.lastName,
+              phoneNumber: billingAddressSource?.phoneNumber,
+              state: billingAddressSource?.state,
+              zipCode: billingAddressSource?.zipCode,
+            };
 
         const separateBillingAddress: AddressInput | undefined = billingAddressSource;
 
@@ -459,8 +454,7 @@ const StripeExpressCheckoutInner = ({
 
         debugLog('requirePaymentIntent:response', {
           actionType: response.action?.__typename,
-          formType:
-            response.action?.__typename === 'FormPaymentAction' ? response.action.formType : undefined,
+          formType: response.action?.__typename === 'FormPaymentAction' ? response.action.formType : undefined,
         });
 
         const stripeConfig = getStripeConfig(response.action);
