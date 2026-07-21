@@ -74,7 +74,7 @@ export const LocalizationPanel = ({ countries, languages }: Props) => {
         newUrl.searchParams.set(REMOVED_ITEMS_PARAM, 'true');
       }
 
-      router.push(newUrl.href);
+      window.location.assign(newUrl.href);
     });
   };
 

@@ -24,6 +24,7 @@ export type AddItemPayload = Payload & SelectionMutationPayload & {
   line?: Maybe<Line>;
   selection?: Maybe<Selection>;
   userErrors: Array<UserError>;
+  userWarnings: Array<UserWarning>;
 };
 
 
@@ -33,7 +34,29 @@ export type AddItemPayloadSelectionArgs = {
 
 export type AddWishlistItemPayload = Payload & {
   userErrors: Array<UserError>;
+  userWarnings: Array<UserWarning>;
   wishlist?: Maybe<Wishlist>;
+};
+
+export type AddonItemInput = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Inject a custom unit price for this add-on.
+   * Required permissions: SHARED_SECRET and priceInjections enabled in the plugin.
+   * customPrice.quantity must be at least the add-on quantity (partial splits are not supported for add-ons).
+   */
+  customPrice?: InputMaybe<CustomPriceInput>;
+  dynamicAttributes?: InputMaybe<Array<DynamicLineAttributeSetInput>>;
+  item: Scalars['String']['input'];
+  mappedAttributes?: InputMaybe<Array<MappedLineAttributeSetInput>>;
+  productExternalUrl?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Quantity of the add-on line. Defaults to 1.
+   *
+   * - For `addItem`: quantity is added incrementally to any existing add-on line for the same item.
+   * - For `setLineAddons`: quantity is set directly, replacing the existing add-on line quantity.
+   */
+  quantity?: Scalars['Int']['input'];
 };
 
 export type Address = {
@@ -770,6 +793,24 @@ export type CustomAttributeInput = {
   mappedAttributes?: InputMaybe<Array<MappedAttributeInput>>;
 };
 
+export type CustomLinePriceChange = UserWarning & {
+  lineId: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+  path?: Maybe<Array<Scalars['String']['output']>>;
+};
+
+/** CustomPriceInput allows you to enter a price injection when adding to cart or on an existing line */
+export type CustomPriceInput = {
+  /** A comment specifying where the price injection came from or why it happened. For traceability. */
+  comment: Scalars['String']['input'];
+  /** The custom original price, i.e. if you want to override the price list price on the added line */
+  originalPrice?: InputMaybe<PriceInput>;
+  /** Quantity specifies for how many units the custom price is valid for, if the quantity of the line is greater than specified Centra will add additional units using the built-in pricing logic. */
+  quantity: Scalars['Int']['input'];
+  /** The custom unitPrice */
+  unitPrice: PriceInput;
+};
+
 export type CustomSortInput = {
   key: SortKey;
   order: SortOrder;
@@ -842,8 +883,10 @@ export type CustomerRegisterInput = {
   consents?: InputMaybe<Array<ConsentInput>>;
   customAttributes?: InputMaybe<CustomAttributeInput>;
   gender?: InputMaybe<Gender>;
+  languageCode?: InputMaybe<Scalars['String']['input']>;
   loginOnSuccess: Scalars['Boolean']['input'];
   password: Scalars['String']['input'];
+  sendEmail?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type CustomerRegisterPayload = Payload & {
@@ -874,6 +917,7 @@ export type CustomerUpdateInput = {
   consents?: InputMaybe<Array<ConsentInput>>;
   customAttributes?: InputMaybe<CustomAttributeInput>;
   gender?: InputMaybe<Gender>;
+  languageCode?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<PasswordUpdateInput>;
 };
 
@@ -908,6 +952,14 @@ export type DeliveryGroupLine = {
   line: Line;
   quantity: Scalars['Int']['output'];
 };
+
+export enum DeliveryType {
+  Locker = 'LOCKER',
+  Mailbox = 'MAILBOX',
+  Other = 'OTHER',
+  Pickup = 'PICKUP',
+  ToDoor = 'TO_DOOR'
+}
 
 export type DisplayItem = {
   attributes: Array<Attribute>;
@@ -1176,6 +1228,7 @@ export enum Gender {
 export type GenericSelectionMutationPayload = Payload & SelectionMutationPayload & {
   selection?: Maybe<Selection>;
   userErrors: Array<UserError>;
+  userWarnings: Array<UserWarning>;
 };
 
 
@@ -1575,6 +1628,14 @@ export type Mutation = {
    */
   claimSelection: SelectionMutationPayload;
   /**
+   * Remove a previously applied custom price from a selection line, restoring the
+   * pricelist price for the affected units.
+   *
+   * Required [operating mode](#operating-mode): `SHARED_SECRET`
+   * Required permissions: must have price injections allowed in the Storefront API plugin.
+   */
+  clearCustomPrice: SelectionMutationPayload;
+  /**
    * Delete selection line by its id.
    *
    * Required [operating mode](#operating-mode): `SESSION`
@@ -1743,6 +1804,15 @@ export type Mutation = {
    */
   setLanguage: SessionPayload;
   /**
+   * Set add-ons on a selection line.
+   *
+   * Add-ons not present in the input are left unchanged. For add-ons already on the line,
+   * `quantity` is set directly (not incrementally).
+   *
+   * Required [operating mode](#operating-mode): `SESSION`
+   */
+  setLineAddons: SelectionMutationPayload;
+  /**
    * Set dynamic and mapped attributes on a selection line.
    * If `quantity` is less than the line's quantity, the line will be split based on checksum:
    * - Original line quantity is reduced
@@ -1751,6 +1821,15 @@ export type Mutation = {
    * Required [operating mode](#operating-mode): `SHARED_SECRET`
    */
   setLineAttributes: SelectionMutationPayload;
+  /**
+   * Apply a custom price to an existing selection line, overriding Centra's
+   * pricing logic for the units covered by `customPrice.quantity`. If
+   * `customPrice.quantity` is less than the line's quantity, the line is split.
+   *
+   * Required [operating mode](#operating-mode): `SHARED_SECRET`
+   * Required permissions: must have price injections allowed in the Storefront API plugin.
+   */
+  setLinePrice: SelectionMutationPayload;
   /**
    * Set the market on the current selection.
    *
@@ -1887,8 +1966,10 @@ export type MutationAddFlexibleBundleArgs = {
 
 
 export type MutationAddItemArgs = {
+  addons?: InputMaybe<Array<AddonItemInput>>;
   categoryId?: InputMaybe<Scalars['Int']['input']>;
   comment?: Scalars['String']['input'];
+  customPrice?: InputMaybe<CustomPriceInput>;
   dynamicAttributes?: InputMaybe<Array<DynamicLineAttributeSetInput>>;
   item: Scalars['String']['input'];
   localizedProdSize?: InputMaybe<LocalizedProdSizeInput>;
@@ -1933,6 +2014,11 @@ export type MutationChangeSubscriptionContractAddressArgs = {
 export type MutationClaimSelectionArgs = {
   hash: Scalars['String']['input'];
   id: Scalars['String']['input'];
+};
+
+
+export type MutationClearCustomPriceArgs = {
+  lineId: Scalars['String']['input'];
 };
 
 
@@ -2007,6 +2093,7 @@ export type MutationRemoveWishlistItemArgs = {
 
 export type MutationRequestPasswordResetEmailArgs = {
   email: Scalars['String']['input'];
+  languageCode?: InputMaybe<Scalars['String']['input']>;
   resetPasswordExternalUrl: Scalars['String']['input'];
 };
 
@@ -2058,11 +2145,23 @@ export type MutationSetLanguageArgs = {
 };
 
 
+export type MutationSetLineAddonsArgs = {
+  addons: Array<AddonItemInput>;
+  lineId: Scalars['String']['input'];
+};
+
+
 export type MutationSetLineAttributesArgs = {
   dynamicAttributes?: InputMaybe<Array<DynamicLineAttributeSetInput>>;
   lineId: Scalars['String']['input'];
   mappedAttributes?: InputMaybe<Array<MappedLineAttributeSetInput>>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type MutationSetLinePriceArgs = {
+  customPrice: CustomPriceInput;
+  lineId: Scalars['String']['input'];
 };
 
 
@@ -2137,6 +2236,7 @@ export type MutationUpdateLineArgs = {
   lineId: Scalars['String']['input'];
   quantity?: InputMaybe<Scalars['Int']['input']>;
   subscriptionPlanId?: InputMaybe<Scalars['Int']['input']>;
+  updateQuantityStrategy?: InputMaybe<UpdateQuantityStrategy>;
 };
 
 
@@ -2315,6 +2415,61 @@ export type PaginationInfo = {
   total: Scalars['Int']['output'];
 };
 
+export type PasswordCannotContainNewline = UserError & {
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordCannotStartOrEndWithWhitespace = UserError & {
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordIsLeaked = UserError & {
+  message: Scalars['String']['output'];
+  occurrences: Scalars['Int']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordIsTooLong = UserError & {
+  maxPasswordLength: Scalars['Int']['output'];
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordIsTooShort = UserError & {
+  message: Scalars['String']['output'];
+  minPasswordLength: Scalars['Int']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordNeedsChange = UserError & {
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+  resetI: Scalars['String']['output'];
+  resetId: Scalars['String']['output'];
+};
+
+export type PasswordRequiresLowercaseLetter = UserError & {
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordRequiresNumber = UserError & {
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordRequiresSymbol = UserError & {
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
+export type PasswordRequiresUppercaseLetter = UserError & {
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
 export type PasswordUpdateInput = {
   confirmNewPassword?: InputMaybe<Scalars['String']['input']>;
   newPassword: Scalars['String']['input'];
@@ -2435,6 +2590,13 @@ export enum PaymentResultType {
   Success = 'SUCCESS'
 }
 
+export type PriceInput = {
+  /** CurrencyCode must match the currency code of the session */
+  currencyCode: Scalars['String']['input'];
+  /** The price value */
+  price: Scalars['Float']['input'];
+};
+
 export type Pricelist = {
   comment?: Maybe<Scalars['String']['output']>;
   /** Required [operating mode](#operating-mode): `NO_SESSION` */
@@ -2503,6 +2665,77 @@ export type ProductLineUnitPriceArgs = {
 
 
 export type ProductLineUnitPriceReductionArgs = {
+  includingTax?: Scalars['Boolean']['input'];
+};
+
+export type ProductLineWithAddons = Line & {
+  addedFromCategory?: Maybe<Category>;
+  addons: Array<ProductLine>;
+  appliedPromotions: Array<AppliedPromotion>;
+  attributes: Array<Attribute>;
+  brand?: Maybe<Brand>;
+  comment: Scalars['String']['output'];
+  discountPercent: Scalars['Float']['output'];
+  displayItem: DisplayItem;
+  hasDiscount: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  item: Item;
+  lineValue: MonetaryValue;
+  lineValueWithAddons: MonetaryValue;
+  localizedSize?: Maybe<LocalizedProdSize>;
+  name: Scalars['String']['output'];
+  originalLineValue: MonetaryValue;
+  productExternalUrl?: Maybe<Scalars['String']['output']>;
+  productNumber: Scalars['String']['output'];
+  productVariantName: Scalars['String']['output'];
+  quantity: Scalars['Int']['output'];
+  size: Scalars['String']['output'];
+  subscriptionId?: Maybe<Scalars['Int']['output']>;
+  taxPercent: Scalars['Float']['output'];
+  unitOriginalPrice: MonetaryValue;
+  unitOriginalPriceWithAddons: MonetaryValue;
+  unitPrice: MonetaryValue;
+  unitPriceReduction: MonetaryValue;
+  unitPriceWithAddons: MonetaryValue;
+};
+
+
+export type ProductLineWithAddonsLineValueArgs = {
+  includingTax?: Scalars['Boolean']['input'];
+};
+
+
+export type ProductLineWithAddonsLineValueWithAddonsArgs = {
+  includingTax?: Scalars['Boolean']['input'];
+};
+
+
+export type ProductLineWithAddonsOriginalLineValueArgs = {
+  includingTax?: Scalars['Boolean']['input'];
+};
+
+
+export type ProductLineWithAddonsUnitOriginalPriceArgs = {
+  includingTax?: Scalars['Boolean']['input'];
+};
+
+
+export type ProductLineWithAddonsUnitOriginalPriceWithAddonsArgs = {
+  includingTax?: Scalars['Boolean']['input'];
+};
+
+
+export type ProductLineWithAddonsUnitPriceArgs = {
+  includingTax?: Scalars['Boolean']['input'];
+};
+
+
+export type ProductLineWithAddonsUnitPriceReductionArgs = {
+  includingTax?: Scalars['Boolean']['input'];
+};
+
+
+export type ProductLineWithAddonsUnitPriceWithAddonsArgs = {
   includingTax?: Scalars['Boolean']['input'];
 };
 
@@ -2911,6 +3144,7 @@ export type SelectionDeliveryGroup = {
 export type SelectionMutationPayload = {
   selection?: Maybe<Selection>;
   userErrors: Array<UserError>;
+  userWarnings: Array<UserWarning>;
 };
 
 
@@ -2962,6 +3196,7 @@ export type SessionPayload = Payload & SelectionMutationPayload & {
   selection?: Maybe<Selection>;
   session: Session;
   userErrors: Array<UserError>;
+  userWarnings: Array<UserWarning>;
 };
 
 
@@ -3246,6 +3481,7 @@ export type TranslatedProductVariant = {
 export type TriggerSelectionActionPayload = Payload & SelectionMutationPayload & {
   selection?: Maybe<Selection>;
   userErrors: Array<UserError>;
+  userWarnings: Array<UserWarning>;
 };
 
 
@@ -3267,6 +3503,10 @@ export type UnavailableItem = UserError & {
   path?: Maybe<Array<Scalars['String']['output']>>;
   unavailableQuantity: Scalars['Int']['output'];
 };
+
+export enum UpdateQuantityStrategy {
+  IncludeAddons = 'INCLUDE_ADDONS'
+}
 
 export enum UriLookupType {
   Affiliate = 'AFFILIATE',
@@ -3319,6 +3559,16 @@ export type UserError = {
 };
 
 export type UserErrorBase = UserError & {
+  message: Scalars['String']['output'];
+  path?: Maybe<Array<Scalars['String']['output']>>;
+};
+
+export type UserWarning = {
+  message: Scalars['String']['output'];
+  path?: Maybe<Array<Scalars['String']['output']>>;
+};
+
+export type UserWarningBase = UserWarning & {
   message: Scalars['String']['output'];
   path?: Maybe<Array<Scalars['String']['output']>>;
 };
@@ -3418,6 +3668,7 @@ export type ReceiptQuery = { order?: { id: string, number: number, orderDate: st
     >, shippingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, billingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingMethod: { id: number, name: string, comment?: string | null, selected: boolean, price: { value: number, formattedValue: string } }, lines: Array<
       | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
       | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+      | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
      | null> } | null };
 
 export type PaymentResultMutationVariables = Exact<{
@@ -3427,10 +3678,30 @@ export type PaymentResultMutationVariables = Exact<{
 
 export type PaymentResultMutation = { paymentResult:
     | { type: PaymentResultType, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { type: PaymentResultType, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3444,18 +3715,58 @@ export type ChangeLocaleMutationVariables = Exact<{
 
 export type ChangeLocaleMutation = { setCountryState:
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
@@ -3470,12 +3781,23 @@ export type AddFlexibleBundleToCartMutationVariables = Exact<{
 
 
 export type AddFlexibleBundleToCartMutation = { addFlexibleBundle: { userErrors: Array<
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     >, selection?: { lines: Array<
         | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-       | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null } };
+        | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+       | null>, grandTotal: { currency: { code: string, prefix?: string | null, suffix?: string | null } } } | null } };
 
 export type CartQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3483,7 +3805,8 @@ export type CartQueryVariables = Exact<{ [key: string]: never; }>;
 export type CartQuery = { selection: { lines: Array<
       | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
       | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-     | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } };
+      | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+     | null>, grandTotal: { currency: { code: string, prefix?: string | null, suffix?: string | null } } } };
 
 export type UpdateLineMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -3494,33 +3817,77 @@ export type UpdateLineMutationVariables = Exact<{
 
 export type UpdateLineMutation = { updateLine:
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-         | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+         | null>, grandTotal: { currency: { code: string, prefix?: string | null, suffix?: string | null } } } | null }
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-         | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+         | null>, grandTotal: { currency: { code: string, prefix?: string | null, suffix?: string | null } } } | null }
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-         | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+         | null>, grandTotal: { currency: { code: string, prefix?: string | null, suffix?: string | null } } } | null }
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-         | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+         | null>, grandTotal: { currency: { code: string, prefix?: string | null, suffix?: string | null } } } | null }
    };
 
 export type AddItemMutationVariables = Exact<{
@@ -3531,12 +3898,23 @@ export type AddItemMutationVariables = Exact<{
 
 
 export type AddItemMutation = { addItem: { userErrors: Array<
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     >, selection?: { lines: Array<
         | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-       | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } } | null } };
+        | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+       | null>, grandTotal: { currency: { code: string, prefix?: string | null, suffix?: string | null } } } | null } };
 
 export type ExpressCheckoutWidgetsQueryVariables = Exact<{
   plugins: Array<ExpressCheckoutWidgetsPluginItem> | ExpressCheckoutWidgetsPluginItem;
@@ -3544,6 +3922,16 @@ export type ExpressCheckoutWidgetsQueryVariables = Exact<{
 
 
 export type ExpressCheckoutWidgetsQuery = { expressCheckoutWidgets: { list?: Array<{ name: string, widgets: Array<{ id?: string | null, name: string, contents?: string | null, error?: string | null }> }> | null, userErrors: Array<
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     > } };
@@ -3558,6 +3946,7 @@ export type SetAddressMutation = { setAddress:
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3570,12 +3959,23 @@ export type SetAddressMutation = { setAddress:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3588,12 +3988,23 @@ export type SetAddressMutation = { setAddress:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3606,12 +4017,23 @@ export type SetAddressMutation = { setAddress:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3624,6 +4046,16 @@ export type SetAddressMutation = { setAddress:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
@@ -3638,6 +4070,7 @@ export type AddVoucherMutation = { addVoucher:
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3650,12 +4083,23 @@ export type AddVoucherMutation = { addVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3668,12 +4112,23 @@ export type AddVoucherMutation = { addVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3686,12 +4141,23 @@ export type AddVoucherMutation = { addVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3704,6 +4170,16 @@ export type AddVoucherMutation = { addVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3718,6 +4194,7 @@ export type RemoveVoucherMutation = { removeVoucher:
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3730,12 +4207,23 @@ export type RemoveVoucherMutation = { removeVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3748,12 +4236,23 @@ export type RemoveVoucherMutation = { removeVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3766,12 +4265,23 @@ export type RemoveVoucherMutation = { removeVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3784,6 +4294,16 @@ export type RemoveVoucherMutation = { removeVoucher:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -3798,11 +4318,22 @@ export type UpdateLineCheckoutMutationVariables = Exact<{
 
 export type UpdateLineCheckoutMutation = { updateLine:
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3816,11 +4347,22 @@ export type UpdateLineCheckoutMutation = { updateLine:
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null }
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3834,11 +4376,22 @@ export type UpdateLineCheckoutMutation = { updateLine:
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null }
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3852,11 +4405,22 @@ export type UpdateLineCheckoutMutation = { updateLine:
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null }
     | { userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       >, selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3881,6 +4445,7 @@ export type ApplyGiftCardMutation = { applyGiftCard:
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3893,12 +4458,23 @@ export type ApplyGiftCardMutation = { applyGiftCard:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3911,12 +4487,23 @@ export type ApplyGiftCardMutation = { applyGiftCard:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3929,12 +4516,23 @@ export type ApplyGiftCardMutation = { applyGiftCard:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3947,29 +4545,20 @@ export type ApplyGiftCardMutation = { applyGiftCard:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
    };
-
-export type CheckoutQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type CheckoutQuery = { selection: { externalGiftCardAvailable: boolean, lines: Array<
-      | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-      | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-     | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
-      | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-      | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-      | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
-    >, checkout?: { checkoutScript?: string | null, separateBillingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingAddress: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null }, paymentMethods: Array<{ id: number, uri: string, name: string, kind: PaymentMethodKind, initiateOnlySupported: boolean, handlingCost: { formattedValue: string, value: number } }>, paymentMethod?: { id: number } | null, shippingMethods?: Array<{ id: number, name: string, comment?: string | null, price: { formattedValue: string, value: number } }> | null, shippingMethod?: { id: number, name: string, comment?: string | null, price: { value: number, formattedValue: string } } | null, totals: Array<
-        | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
-        | { type: SelectionTotalRowType, price: { value: number, formattedValue: string, currency: { code: string } } }
-      >, widgets?: Array<
-        | { __typename: 'IngridWidget', snippet: string, deliveryOptionsAvailable: boolean }
-        | { __typename: 'KlarnaCheckoutWidget' }
-        | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
-      > | null } | null } };
 
 export type CheckoutPaymentMethodsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3985,6 +4574,7 @@ export type SetShippingMethodMutation = { setShippingMethod:
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -3997,12 +4587,23 @@ export type SetShippingMethodMutation = { setShippingMethod:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4015,12 +4616,23 @@ export type SetShippingMethodMutation = { setShippingMethod:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4033,12 +4645,23 @@ export type SetShippingMethodMutation = { setShippingMethod:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4051,6 +4674,16 @@ export type SetShippingMethodMutation = { setShippingMethod:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -4070,6 +4703,7 @@ export type PaymentInstructionsMutation = { paymentInstructions: { action?:
      | null, selection: { externalGiftCardAvailable: boolean, lines: Array<
         | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+        | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
        | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
         | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
         | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4082,6 +4716,16 @@ export type PaymentInstructionsMutation = { paymentInstructions: { action?:
           | { __typename: 'KlarnaCheckoutWidget' }
           | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
         > | null } | null }, userErrors: Array<
+      | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+      | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+      | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
     > } };
@@ -4095,6 +4739,7 @@ export type WidgetEventMutation = { handleWidgetEvent:
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4107,12 +4752,23 @@ export type WidgetEventMutation = { handleWidgetEvent:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4125,12 +4781,23 @@ export type WidgetEventMutation = { handleWidgetEvent:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4143,12 +4810,23 @@ export type WidgetEventMutation = { handleWidgetEvent:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
     | { selection?: { externalGiftCardAvailable: boolean, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
          | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
           | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
           | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4161,6 +4839,16 @@ export type WidgetEventMutation = { handleWidgetEvent:
             | { __typename: 'KlarnaCheckoutWidget' }
             | { __typename: 'KlarnaPaymentWidget', client_token: string, authorizePayload?: Record<string, unknown> | null }
           > | null } | null } | null, userErrors: Array<
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
+        | { message: string, path: Array<string> }
         | { message: string, path?: Array<string> | null }
         | { message: string, path?: Array<string> | null }
       > }
@@ -4180,18 +4868,58 @@ export type SetCountryAndLanguageMutationVariables = Exact<{
 
 export type SetCountryAndLanguageMutation = { setCountryState:
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
     | { userErrors: Array<
+        | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+        | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+        | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+        | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+        | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
         | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
         | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
       > }
@@ -4209,6 +4937,7 @@ export type OrdersQuery = { customer?: { totalOrders: number, orders: Array<{ id
       >, shippingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, billingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingMethod: { id: number, name: string, comment?: string | null, selected: boolean, price: { value: number, formattedValue: string } }, lines: Array<
         | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+        | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
        | null> }> } | null };
 
 export type LoginMutationVariables = Exact<{
@@ -4218,6 +4947,16 @@ export type LoginMutationVariables = Exact<{
 
 
 export type LoginMutation = { login: { session: { country: { code: string }, countryState?: { code: string } | null, language?: { code: string } | null, market: { id: number }, pricelist: { id: number }, loggedIn?: { id: number } | null }, userErrors: Array<
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     > } };
@@ -4228,6 +4967,16 @@ export type RegisterMutationVariables = Exact<{
 
 
 export type RegisterMutation = { registerCustomer: { userErrors: Array<
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     > } };
@@ -4244,6 +4993,16 @@ export type ForgotPasswordMutationVariables = Exact<{
 
 
 export type ForgotPasswordMutation = { requestPasswordResetEmail: { userErrors: Array<
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     > } };
@@ -4257,6 +5016,16 @@ export type ResetPasswordMutationVariables = Exact<{
 
 
 export type ResetPasswordMutation = { resetPassword: { userErrors: Array<
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
+      | { message: string, path: Array<string> }
       | { message: string, path?: Array<string> | null }
       | { message: string, path?: Array<string> | null }
     > } };
@@ -4270,7 +5039,18 @@ export type ChangeSubscriptionContractAddressMutationVariables = Exact<{
 export type ChangeSubscriptionContractAddressMutation = { changeSubscriptionContractAddress: { contract?: { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
+      | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+      | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+      | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
     > } };
@@ -4284,7 +5064,18 @@ export type UpdateSubscriptionIntervalMutationVariables = Exact<{
 export type UpdateSubscriptionIntervalMutation = { updateSubscriptionInterval: { contract?: { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
+      | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+      | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+      | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
     > } };
@@ -4298,7 +5089,18 @@ export type UpdateSubscriptionQuantityMutationVariables = Exact<{
 export type UpdateSubscriptionQuantityMutation = { updateSubscriptionQuantity: { contract?: { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
+      | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+      | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+      | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
     > } };
@@ -4312,7 +5114,18 @@ export type UpdateSubscriptionStatusMutationVariables = Exact<{
 export type UpdateSubscriptionStatusMutation = { updateSubscriptionStatus: { contract?: { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> } | null, userErrors: Array<
+      | { __typename: 'PasswordCannotContainNewline', message: string, path: Array<string> }
+      | { __typename: 'PasswordCannotStartOrEndWithWhitespace', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsLeaked', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooLong', message: string, path: Array<string> }
+      | { __typename: 'PasswordIsTooShort', message: string, path: Array<string> }
+      | { __typename: 'PasswordNeedsChange', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresLowercaseLetter', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresNumber', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresSymbol', message: string, path: Array<string> }
+      | { __typename: 'PasswordRequiresUppercaseLetter', message: string, path: Array<string> }
       | { __typename: 'UnavailableItem', message: string, path?: Array<string> | null }
       | { __typename: 'UserErrorBase', message: string, path?: Array<string> | null }
     > } };
@@ -4323,6 +5136,7 @@ export type SubscriptionContractsQueryVariables = Exact<{ [key: string]: never; 
 export type SubscriptionContractsQuery = { customer?: { subscriptionContracts: Array<{ id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
           | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
           | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+          | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
         >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> }> } | null };
 
 export type LookupProductMutationVariables = Exact<{
@@ -4478,6 +5292,7 @@ export type LookupCategoryMutation = { lookupUri?:
 export type CheckoutFragment = { externalGiftCardAvailable: boolean, lines: Array<
     | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
     | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+    | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
    | null>, grandTotal: { value: number, currency: { denominator: number, code: string } }, discounts: Array<
     | { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
     | { code: string, name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null }
@@ -4499,6 +5314,7 @@ export type OrderFragment = { id: string, number: number, orderDate: string, sta
   >, shippingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, billingAddress?: { address1?: string | null, address2?: string | null, city?: string | null, zipCode?: string | null, email?: string | null, firstName?: string | null, lastName?: string | null, phoneNumber?: string | null, companyName?: string | null, vatNumber?: string | null, country?: { code: string, name: string } | null, state?: { code: string, name: string } | null } | null, shippingMethod: { id: number, name: string, comment?: string | null, selected: boolean, price: { value: number, formattedValue: string } }, lines: Array<
     | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
     | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+    | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
    | null> };
 
 type Voucher_AutoVoucher_Fragment = { name: string, value: { value: number, formattedValue: string }, giftCard?: { lastFourDigits: string } | null };
@@ -4620,15 +5436,19 @@ export type ProductDetailsFragment = { id: number, available: boolean, uri: stri
 export type CartFragment = { lines: Array<
     | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
     | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
-   | null>, grandTotal: { currency: { prefix?: string | null, suffix?: string | null } } };
+    | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+   | null>, grandTotal: { currency: { code: string, prefix?: string | null, suffix?: string | null } } };
 
 type Line_BundleLine_Fragment = { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } };
 
 type Line_ProductLine_Fragment = { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } };
 
+type Line_ProductLineWithAddons_Fragment = { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } };
+
 export type LineFragment =
   | Line_BundleLine_Fragment
   | Line_ProductLine_Fragment
+  | Line_ProductLineWithAddons_Fragment
 ;
 
 export type SessionFragment = { country: { code: string }, countryState?: { code: string } | null, language?: { code: string } | null, market: { id: number }, pricelist: { id: number }, loggedIn?: { id: number } | null };
@@ -4636,11 +5456,13 @@ export type SessionFragment = { country: { code: string }, countryState?: { code
 export type SubscriptionInfoFragment = { id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
     | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
     | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+    | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
   >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null };
 
 export type SubscriptionContractFragment = { id: number, createdAt: string, shippingAddress: { firstName?: string | null, lastName?: string | null, address1?: string | null, address2?: string | null, email?: string | null, phoneNumber?: string | null, zipCode?: string | null, city?: string | null, state?: { name: string } | null, country?: { name: string } | null }, shippingOption?: { name: string } | null, subscriptionPayment: Array<{ paymentMethod: string }>, subscriptions: Array<{ id: number, status: SubscriptionStatus, nextOrderDate?: string | null, lines: Array<
       | { __typename: 'BundleLine', id: string, quantity: number, subscriptionId?: number | null, bundle?: { type: BundleType, sections: Array<{ quantity: number, lines: Array<{ id: string, name: string, quantity: number, lineValue: { formattedValue: string }, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> } }> }> } | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
       | { __typename: 'ProductLine', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
+      | { __typename: 'ProductLineWithAddons', id: string, quantity: number, subscriptionId?: number | null, item: { id: string, name: string, sizeLocalization: Array<{ name?: string | null, countries: Array<{ code: string }> }> }, lineValue: { formattedValue: string, value: number }, displayItem: { name: string, uri: string, media: Array<{ altText?: string | null, source: { url: string } }>, subscriptionPlans: Array<{ id: number, discount?: number | null, interval: { value: number, type: DateIntervalType } }> } }
     >, interval: { value: number, type: DateIntervalType }, plan?: { id: number } | null }> };
 
 export class TypedDocumentString<TResult, TVariables>
@@ -5411,6 +6233,7 @@ export const CartFragmentDoc = new TypedDocumentString(`
   }
   grandTotal {
     currency {
+      code
       prefix
       suffix
     }
@@ -5903,6 +6726,7 @@ fragment cart on Selection {
   }
   grandTotal {
     currency {
+      code
       prefix
       suffix
     }
@@ -5983,6 +6807,7 @@ fragment cart on Selection {
   }
   grandTotal {
     currency {
+      code
       prefix
       suffix
     }
@@ -6073,6 +6898,7 @@ fragment cart on Selection {
   }
   grandTotal {
     currency {
+      code
       prefix
       suffix
     }
@@ -6159,6 +6985,7 @@ fragment cart on Selection {
   }
   grandTotal {
     currency {
+      code
       prefix
       suffix
     }
@@ -7166,186 +7993,6 @@ fragment line on Line {
     }
   }
 }`) as unknown as TypedDocumentString<ApplyGiftCardMutation, ApplyGiftCardMutationVariables>;
-export const CheckoutDocument = new TypedDocumentString(`
-    query checkout {
-  selection {
-    ...checkout
-  }
-}
-    fragment checkout on Selection {
-  lines {
-    ...line
-  }
-  grandTotal {
-    value
-    currency {
-      denominator
-      code
-    }
-  }
-  discounts {
-    ...voucher
-  }
-  externalGiftCardAvailable
-  checkout {
-    checkoutScript
-    separateBillingAddress {
-      ...address
-    }
-    shippingAddress {
-      ...address
-    }
-    paymentMethods {
-      id
-      uri
-      name
-      kind
-      initiateOnlySupported
-      handlingCost {
-        formattedValue
-        value
-      }
-    }
-    paymentMethod {
-      id
-    }
-    shippingMethods {
-      id
-      name
-      comment
-      price {
-        formattedValue
-        value
-      }
-    }
-    shippingMethod {
-      id
-      name
-      comment
-      price {
-        value
-        formattedValue
-      }
-    }
-    totals {
-      type
-      price {
-        value
-        formattedValue
-        currency {
-          code
-        }
-      }
-    }
-    widgets {
-      __typename
-      ... on IngridWidget {
-        snippet
-        deliveryOptionsAvailable
-      }
-      ... on KlarnaPaymentWidget {
-        client_token
-        authorizePayload
-      }
-    }
-  }
-}
-fragment address on Address {
-  country {
-    code
-    name
-  }
-  state {
-    code
-    name
-  }
-  address1
-  address2
-  city
-  zipCode
-  email
-  firstName
-  lastName
-  phoneNumber
-  companyName
-  vatNumber
-}
-fragment voucher on Voucher {
-  name
-  value {
-    value
-    formattedValue
-  }
-  ... on CodeVoucher {
-    code
-  }
-  giftCard {
-    lastFourDigits
-  }
-}
-fragment item on Item {
-  id
-  name
-  sizeLocalization {
-    name
-    countries {
-      code
-    }
-  }
-}
-fragment subscriptionPlan on SubscriptionPlan {
-  id
-  discount
-  interval {
-    value
-    type
-  }
-}
-fragment line on Line {
-  __typename
-  id
-  item {
-    ...item
-  }
-  quantity
-  lineValue {
-    formattedValue
-    value
-  }
-  subscriptionId
-  displayItem {
-    name
-    uri
-    media {
-      altText
-      source(sizeName: "mini") {
-        url
-      }
-    }
-    subscriptionPlans {
-      ...subscriptionPlan
-    }
-  }
-  ... on BundleLine {
-    bundle {
-      type
-      sections {
-        quantity
-        lines {
-          id
-          lineValue {
-            formattedValue
-          }
-          name
-          quantity
-          item {
-            ...item
-          }
-        }
-      }
-    }
-  }
-}`) as unknown as TypedDocumentString<CheckoutQuery, CheckoutQueryVariables>;
 export const CheckoutPaymentMethodsDocument = new TypedDocumentString(`
     query checkoutPaymentMethods {
   selection {

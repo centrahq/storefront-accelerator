@@ -19,7 +19,6 @@ import { Widget } from '../Widget';
 
 // Payment methods to display as quick checkout
 const QUICK_PAYMENT_METHODS: PaymentMethodKind[] = [
-  PaymentMethodKind.StripePaymentIntents,
   PaymentMethodKind.PaypalCommerce,
 ];
 

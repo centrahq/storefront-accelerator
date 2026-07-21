@@ -12,7 +12,11 @@ import { PaymentMethodKind } from '@gql/graphql';
 import { checkoutQuery } from '../../queries';
 import { PaymentWidget } from './PaymentWidget';
 
-const PAYMENT_METHODS = [PaymentMethodKind.AdyenDropin, PaymentMethodKind.KlarnaPayments];
+const PAYMENT_METHODS = [
+  PaymentMethodKind.StripePaymentIntents,
+  PaymentMethodKind.AdyenDropin,
+  PaymentMethodKind.KlarnaPayments,
+];
 
 export const Payment = () => {
   const { t } = useTranslation(['checkout']);
@@ -39,7 +43,7 @@ export const Payment = () => {
         </p>
       </div>
       {paymentMethods.length === 1 && paymentMethods[0] && (
-        <PaymentWidget id={paymentMethods[0].id} uri={paymentMethods[0].uri} />
+        <PaymentWidget id={paymentMethods[0].id} uri={paymentMethods[0].uri} kind={paymentMethods[0].kind} />
       )}
       {paymentMethods.length > 1 && (
         <div className="flex flex-col gap-4">
@@ -57,7 +61,9 @@ export const Payment = () => {
                   <ChevronDownIcon className="text-mono-800 size-4" aria-hidden="true" />
                 )}
               </button>
-              {selectedPaymentMethod === method.id && <PaymentWidget id={method.id} uri={method.uri} />}
+              {selectedPaymentMethod === method.id && (
+                <PaymentWidget id={method.id} uri={method.uri} kind={method.kind} />
+              )}
             </div>
           ))}
         </div>

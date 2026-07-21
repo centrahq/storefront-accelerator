@@ -69,7 +69,7 @@ const CartItem = ({ line }: { line: LineFragment }) => {
             <ShopLink className="font-medium" href={`/product/${line.displayItem.uri}`}>
               {line.displayItem.name}
             </ShopLink>
-            {(line.__typename === 'ProductLine' || line.bundle?.type === BundleType.Fixed) && (
+            {(line.__typename !== 'BundleLine' || line.bundle?.type === BundleType.Fixed) && (
               <dl className="flex gap-2 text-sm">
                 <dt className="text-mono-500">{t('shop:cart.size')}</dt>
                 <dd>{getItemName(line.item, country)}</dd>

@@ -1,10 +1,10 @@
 import { AddressData, Core, GooglePay, SubmitActions, SubmitData, UIElement } from '@adyen/adyen-web';
 
 import { addToCart } from '@/features/cart/service';
-import { CheckoutQuery, SelectionTotalRowType } from '@gql/graphql';
+import { SelectionTotalRowType } from '@gql/graphql';
 
-import { PaymentConfigResponse } from '../../../queries';
-import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
+import { AdyenPaymentConfigResponse } from '../../../queries';
+import { CheckoutData, fetchExpressCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
 import { AdyenAddress } from '../types';
 import { debugLog } from './debug';
 import { formatMinorToMajor } from './helpers';
@@ -24,11 +24,10 @@ const mapAdyenAddressToCentra = (adyenAddress: Partial<google.payments.api.Addre
 };
 
 const createGooglePayLineItems = (
-  totals: NonNullable<CheckoutQuery['selection']['checkout']>['totals'],
-  lines: CheckoutQuery['selection']['lines'],
+  totals: CheckoutData['checkout']['totals'],
+  lines: CheckoutData['lines'],
 ): google.payments.api.DisplayItem[] => {
   const itemsTotal = totals.find((t) => t.type === SelectionTotalRowType.ItemsSubtotal)?.price.value ?? 0;
-  const tax = totals.find((t) => t.type === SelectionTotalRowType.IncludingTaxTotal)?.price.value ?? 0;
   const shipping = totals.find((t) => t.type === SelectionTotalRowType.Shipping)?.price.value ?? 0;
   const discount = totals.find((t) => t.type === SelectionTotalRowType.Discount)?.price.value ?? 0;
 
@@ -47,11 +46,6 @@ const createGooglePayLineItems = (
       label: 'Discount',
       price: discount.toFixed(2),
       type: 'SUBTOTAL' as const,
-    },
-    {
-      label: 'Tax',
-      price: tax.toFixed(2),
-      type: 'TAX' as const,
     },
     {
       label: 'Shipping',
@@ -130,7 +124,7 @@ export const getGooglePay = ({
   onAddedItemLineChange,
 }: {
   checkout: Core;
-  paymentConfig: PaymentConfigResponse;
+  paymentConfig: AdyenPaymentConfigResponse;
   initialLineItems: {
     name: string;
     price: string;
@@ -226,7 +220,7 @@ export const getGooglePay = ({
       const currentItemId = getItemId();
       if (currentItemId) {
         try {
-          const checkout = await fetchCheckout();
+          const checkout = await fetchExpressCheckout();
           debugLog('googlePayPaymentDataChangedHandler:INITIALIZE:fetchCheckout', checkout);
           const hasProductInSelection = checkout.lines.some((line) => line?.item.id === currentItemId);
 

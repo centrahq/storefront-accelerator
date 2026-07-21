@@ -1,6 +1,5 @@
 'use client';
 
-import { useSuspenseQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { toast } from 'sonner';
 
@@ -12,7 +11,6 @@ import { getItemName } from '@/lib/utils/product';
 import { BundleType, LineFragment } from '@gql/graphql';
 
 import { useUpdateLineCheckout } from '../mutations';
-import { checkoutQuery } from '../queries';
 
 const CheckoutItem = ({ line }: { line: LineFragment }) => {
   const { country } = useLocale();
@@ -69,7 +67,7 @@ const CheckoutItem = ({ line }: { line: LineFragment }) => {
             <ShopLink className="font-medium" href={`/product/${line.displayItem.uri}`}>
               {line.displayItem.name}
             </ShopLink>
-            {(line.__typename === 'ProductLine' || line.bundle?.type === BundleType.Fixed) && (
+            {(line.__typename !== 'BundleLine' || line.bundle?.type === BundleType.Fixed) && (
               <dl className="flex gap-2 text-sm">
                 <dt className="text-mono-500">{t('shop:cart.size')}</dt>
                 <dd>{getItemName(line.item, country)}</dd>
@@ -127,22 +125,20 @@ const CheckoutItem = ({ line }: { line: LineFragment }) => {
   );
 };
 
-export const CheckoutItems = () => {
+export const CheckoutItems = ({ lines }: { lines: (LineFragment | null)[] }) => {
   const { t } = useTranslation(['shop']);
-  const { data } = useSuspenseQuery(checkoutQuery);
-  const { lines } = data;
 
-  if (lines.length === 0) {
+  const filteredLines = lines.filter((line): line is LineFragment => !!line);
+
+  if (filteredLines.length === 0) {
     return <span>{t('shop:cart.empty')}</span>;
   }
 
   return (
     <ul className="flex flex-col gap-2">
-      {lines
-        .filter((line) => !!line)
-        .map((line) => (
-          <CheckoutItem key={line.id} line={line} />
-        ))}
+      {filteredLines.map((line) => (
+        <CheckoutItem key={line.id} line={line} />
+      ))}
     </ul>
   );
 };

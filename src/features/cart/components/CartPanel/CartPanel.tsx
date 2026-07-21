@@ -5,7 +5,7 @@ import { ShoppingBagIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useIsMutating, useSuspenseQuery } from '@tanstack/react-query';
 import { useContext, useMemo } from 'react';
 
-import { AdyenExpressCheckout } from '@/features/checkout/components/Payment/AdyenExpressCheckout/AdyenExpressCheckout';
+import { ExpressCheckout } from '@/features/checkout/components/Payment/ExpressCheckout';
 import { Trans } from '@/features/i18n';
 import { ShopLink } from '@/features/i18n/routing/ShopLink';
 import { useTranslation } from '@/features/i18n/useTranslation/client';
@@ -89,7 +89,7 @@ export const CartPanel = ({ language, market }: Props) => {
                 {t('shop:cart.proceed')}
               </ShopLink>
               {!hasSubscriptionItems && lines.length > 0 && (
-                <AdyenExpressCheckout
+                <ExpressCheckout
                   cartTotal={totalValue}
                   initialLineItems={lines.map((line) => ({
                     name: line?.displayItem.name ?? '',

@@ -11,7 +11,7 @@ interface State {
   error?: Error;
 }
 
-export class AdyenExpressCheckoutErrorBoundary extends Component<Props, State> {
+export class ExpressCheckoutErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false };
@@ -23,7 +23,7 @@ export class AdyenExpressCheckoutErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     if (process.env.NODE_ENV === 'development') {
-      console.error('Adyen Express Checkout Error:', error, errorInfo);
+      console.error('Express Checkout Error:', error, errorInfo);
     }
   }
 

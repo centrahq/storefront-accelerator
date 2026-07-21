@@ -1,10 +1,10 @@
 import { ApplePay, Core, SubmitActions, SubmitData, UIElement } from '@adyen/adyen-web';
 
 import { addToCart } from '@/features/cart/service';
-import { CheckoutQuery, SelectionTotalRowType } from '@gql/graphql';
+import { SelectionTotalRowType } from '@gql/graphql';
 
-import { PaymentConfigResponse } from '../../../queries';
-import { fetchCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
+import { AdyenPaymentConfigResponse } from '../../../queries';
+import { CheckoutData, fetchCheckout, fetchExpressCheckout, setShippingMethod, submitPaymentInstructions } from '../../../service';
 import { AdyenAddress } from '../types';
 import { debugLog } from './debug';
 
@@ -27,11 +27,10 @@ const mapApplePayAddressToCentra = (
 };
 
 const createApplePayLineItems = (
-  totals: NonNullable<CheckoutQuery['selection']['checkout']>['totals'],
-  lines: CheckoutQuery['selection']['lines'],
+  totals: CheckoutData['checkout']['totals'],
+  lines: CheckoutData['lines'],
 ): ApplePayJS.ApplePayLineItem[] => {
   const itemsTotal = totals.find((t) => t.type === SelectionTotalRowType.ItemsSubtotal)?.price.value ?? 0;
-  const tax = totals.find((t) => t.type === SelectionTotalRowType.IncludingTaxTotal)?.price.value ?? 0;
   const shipping = totals.find((t) => t.type === SelectionTotalRowType.Shipping)?.price.value ?? 0;
   const discount = totals.find((t) => t.type === SelectionTotalRowType.Discount)?.price.value ?? 0;
 
@@ -52,11 +51,6 @@ const createApplePayLineItems = (
       type: 'final' as const,
     },
     {
-      amount: tax.toFixed(2),
-      label: 'Tax',
-      type: 'final' as const,
-    },
-    {
       amount: shipping.toFixed(2),
       label: 'Shipping',
       type: 'final' as const,
@@ -74,7 +68,7 @@ const onApplePayClick = async (
   debugLog('applePay:onClick:input', { itemId });
   if (itemId) {
     try {
-      const checkout = await fetchCheckout();
+      const checkout = await fetchExpressCheckout();
       debugLog('applePay:onClick:fetchCheckout', checkout);
       const hasProductInSelection = checkout.lines.some((line) => line?.item.id === itemId);
 
@@ -123,7 +117,7 @@ export const getApplePay = ({
     billingAddress?: AdyenAddress,
     shippingAddress?: AdyenAddress,
   ) => Promise<void>;
-  paymentConfig: PaymentConfigResponse;
+  paymentConfig: AdyenPaymentConfigResponse;
 }) => {
   let currentBillingAddress: AdyenAddress | undefined;
   let currentShippingAddress: AdyenAddress | undefined;
@@ -131,7 +125,7 @@ export const getApplePay = ({
     resolve: (data: ApplePayJS.ApplePayShippingContactUpdate) => void,
     reject: (error?: Error) => void,
     event: ApplePayJS.ApplePayShippingContactSelectedEvent,
-    paymentConfig: PaymentConfigResponse,
+    paymentConfig: AdyenPaymentConfigResponse,
   ) => {
     debugLog('applePay:onShippingContactSelected:input', { event, paymentConfig });
     const shippingAddress = event.shippingContact;
