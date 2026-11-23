@@ -4,7 +4,7 @@ import { apiTokenCookie } from '../../cookies';
 import { CentraError } from '../../errors';
 import { CentraResponse } from '../../types/api';
 
-const getApiToken = async () => {
+export const getApiToken = async () => {
   if (typeof document === 'undefined') {
     const { cookies } = await import('next/headers');
 

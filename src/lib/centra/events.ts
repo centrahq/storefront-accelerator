@@ -46,7 +46,7 @@ const getShippingUpdateResponse = (
     shippingMethodsAvailable:
       checkout.shippingMethods?.map((method) => ({
         name: method.name,
-        price: method.price.formattedValue,
+        price: method.price.formattedValue ?? '',
         priceAsNumber: method.price.value,
         shippingMethod: String(method.id),
       })) ?? [],

@@ -4,12 +4,19 @@ import { queryOptions } from '@tanstack/react-query';
 import { ExpressCheckoutWidgetsQuery, ExpressCheckoutWidgetType } from '@gql/graphql';
 
 import { getExpressCheckoutWidgets } from './components/Payment/AdyenExpressCheckout/actions';
-import { fetchCheckout, fetchCheckoutPaymentMethods } from './service';
+import { fetchCheckout, fetchCheckoutPaymentMethods, fetchExpressSelection } from './service';
 
 export const checkoutQuery = queryOptions({
   queryKey: ['checkout'],
   queryFn: fetchCheckout,
 });
+
+/** The selection a wallet outside checkout prices, read again whenever the bag (`bagKey`) changes. */
+export const expressSelectionQuery = (bagKey: string) =>
+  queryOptions({
+    queryKey: ['express-selection', bagKey],
+    queryFn: fetchExpressSelection,
+  });
 
 export const checkoutPaymentMethodsQuery = queryOptions({
   queryKey: ['checkout-payment-methods'],

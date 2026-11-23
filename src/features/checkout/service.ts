@@ -26,6 +26,23 @@ export function fetchExpressCheckout(): Promise<CheckoutData> {
   return sendWidgetData({ expressCheckout: true });
 }
 
+// What a wallet on the product page or in the cart reads before it shows: the bag, its addresses and which payment
+// methods take an express payment. A query, so browsing sets no express context; the wallet sets it when engaged.
+export async function fetchExpressSelection(): Promise<CheckoutData | null> {
+  const response = await centraFetch(
+    graphql(`
+      query expressSelection {
+        selection {
+          ...checkout
+        }
+      }
+    `),
+  );
+  const { selection } = response.data;
+
+  return selection.checkout ? { ...selection, checkout: selection.checkout } : null;
+}
+
 export async function fetchCheckoutPaymentMethods() {
   const response = await centraFetch(
     graphql(`

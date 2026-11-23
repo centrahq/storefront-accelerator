@@ -42,6 +42,7 @@
   "place-order": "Place order",
   "payment": "Payment",
   "payment-failed": "Payment failed",
+  "payment-may-have-been-received": "Your payment may have been received. Contact us to confirm your order before paying again.",
   "payment-method": "Payment method",
   "payment-options": "Payment options",
   "receipt": {
