@@ -36,6 +36,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# jolli memory (local agent state)
+.jolli/
+
 # vscode
 .vscode/*
 !.vscode/extensions.json

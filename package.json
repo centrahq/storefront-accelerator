@@ -17,7 +17,13 @@
     "gql-gen:watch": "gql-gen --watch"
   },
   "dependencies": {
-    "@adyen/adyen-web": "^6.25.0",
+    "@adyen/adyen-web": "^6.25.1",
+    "@centra/adyen": "^0.1.0-beta.2",
+    "@centra/adyen-react": "^0.1.0-beta.2",
+    "@centra/storefront": "^0.1.0-beta.2",
+    "@centra/storefront-operations": "^0.1.0-beta.2",
+    "@centra/stripe": "^0.1.0-beta.2",
+    "@centra/stripe-react": "^0.1.0-beta.2",
     "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",
     "@stripe/react-stripe-js": "^5.6.1",

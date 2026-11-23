@@ -43,6 +43,7 @@ export const CheckoutSummary = ({ language, market, summary }: Props) => {
           initialLineItems={lineItems}
           language={language}
           market={market}
+          selection={data}
         />
       )}
     </div>

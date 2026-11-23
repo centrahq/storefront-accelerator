@@ -15,6 +15,8 @@ directive @feature(flag: String!) on ARGUMENT_DEFINITION | FIELD_DEFINITION | IN
 
 directive @maxLimit(limit: Int!, scope: SCOPE!) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INTERFACE | OBJECT
 
+directive @noDocs on ARGUMENT_DEFINITION | ENUM | ENUM_VALUE | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INPUT_OBJECT | INTERFACE | OBJECT | SCALAR | UNION
+
 directive @nolock on FIELD_DEFINITION
 
 directive @notEmpty on FIELD_DEFINITION | SCALAR
@@ -22,6 +24,8 @@ directive @notEmpty on FIELD_DEFINITION | SCALAR
 directive @operationCategory(category: OPERATION_CATEGORY) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INTERFACE | OBJECT
 
 directive @permission(permission: String!) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INTERFACE | OBJECT
+
+directive @redacted on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @scope(scope: SCOPE!) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION | INTERFACE | OBJECT
 
@@ -269,11 +273,6 @@ type AttributeStringElement implements AttributeElement {
   key: String!
   kind: AttributeElementKind!
   translations: [AttributeStringElementTranslation!]
-  value: String!
-}
-
-input AttributeStringElementInput {
-  key: String!
   value: String!
 }
 
@@ -603,6 +602,13 @@ type CheckboxAddressField implements AddressField {
 
 type CheckoutSelection {
   addressFields: AddressFieldList!
+
+  """
+  Whether shipping widgets (e.g. Ingrid) are force-disabled on this selection via
+  `disableShippingWidgets`. Read this instead of querying `widgets` just to check state, since
+  querying `widgets` switches the selection to the old widget-driven methodology.
+  """
+  areShippingWidgetsDisabled: Boolean
   checkoutScript: String
   deliveryGroups: [SelectionDeliveryGroup!]!
   hasSeparateBillingAddress: Boolean!
@@ -611,7 +617,12 @@ type CheckoutSelection {
   separateBillingAddress: Address
   shippingAddress: Address!
   shippingMethod: ShippingMethod
-  shippingMethods: [ShippingMethod!]
+
+  """
+  optimizeFor signals which display context this is being requested for, letting the Shipping
+  Engine return a tailored set of options. Omit for the full standard set.
+  """
+  shippingMethods(optimizeFor: ShippingMethodsOptimizeFor): [ShippingMethod!]
   totals: [SelectionTotalRow!]!
   widgets: [Widget!]
 }
@@ -713,11 +724,6 @@ type CountryAddressField implements AddressField {
   required: Boolean!
   selected: Country
   visible: Boolean!
-}
-
-input CountryInput {
-  code: String
-  id: Int
 }
 
 type CountryState {
@@ -1276,6 +1282,11 @@ type JavascriptPaymentAction implements PaymentAction {
   script: String!
 }
 
+type KeyValue {
+  key: String!
+  value: String!
+}
+
 type KlarnaCheckoutWidget implements Widget {
   kind: WidgetKind!
   replaceSnippet: Boolean!
@@ -1495,7 +1506,8 @@ enum MediaType {
 
 type MonetaryValue {
   currency: Currency!
-  formattedValue: String!
+  formatted: String!
+  formattedValue: String @deprecated(reason: "Use `formatted` - this field will be removed in the future.")
   value: Float!
 }
 
@@ -1613,6 +1625,17 @@ type Mutation {
   Required [operating mode](#operating-mode): `SESSION`
   """
   deleteLine(lineId: String!): SelectionMutationPayload!
+
+  """
+  Force-disable shipping widgets (e.g. Ingrid) on the current selection, so front-end partners
+  control the migration to the Shipping Engine. This is an override flag, not a toggle between
+  two active states: `disabled: true` forces shipping widgets off regardless of what
+  plugin/market config would otherwise decide; `disabled: false` removes the override so their
+  normal behavior applies.
+  
+  Required [operating mode](#operating-mode): `SESSION`
+  """
+  disableShippingWidgets(disabled: Boolean!): SelectionMutationPayload!
 
   """
   Finalize the recurring payment process by send all variables received to paymentReturnPage.
@@ -1827,6 +1850,23 @@ type Mutation {
   setCountryState(countryCode: String!, stateCode: String): SelectionMutationPayload!
 
   """
+  Set the shipping method for a single delivery group on a selection with multiple delivery groups.
+  
+  Required [operating mode](#operating-mode): `SESSION`
+  """
+  setDeliveryGroupShippingMethod(deliveryGroupId: String!, locationId: String, shippingMethodId: Int!): SelectionMutationPayload!
+
+  """
+  Submit customer choices for a delivery group's selected shipping method, on a selection with
+  multiple delivery groups. Returns a user error if a choice id is not present in the delivery
+  group's currently selected shipping method's customerChoices, or if a value does not satisfy
+  that choice's type constraints.
+  
+  Required [operating mode](#operating-mode): `SESSION`
+  """
+  setDeliveryGroupShippingMethodCustomerChoices(choices: [ShippingMethodCustomerChoiceValueInput!]!, deliveryGroupId: String!): SelectionMutationPayload!
+
+  """
   Set the language on the current session and selection.
   
   Required [operating mode](#operating-mode): `SESSION`
@@ -1913,7 +1953,40 @@ type Mutation {
   
   Required [operating mode](#operating-mode): `SESSION`
   """
-  setShippingMethod(id: Int!): SelectionMutationPayload!
+  setShippingMethod(id: Int!, locationId: String): SelectionMutationPayload!
+
+  """
+  Submit customer choices for the selected shipping method, on a selection with no delivery
+  groups. Returns a user error if a choice id is not present in the currently selected shipping
+  method's customerChoices, or if a value does not satisfy that choice's type constraints.
+  
+  Required [operating mode](#operating-mode): `SESSION`
+  """
+  setShippingMethodCustomerChoices(choices: [ShippingMethodCustomerChoiceValueInput!]!): SelectionMutationPayload!
+
+  """
+  Login using Social Login.
+  
+  Called after [socialLoginVerify](/mutations/socialLoginVerify).
+  
+  See: [login](/mutations/login)
+  
+  Required [operating mode](#operating-mode): `SHARED_SECRET`
+  """
+  socialLogin(input: SocialLoginInput!, loginOptions: LoginOptions): LoginPayload!
+
+  """
+  Verifies an ID token.
+  
+  ID tokens can only be used once, within a 30 second window.
+  
+  Called after [socialLoginList](/queries/socialLoginList).
+  
+  See: [socialLogin](/mutations/socialLogin).
+  
+  Required [operating mode](#operating-mode): `SHARED_SECRET`
+  """
+  socialLoginVerify(input: SocialLoginVerifyInput!): SocialLoginVerifyPayload!
 
   """
   Subscribe to back in stock notification.
@@ -2076,6 +2149,28 @@ type OpeningHours {
   start: String!
 }
 
+type OpeningHoursPeriod {
+  """null means open 24 h"""
+  close: OpeningHoursPoint
+  open: OpeningHoursPoint!
+}
+
+type OpeningHoursPeriodList {
+  list: [OpeningHoursPeriod!]!
+  pagination: PaginationInfo!
+}
+
+type OpeningHoursPoint {
+  """0 = Sunday … 6 = Saturday"""
+  day: Int!
+
+  """0–23"""
+  hour: Int!
+
+  """0–59"""
+  minute: Int!
+}
+
 type Order {
   affiliateHtml: String!
   attributes: [Attribute!]!
@@ -2108,41 +2203,6 @@ type Order {
   totals: [SelectionTotalRow!]!
   usedFallbackTax: Boolean!
   userIP: String
-}
-
-input OrderBillingAddressCreateInput {
-  address1: String!
-  address2: String
-  attention: String
-  city: String!
-  companyName: String
-  country: CountryInput!
-  email: String
-  faxNumber: String
-  firstName: String
-  lastName: String
-  phoneNumber: String
-  stateOrProvince: String
-  vatNumber: String
-  zipCode: String!
-}
-
-input OrderShippingAddressCreateInput {
-  address1: String!
-  address2: String
-  attention: String
-  cellPhoneNumber: String
-  city: String!
-  companyName: String
-  country: CountryInput!
-  email: String!
-  faxNumber: String
-  firstName: String
-  lastName: String
-  phoneNumber: String
-  registerCustomer: Boolean
-  stateOrProvince: String
-  zipCode: String!
 }
 
 enum OrderStatus {
@@ -2242,6 +2302,17 @@ enum PaymentActionType {
   JAVASCRIPT
   REDIRECT
   SUCCESS
+}
+
+type PaymentError implements UserError {
+  code: PaymentErrorCode!
+  message: String!
+  path: [String!]
+}
+
+enum PaymentErrorCode {
+  CANCELLED
+  FAILED
 }
 
 input PaymentInstructionsInput {
@@ -2390,6 +2461,7 @@ type ProductLineWithAddons implements Line {
   hasDiscount: Boolean!
   id: String!
   item: Item!
+  lineOriginalValueWithAddons(includingTax: Boolean! = true): MonetaryValue!
   lineValue(includingTax: Boolean! = true): MonetaryValue!
   lineValueWithAddons(includingTax: Boolean! = true): MonetaryValue!
   localizedSize: LocalizedProdSize
@@ -2423,27 +2495,6 @@ type ProductVariant {
   name: String
   number: String
   translations: [TranslatedProductVariant!]
-}
-
-"""
-A promotion is information about how you can trigger certain deals by adding an item to cart.
-
-E.g. add to cart and get 50% off on your cheapest product, save 20% when bought with X.
-
-It interacts with auto vouchers.
-"""
-interface Promotion {
-  action: PromotionAction!
-  result: PromotionResult!
-}
-
-enum PromotionAction {
-  ADD_ME_TO_CART
-  ADD_RELATED_ITEM_TO_CART
-}
-
-enum PromotionResult {
-  FREE_SHIPPING
 }
 
 type Query {
@@ -2647,6 +2698,7 @@ type Query {
 
   """Check which brick and mortars can fulfill the current selection."""
   fulfillmentCheck(brickAndMortarIds: [Int!]!): FulfillmentCheckPayload!
+  getShippingMethodLocations(address: ShippingLocationAddressInput, deliveryGroupId: String! = "", latitude: Float, longitude: Float, shippingMethodId: Int!): [ShippingMethodLocation!]!
   giftCertificate(id: Int!): GiftCertificate
   giftCertificates(
     ids: [Int!] = []
@@ -2711,6 +2763,19 @@ type Query {
   Required [operating mode](#operating-mode): `SESSION`
   """
   session: Session!
+
+  """
+  Only returns active providers.
+  
+  Can be used to hide inactive providers/login buttons.
+  
+  The returned IDs need to be mapped in the application.
+  
+  Called before [socialLoginVerify](/mutations/socialLoginVerify).
+  
+  Required [operating mode](#operating-mode): `SHARED_SECRET`
+  """
+  socialLoginList: SocialLoginProviderList!
 
   """
   Get payment methods supporting recurring payment.
@@ -2816,9 +2881,11 @@ type SelectionBundleSection {
 }
 
 type SelectionDeliveryGroup {
+  id: String!
   lines: [DeliveryGroupLine!]!
   name: String
   shippingMethod: ShippingMethod!
+  shippingMethods: [ShippingMethod!]
   shippingPrice: MonetaryValue!
 }
 
@@ -2835,6 +2902,11 @@ interface SelectionTotalRow {
 
 type SelectionTotalRowBase implements SelectionTotalRow {
   price: MonetaryValue!
+
+  """
+  SHIPPING and HANDLING only. Total tax for the row; taxPercent is the effective rate.
+  """
+  tax: SelectionTotalTaxRow
   type: SelectionTotalRowType!
 }
 
@@ -2866,6 +2938,13 @@ type Session {
   loggedIn: Customer
   market: Market!
   pricelist: Pricelist!
+
+  """
+  Session-scoped metadata attached by the Shipping Engine (e.g. a provider-side session
+  reference) — replaced in full on every successful NOTIFY/CHECKOUT response. Empty when no
+  Shipping Engine metadata is present.
+  """
+  shippingProviderCustomData(limit: Int = 20, page: Int = 1): ShippingProviderCustomDataList!
 }
 
 type SessionPayload implements Payload & SelectionMutationPayload {
@@ -2875,12 +2954,202 @@ type SessionPayload implements Payload & SelectionMutationPayload {
   userWarnings: [UserWarning!]!
 }
 
+"""
+Note: intentionally named ShippingETD (not ShippingEtd) in the schema.
+gqlgen generates this as ShippingEtd in Go due to acronym-at-end naming rules — do not rename.
+"""
+type ShippingETD {
+  absolute: ShippingETDAbsolute
+  custom: String
+  relative: ShippingETDRelative
+}
+
+type ShippingETDAbsolute {
+  """ISO 8601 date string"""
+  from: String!
+  to: String!
+}
+
+type ShippingETDRelative {
+  max: Int!
+  min: Int!
+
+  """One of: HOURS, DAYS, BUSINESS_DAYS, WEEKS"""
+  units: String!
+}
+
+"""
+A non-fatal error reported by the shipping engine while calculating shipping options.
+The selection is still usable, just without fresh shipping options.
+"""
+type ShippingEngineErrorWarning implements UserWarning {
+  addressFields: [String!]
+  code: String!
+  customData: [KeyValue!]
+  message: String!
+  path: [String!]
+  publicMessage: String
+}
+
+type ShippingLabel {
+  description: String
+  displayName: String!
+  iconUrl: String
+  type: String!
+}
+
+type ShippingLabelList {
+  list: [ShippingLabel!]!
+  pagination: PaginationInfo!
+}
+
+input ShippingLocationAddressInput {
+  address1: String
+  address2: String
+  city: String
+  country: String!
+  state: String
+  zipCode: String
+}
+
+"""
+Opening hours for a shipping location.
+Named ShippingLocationOpeningHours to avoid conflict with the existing OpeningHours type used by BrickAndMortar.
+"""
+type ShippingLocationOpeningHours {
+  periods(limit: Int = 20, page: Int = 1): OpeningHoursPeriodList!
+  specialDays(limit: Int = 20, page: Int = 1): SpecialDayList!
+}
+
 type ShippingMethod {
-  comment: String
+  carrierName: String
+  comment: String!
+  customerChoices(limit: Int = 20, page: Int = 1): ShippingMethodCustomerChoiceList!
+  deliveryType: DeliveryType
+  description: String
+  etd: ShippingETD
+  hasLocation: Boolean!
+  iconUrl: String
   id: Int!
+  internalOptionId: Int
+  labels(limit: Int = 20, page: Int = 1): ShippingLabelList!
+  locations(limit: Int = 20, page: Int = 1): ShippingMethodLocationList!
   name: String!
+  originalPrice: MonetaryValue
   price: MonetaryValue!
+  provider: String
+  providerOptionId: String
   selected: Boolean!
+  selectedLocation: ShippingMethodLocation
+  serviceCode: String
+
+  """
+  Unlike Session.shippingProviderCustomData, this is always a single option's data — one
+  provider per option — so it's a flat entry list rather than a per-provider grouping.
+  """
+  shippingProviderCustomData(limit: Int = 20, page: Int = 1): ShippingProviderCustomDataEntryList!
+  uri: String!
+}
+
+type ShippingMethodCustomerChoice {
+  default: String
+  description: String
+  displayName: String!
+  id: String!
+  options(limit: Int = 20, page: Int = 1): ShippingMethodCustomerChoiceOptionList!
+  price: MonetaryValue
+
+  """One of: INPUT, CHECKBOX, CHOICE, TIMESLOT"""
+  type: String!
+
+  """
+  The value submitted via setShippingMethodCustomerChoices /
+  setDeliveryGroupShippingMethodCustomerChoices, if any. Null until submitted.
+  """
+  value: String
+}
+
+type ShippingMethodCustomerChoiceList {
+  list: [ShippingMethodCustomerChoice!]!
+  pagination: PaginationInfo!
+}
+
+type ShippingMethodCustomerChoiceOption {
+  description: String
+  displayName: String!
+  key: String!
+  price: MonetaryValue
+}
+
+type ShippingMethodCustomerChoiceOptionList {
+  list: [ShippingMethodCustomerChoiceOption!]!
+  pagination: PaginationInfo!
+}
+
+input ShippingMethodCustomerChoiceValueInput {
+  id: String!
+  value: String!
+}
+
+type ShippingMethodLocation {
+  address: Address
+  brickAndMortar: Int
+  displayName: String!
+  distance: [ShippingMethodLocationDistance!]!
+  id: String!
+  latitude: Float
+  longitude: Float
+  openingHours: ShippingLocationOpeningHours
+  openingHoursText: String
+
+  """
+  Unlike Session.shippingProviderCustomData, this is always a single option's data — one
+  provider per option — so it's a flat entry list rather than a per-provider grouping.
+  """
+  shippingProviderCustomData(limit: Int = 20, page: Int = 1): ShippingProviderCustomDataEntryList!
+}
+
+type ShippingMethodLocationDistance {
+  meters: Int
+  minutes: Int
+
+  """One of: DRIVING, WALKING"""
+  mode: String!
+}
+
+type ShippingMethodLocationList {
+  list: [ShippingMethodLocation!]!
+  pagination: PaginationInfo!
+}
+
+"""
+Display context to optimize shippingMethods for — lets the Shipping Engine return a tailored
+set of options (e.g. fewer options, no location picker, no customer choices).
+"""
+enum ShippingMethodsOptimizeFor {
+  AMS
+  APPLEPAY
+  GOOGLEPAY
+}
+
+type ShippingProviderCustomData {
+  data(limit: Int = 20, page: Int = 1): ShippingProviderCustomDataEntryList!
+  provider: String!
+}
+
+type ShippingProviderCustomDataEntry {
+  key: String!
+  value: String!
+}
+
+type ShippingProviderCustomDataEntryList {
+  list: [ShippingProviderCustomDataEntry!]!
+  pagination: PaginationInfo!
+}
+
+type ShippingProviderCustomDataList {
+  list: [ShippingProviderCustomData!]!
+  pagination: PaginationInfo!
 }
 
 type SizeChart {
@@ -2909,6 +3178,72 @@ type SizeNameFilterValue implements FilterValue {
   value: String!
 }
 
+input SocialLoginInput {
+  """
+  Whether the user has confirmed.
+  See: [SocialLoginVerifyPayload](/types/SocialLoginVerifyPayload)
+  """
+  confirmed: Boolean! = false
+
+  """The nonce from [socialLoginVerify](/mutations/socialLoginVerify)."""
+  nonce: String!
+}
+
+input SocialLoginOverrides {
+  firstName: String! = ""
+  lastName: String! = ""
+}
+
+type SocialLoginProvider {
+  id: String!
+
+  """
+  Back office display name, e.g.: "My Social Login 5".
+  This value can change.
+  """
+  name: String!
+}
+
+type SocialLoginProviderList implements Payload {
+  list: [SocialLoginProvider!]!
+  userErrors: [UserError!]!
+}
+
+input SocialLoginVerifyInput {
+  """
+  The ID token from the provider.
+  Sent to us in an Auth.js hook or similar.
+  """
+  idToken: String!
+
+  """
+  If a provider returns the user's name outside the ID token,
+  or only on the first authorization, e.g.: Apple, this allows the
+  `firstName` and `lastName` to be overridden.
+  Subsequent authorizations with the provider may not return these values.
+  If a value exists in the token it takes precedence.
+  """
+  overrides: SocialLoginOverrides
+
+  """From [socialLoginList](/queries/socialLoginList)."""
+  providerId: String!
+}
+
+type SocialLoginVerifyPayload {
+  """
+  Whether the user is required to confirm that they would like to use Social Login.
+  Some existing customers may have their password invalidated.
+  They will have to reset their password on next login if they choose to use email/password again.
+  """
+  confirmationRequired: Boolean!
+
+  """
+  A single-use nonce sent in the following [socialLogin](/mutations/socialLogin) mutation.
+  """
+  nonce: String!
+  userErrors: [UserError!]!
+}
+
 enum SortKey {
   CATEGORY
   COLLECTION
@@ -2924,6 +3259,23 @@ enum SortKey {
 enum SortOrder {
   ASC
   DESC
+}
+
+type SpecialDay {
+  comment: String
+  date: SpecialDayDate!
+  isClosed: Boolean!
+}
+
+type SpecialDayDate {
+  day: Int!
+  month: Int!
+  year: Int!
+}
+
+type SpecialDayList {
+  list: [SpecialDay!]!
+  pagination: PaginationInfo!
 }
 
 type StateAddressField implements AddressField {
@@ -3259,11 +3611,6 @@ interface Voucher {
 
 interface VoucherAction {
   type: AppliedActionType!
-}
-
-enum VoucherActionType {
-  CREDIT
-  DISCOUNT
 }
 
 enum VoucherAppliedOn {

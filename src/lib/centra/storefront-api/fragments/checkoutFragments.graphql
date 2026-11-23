@@ -147,6 +147,8 @@ fragment voucher on Voucher {
 
 fragment paymentAction on PaymentAction {
   __typename
+  # The kind of step, which @centra/stripe and @centra/adyen read to recognise their forms.
+  action
   ... on FormPaymentAction {
     html
     formFields

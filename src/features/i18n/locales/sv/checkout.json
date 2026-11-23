@@ -42,6 +42,7 @@
   "place-order": "Lägg beställning",
   "payment": "Betalning",
   "payment-failed": "Betalningen misslyckades",
+  "payment-may-have-been-received": "Din betalning kan ha tagits emot. Kontakta oss för att bekräfta din beställning innan du betalar igen.",
   "payment-method": "Betalningsmetod",
   "payment-options": "Betalningsmetoder",
   "receipt": {
